@@ -16,6 +16,9 @@ dependencies:
   octokit:
     github: grantbirki/octokit.cr
     version: ~> 0.2.0
+  emoji:
+    github: veelenga/emoji.cr
+    version: ~> 0.5.0
 
 development_dependencies:
   ameba:

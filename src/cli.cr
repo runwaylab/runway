@@ -1,5 +1,7 @@
 require "option_parser"
 require "log"
+require "emoji"
+require "colorize"
 
 module Runway
   module Cli
@@ -7,7 +9,7 @@ module Runway
       opts = self.opts
 
       log = self.logger(opts[:log_level])
-      log.debug { "starting runway" }
+      log.info { Emoji.emojize(":airplane: runway starting") }
     end
 
     # Parse command line options
@@ -51,6 +53,36 @@ module Runway
                   when "ERROR" then Log::Severity::Error
                   else              raise "Invalid log level: #{log_level}"
                   end
+
+      # only use colors if we are on a tty
+      colors : Bool = Colorize.on_tty_only!
+
+      # setup a custom formatter that even supports colors
+      formatter = Log::Formatter.new do |entry, io|
+        message = entry.message
+
+        logger_colors = {
+          Log::Severity::Error => :red,
+          Log::Severity::Warn  => :yellow,
+          Log::Severity::Info  => :green,
+          Log::Severity::Debug => :light_gray,
+        }
+
+        # get the severity label and make it uppercase
+        severity_label = entry.severity.to_s.upcase
+
+        if colors
+          io << if color = logger_colors[entry.severity]?
+            severity_label.colorize(color).to_s + ": " + message
+          else
+            severity_label + ": " + message
+          end
+        else
+          io << severity_label + ": " + message
+        end
+      end
+
+      log.backend = Log::IOBackend.new(formatter: formatter)
 
       log.debug { "log level set to #{log_level}" }
 

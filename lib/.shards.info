@@ -13,3 +13,6 @@ shards:
   ameba:
     git: https://github.com/crystal-ameba/ameba.git
     version: 1.6.1
+  emoji:
+    git: https://github.com/veelenga/emoji.cr.git
+    version: 0.5.0
