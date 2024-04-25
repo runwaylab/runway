@@ -1,0 +1,5 @@
+projects:
+  - name: "project-1"
+    type: "git"
+    location: "local" # local or remote
+    path: "/path/to/project-1" # local path or remote url

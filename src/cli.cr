@@ -2,6 +2,8 @@ require "option_parser"
 require "log"
 require "emoji"
 require "colorize"
+require "./models/config"
+require "./runway"
 
 module Runway
   module Cli
@@ -9,7 +11,13 @@ module Runway
       opts = self.opts
 
       log = self.logger(opts[:log_level])
-      log.info { Emoji.emojize(":airplane: runway starting") }
+      log.info { Emoji.emojize(":book: loading runway configuration") }
+
+      log.debug { "attempting to load config from #{opts[:config_path]}"}
+      config = RunwayConfiguration.from_yaml(File.open(opts[:config_path]))
+      log.info { Emoji.emojize(":white_check_mark: loaded configuration successfully") }
+
+      Runway.start(log, config)
     end
 
     # Parse command line options
