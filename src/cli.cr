@@ -40,7 +40,7 @@ module Runway
 
     # setup a logger for the entire application
     # :param log_level: the log level to set
-    # :return: a Log instance  
+    # :return: a Log instance
     def self.logger(log_level) : Log
       Log.setup_from_env
       log = Log.for("runway")
