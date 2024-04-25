@@ -1,8 +1,14 @@
+# This is an example configuration file for runway
+
 projects:
   - name: "project-1"
     type: "git"
     location: "local" # local or remote
     path: "/path/to/project-1" # local path or remote url
-    triggers: # events that runway looks for to trigger a deployment
-      - type: github_deployment # when a github deployment is created in the repo, runway will deploy the project
-        repo: runwayapp/test-flight
+    events: # events that runway looks for to trigger a deployment
+      - type: github_deployment # github deployment event
+        repo: runwayapp/test-flight # the repository to check for deployment events
+        environment: production # the specific environment to check for
+        schedule:
+          type: interval # interval or cron
+          interval: 1s # intervals can be in milliseconds, seconds or minutes (ms, s, or m)
