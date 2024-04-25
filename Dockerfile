@@ -4,6 +4,7 @@ WORKDIR /app
 
 # copy core scripts
 COPY script/preinstall script/preinstall
+COPY script/update script/update
 COPY script/bootstrap script/bootstrap
 COPY script/postinstall script/postinstall
 
@@ -26,7 +27,7 @@ RUN script/build
 FROM crystallang/crystal:1.12.1
 
 # add curl for healthchecks
-RUN apt-get update && apt-get install -y curl
+# RUN apt-get update && apt-get install -y curl
 
 # create a non-root user for security
 RUN useradd -m nonroot
@@ -37,7 +38,7 @@ WORKDIR /app
 ######### CUSTOM SECTION PER PROJECT #########
 
 # copy the binary from the builder stage
-COPY --from=builder --chown=nonroot:nonroot /app/bin/crystal-base-template .
+COPY --from=builder --chown=nonroot:nonroot /app/bin/runway .
 
-# run the binary (adds two numbers together)
-CMD ["./crystal-base-template", "234122314", "1234"]
+# run the binary
+CMD ["./runway"]
