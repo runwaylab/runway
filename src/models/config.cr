@@ -12,4 +12,11 @@ class Project
   property type : String
   property location : String
   property path : String
+  property triggers : Array(Trigger)
+end
+
+class Trigger
+  include YAML::Serializable
+  property type : String
+  property repo : String?
 end

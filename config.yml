@@ -3,3 +3,6 @@ projects:
     type: "git"
     location: "local" # local or remote
     path: "/path/to/project-1" # local path or remote url
+    triggers: # events that runway looks for to trigger a deployment
+      - type: github_deployment # when a github deployment is created in the repo, runway will deploy the project
+        repo: runwayapp/test-flight
