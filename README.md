@@ -18,6 +18,4 @@
 
 <hr>
 
-<p align="center">
-  <img width="428" height="428" src="./docs/assets/runway-logo-light-box-transparent.png">
-</p>
+## TODO

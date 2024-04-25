@@ -65,6 +65,12 @@ fi
 
 script/preinstall
 
+# if the cache directory doesn't exist, run script/update
+if [ ! -d "$DIR/.cache/shards" ]; then
+  echo -e "🔄 ${BLUE}Updating${OFF}: shards cache"
+  script/update
+fi
+
 SHARDS_CACHE_PATH="$DIR/.cache/shards" shards install --skip-postinstall --skip-executables --local --frozen $@
 
 script/postinstall
