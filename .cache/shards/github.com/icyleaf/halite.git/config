@@ -1,0 +1,11 @@
+[core]
+	repositoryformatversion = 0
+	filemode = true
+	bare = true
+	askpass = true
+[init]
+	templatedir = 
+[remote "origin"]
+	url = https://github.com/icyleaf/halite.git
+	fetch = +refs/*:refs/*
+	mirror = true

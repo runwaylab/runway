@@ -1,0 +1,11 @@
+[core]
+	repositoryformatversion = 0
+	filemode = true
+	bare = true
+	askpass = true
+[init]
+	templatedir = 
+[remote "origin"]
+	url = https://github.com/grantbirki/octokit.cr.git
+	fetch = +refs/*:refs/*
+	mirror = true

@@ -1,0 +1,10 @@
+Lint/NotNil:
+  Enabled: false
+
+Style/RedundantReturn:
+  Enabled: false
+
+# exclude all files in vendor/cache
+Globs:
+  - "**/*.cr"
+  - "!lib"
