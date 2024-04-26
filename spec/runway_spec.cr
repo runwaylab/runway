@@ -6,13 +6,13 @@ module Runway
   describe ".is_cron?" do
     CRONS.each do |value|
       it "returns true if it is a cron job (#{value})" do
-        Runway.is_cron?(value).should eq true
+        Runway::Common.is_cron?(value).should eq true
       end
     end
 
     ["", " ", "1s", "1m", "1h", "1d", "1w", "1m", "1y"].each do |value|
       it "returns false if it is not a cron job (#{value})" do
-        Runway.is_cron?(value).should eq false
+        Runway::Common.is_cron?(value).should eq false
       end
     end
   end
