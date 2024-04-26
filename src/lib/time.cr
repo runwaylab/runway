@@ -1,10 +1,11 @@
 module Runway
   module TimeHelpers
-    # A helper method to construct a Time::Span object from an interval pattern
-    # :param interval: The interval pattern to construct the Time::Span object from (String)
-    # :return: The Time::Span object for the interval pattern
-    # Example string: "1m" for 1 minute
-    # Intervals must be in the format of a number followed by a unit of time (ms, s, m) and be whole numbers
+    # Constructs a Time::Span object from an interval pattern.
+    #
+    # @param interval [String] The interval pattern to construct the Time::Span object from.
+    #   Example string: "1m" for 1 minute.
+    #   Intervals must be in the format of a number followed by a unit of time (ms, s, m) and be whole numbers.
+    # @return [Time::Span] The Time::Span object for the interval pattern.
     protected def self.interval(interval : String) : Time::Span
       interval_regex = /^(\d+)(ms|s|m)$/
       match = interval_regex.match(interval)
@@ -22,10 +23,11 @@ module Runway
       end
     end
 
-    # A helper method to get the timezone for a schedule
-    # :param timezone: The timezone to use for the schedule (String) or nil
-    # :return: The Time::Location object for the timezone
-    # Example string: "America/New_York"
+    # Gets the timezone for a schedule.
+    #
+    # @param timezone [String, nil] The timezone to use for the schedule, or `nil` for UTC.
+    #   Example string: "America/New_York".
+    # @return [Time::Location] The Time::Location object for the timezone.
     protected def self.timezone(timezone : String?) : Time::Location
       return Time::Location.load("UTC") if timezone.nil?
 

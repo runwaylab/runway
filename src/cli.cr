@@ -18,7 +18,7 @@ module Runway
       log.info { Emoji.emojize(":white_check_mark: loaded configuration successfully") }
       log.info { "#{config.projects.size} #{config.projects.size == 1 ? "project" : "projects"} loaded" }
 
-      Runway.start(log, config)
+      Runway::Service.new(log, config).start!
     end
 
     # Parse command line options
