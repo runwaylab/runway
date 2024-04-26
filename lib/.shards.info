@@ -16,3 +16,18 @@ shards:
   emoji:
     git: https://github.com/veelenga/emoji.cr.git
     version: 0.5.0
+  readline:
+    git: https://github.com/crystal-lang/crystal-readline.git
+    version: 0.1.1+git.commit.69ecf33d7cad5568d7d19333510cfd9d17cb1bbd
+  icr:
+    git: https://github.com/crystal-community/icr.git
+    version: 0.9.0
+  cron_parser:
+    git: https://github.com/kostya/cron_parser.git
+    version: 0.4.0
+  future:
+    git: https://github.com/crystal-community/future.cr.git
+    version: 1.0.0
+  tasker:
+    git: https://github.com/spider-gazelle/tasker.git
+    version: 2.1.4
