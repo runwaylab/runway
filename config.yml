@@ -12,6 +12,11 @@ projects:
         schedule:
           interval: 1s # intervals can be in milliseconds, seconds or minutes (ms, s, or m) - or a cron expression
           timezone: UTC # the timezone to use for the schedule (default is UTC) - ex: Europe/Berlin or America/New_York - see https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+      - type: github_deployment
+        repo: runwayapp/test-flight
+        environment: staging
+        schedule:
+          interval: 4s
 
   - name: project-2
     type: "git"

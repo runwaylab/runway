@@ -27,7 +27,7 @@ module Runway
       end
     end
 
-    # keep the service running forever
+    # keep the service running until it is stopped (e.g. by a signal or ctrl + c)
     sleep
   end
 end
