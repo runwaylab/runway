@@ -1,5 +1,5 @@
-require "../spec_helper.cr"
-require "../../src/version"
+require "./spec_helper.cr"
+require "../src/version"
 
 describe Runway do
   it "should have a version" do

@@ -23,5 +23,12 @@ class Event
   property type : String
   property repo : String?
   property environment : String?
-  property schedule : String?
+  property schedule : Schedule
+end
+
+# A schedule contains information about how often an event should be checked
+class Schedule
+  include YAML::Serializable
+  property interval : String
+  property timezone : String?
 end
