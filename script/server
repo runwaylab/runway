@@ -5,4 +5,9 @@ set -e
 # set the working directory to the root of the project
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && pwd )"
 
-SHARDS_CACHE_PATH="$DIR/.cache/shards" shards run --release --debug --error-trace
+# if the script was invoked with the --dev flag, run the development version
+if [ "$1" == "--dev" ]; then
+  SHARDS_CACHE_PATH="$DIR/.cache/shards" shards run --debug --error-trace -- -c config.yml --log-level DEBUG
+else
+  SHARDS_CACHE_PATH="$DIR/.cache/shards" shards run --release --debug --error-trace
+fi
