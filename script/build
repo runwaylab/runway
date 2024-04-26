@@ -13,5 +13,5 @@ PURPLE='\033[0;35m'
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && pwd )"
 
 echo -e "🔨 ${BLUE}building in ${PURPLE}release${BLUE} mode${OFF}"
-SHARDS_CACHE_PATH="$DIR/.cache/shards" shards build --release --progress --debug --error-trace
+SHARDS_CACHE_PATH="$DIR/.cache/shards" shards build --release --progress --debug --error-trace -Dpreview_mt
 echo -e "📦 ${GREEN}build complete${OFF}"
