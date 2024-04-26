@@ -22,12 +22,6 @@ class Event
   include YAML::Serializable
   property type : String
   property repo : String?
-end
-
-# A schedule is a cron or interval schedule that is run for an event
-class Schedule
-  include YAML::Serializable
-  property type : String
-  property interval : String?
-  property cron : String?
+  property environment : String?
+  property schedule : String?
 end

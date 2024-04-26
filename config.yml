@@ -9,6 +9,4 @@ projects:
       - type: github_deployment # github deployment event
         repo: runwayapp/test-flight # the repository to check for deployment events
         environment: production # the specific environment to check for
-        schedule:
-          type: interval # interval or cron
-          interval: 1s # intervals can be in milliseconds, seconds or minutes (ms, s, or m)
+        schedule: 1s # intervals can be in milliseconds, seconds or minutes (ms, s, or m) - or a cron expression
