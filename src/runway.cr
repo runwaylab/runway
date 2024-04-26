@@ -1,16 +1,33 @@
 require "tasker"
+require "./lib/common"
+require "./lib/time"
+require "./models/project"
 
 module Runway
   def self.start(log, config)
     log.info { Emoji.emojize(":airplane: starting runway") }
-  end
 
-  # A helper method to determine if a schedule is a cron schedule or not
-  # :param schedule: The schedule to check (String)
-  # :return: True if the schedule is a cron schedule, False otherwise
-  protected def self.is_cron?(schedule : String) : Bool
-    # regex to match a cron schedule
-    cron_regex = /^((((\d+,)+\d+|(\d+(\/|-|#)\d+)|\d+L?|\*(\/\d+)?|L(-\d+)?|\?|[A-Z]{3}(-[A-Z]{3})?) ?){5,7})$|(@(annually|yearly|monthly|weekly|daily|hourly|reboot))|(@every (\d+(ns|us|µs|ms|s|m|h))+)/
-    return cron_regex.match(schedule) != nil
+    config.projects.each do |project_config|
+      log.info { Emoji.emojize(":package: starting project #{project_config.name}") }
+
+      project = Project.new(log, project_config)
+
+      project_config.events.each do |event_config|
+        if Runway::Common.is_cron?(event_config.schedule.interval)
+          log.info { Emoji.emojize(":clock1: scheduling event with cron schedule #{event_config.schedule.interval}") }
+          Tasker.cron(event_config.schedule.interval, Runway::TimeHelpers.timezone(event_config.schedule.timezone)) do
+            project.check_for_event(event_config)
+          end
+        else
+          log.info { Emoji.emojize(":clock1: scheduling event with interval #{event_config.schedule.interval}") }
+          Tasker.every(Runway::TimeHelpers.interval(event_config.schedule.interval)) do
+            project.check_for_event(event_config)
+          end
+        end
+      end
+    end
+
+    # keep the service running forever
+    sleep
   end
 end

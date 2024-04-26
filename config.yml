@@ -1,7 +1,7 @@
 # This is an example configuration file for runway
 
 projects:
-  - name: "project-1"
+  - name: project-1
     type: "git"
     location: "local" # local or remote
     path: "/path/to/project-1" # local path or remote url
@@ -9,6 +9,17 @@ projects:
       - type: github_deployment # github deployment event
         repo: runwayapp/test-flight # the repository to check for deployment events
         environment: production # the specific environment to check for
-        schedule: 
+        schedule:
           interval: 1s # intervals can be in milliseconds, seconds or minutes (ms, s, or m) - or a cron expression
           timezone: UTC # the timezone to use for the schedule (default is UTC) - ex: Europe/Berlin or America/New_York - see https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+
+  - name: project-2
+    type: "git"
+    location: "local"
+    path: "/path/to/project-2"
+    events:
+      - type: github_deployment
+        repo: runwayapp/test-flight
+        environment: development
+        schedule:
+          interval: 3s

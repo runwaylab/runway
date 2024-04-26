@@ -4,11 +4,11 @@ require "yaml"
 
 class RunwayConfiguration
   include YAML::Serializable
-  property projects : Array(Project)
+  property projects : Array(ProjectConfig)
 end
 
 # A project is a collection of events that trigger deployments and are run on a schedule
-class Project
+class ProjectConfig
   include YAML::Serializable
   property name : String
   property type : String
