@@ -27,6 +27,3 @@ development_dependencies:
   ameba:
     github: crystal-ameba/ameba
     version: ~> 1.6.1
-  icr:
-    github: crystal-community/icr
-    version: ~> 0.9.0

@@ -20,10 +20,6 @@ shards:
     git: https://github.com/icyleaf/halite.git
     version: 0.12.0
 
-  icr:
-    git: https://github.com/crystal-community/icr.git
-    version: 0.9.0
-
   json_mapping:
     git: https://github.com/crystal-lang/json_mapping.cr.git
     version: 0.1.1
@@ -31,10 +27,6 @@ shards:
   octokit:
     git: https://github.com/grantbirki/octokit.cr.git
     version: 0.2.0
-
-  readline:
-    git: https://github.com/crystal-lang/crystal-readline.git
-    version: 0.1.1+git.commit.69ecf33d7cad5568d7d19333510cfd9d17cb1bbd
 
   tasker:
     git: https://github.com/spider-gazelle/tasker.git
