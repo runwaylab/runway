@@ -51,7 +51,7 @@ module Runway
     # @param event_config The configuration for the event.
     private def schedule_event(project : Project, event_config)
       interval = event_config.schedule.interval
-      if Runway::Common.is_cron?(interval)
+      if Runway::Common.cron?(interval)
         @log.info { Emoji.emojize(":clock1: scheduling event with cron schedule #{interval}") }
         Tasker.cron(interval, Runway::TimeHelpers.timezone(event_config.schedule.timezone)) { project.check_for_event(event_config) }
       else
