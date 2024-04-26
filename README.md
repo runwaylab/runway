@@ -1,4 +1,4 @@
-<h2 align="center"><img src="docs/assets/logo.png" alt="logo" align="center" width="200px" /></h1>
+<h2 align="center"><img src="assets/logo.png" alt="logo" align="center" width="200px" /></h1>
 
 <h2 align="center">runway</h1>
 <p align="center">
@@ -13,7 +13,7 @@
 </p>
 
 <p align="center">
-  <img src="docs/assets/language-crystal-black.svg" alt="language crystal"/>
+  <img src="assets/language-crystal-black.svg" alt="language crystal"/>
 </p>
 
 <hr>
