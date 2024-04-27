@@ -15,7 +15,7 @@ module Runway
 
     # Creates an octokit.cr client with the given token (can be nil aka unauthenticated)
     # @param token [String?] the GitHub token to use for authentication - if nil, the client will be unauthenticated
-    # @return [Octokit::Client] the client  
+    # @return [Octokit::Client] the client
     protected def create_client(token : String?) : Octokit::Client
       if (token.nil? || token.empty?) && ENV.fetch("SUPPRESS_STARTUP_WARNINGS", nil).nil?
         @log.warn { "No GitHub token provided. Please set the GITHUB_TOKEN environment variable to avoid excessive rate limiting." }

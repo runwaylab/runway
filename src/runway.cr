@@ -60,8 +60,8 @@ module Runway
         Tasker.cron(interval, Runway::TimeHelpers.timezone(event_config.schedule.timezone)) do
           begin
             project.check_for_event(event_config)
-          rescue err : Exception
-            @log.error { Emoji.emojize("#{ERROR_PREFIX} #{err.message} - traceback: #{err.backtrace.join("\n")}") }
+          rescue error : Exception
+            @log.error { Emoji.emojize("#{ERROR_PREFIX} #{error.message} - traceback: #{error.backtrace.join("\n")}") }
           end
         end
       else
@@ -69,8 +69,8 @@ module Runway
         Tasker.every(Runway::TimeHelpers.interval(interval)) do
           begin
             project.check_for_event(event_config)
-          rescue err : Exception
-            @log.error { Emoji.emojize("#{ERROR_PREFIX} #{err.message} - traceback: #{err.backtrace.join("\n")}") }
+          rescue error : Exception
+            @log.error { Emoji.emojize("#{ERROR_PREFIX} #{error.message} - traceback: #{error.backtrace.join("\n")}") }
           end
         end
       end
