@@ -6,6 +6,7 @@ bin/
 *.dwarf
 dist/
 
+
 # non-critical vendored crystal files
 lib/**/.github/
 lib/**/docs/
@@ -15,3 +16,9 @@ lib/**/spec/
 # secrets
 creds.env
 *.pem
+
+# ignore coverage directory in the root
+/coverage
+
+# do not ignore lib/coverage directory
+!/lib/coverage/

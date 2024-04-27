@@ -1,0 +1,22 @@
+name: coverage
+version: 0.1.0
+
+authors:
+   - Yacine Petitprez <anykeyh@gmail.com>
+
+description: |
+  Get coverage rate of your crystal app ! Proof of concept, beware !
+
+targets:
+  crystal-coverage:
+    main: src/coverage/cli.cr
+
+scripts:
+  postinstall: make bin
+
+development_dependencies:
+  ameba:
+    github: crystal-ameba/ameba
+    version: ~> 1.6.1
+
+license: MIT

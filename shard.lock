@@ -4,6 +4,10 @@ shards:
     git: https://github.com/crystal-ameba/ameba.git
     version: 1.6.1
 
+  coverage:
+    git: https://github.com/anykeyh/crystal-coverage.git
+    version: 0.1.0+git.commit.e781f8c70812c9dc4d5bf1d1e396e1f5c9ef1051
+
   cron_parser:
     git: https://github.com/kostya/cron_parser.git
     version: 0.4.0

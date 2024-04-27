@@ -27,3 +27,6 @@ development_dependencies:
   ameba:
     github: crystal-ameba/ameba
     version: ~> 1.6.1
+  coverage:
+    github: anykeyh/crystal-coverage
+    commit: e781f8c70812c9dc4d5bf1d1e396e1f5c9ef1051

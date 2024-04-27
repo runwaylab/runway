@@ -1,0 +1,4 @@
+.shards
+/lib/
+/bin/
+/coverage/
