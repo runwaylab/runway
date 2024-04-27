@@ -56,7 +56,13 @@ module Runway
         Tasker.cron(interval, Runway::TimeHelpers.timezone(event_config.schedule.timezone)) { project.check_for_event(event_config) }
       else
         @log.info { Emoji.emojize(":clock1: scheduling event with interval #{interval}") }
-        Tasker.every(Runway::TimeHelpers.interval(interval)) { project.check_for_event(event_config) }
+        Tasker.every(Runway::TimeHelpers.interval(interval)) do
+          begin
+            project.check_for_event(event_config)
+          rescue err : Exception
+            @log.error { Emoji.emojize(":boom: error while checking for event: #{err.message} - traceback: #{err.backtrace.join("\n")}") }
+          end
+        end
       end
     end
   end

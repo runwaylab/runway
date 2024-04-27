@@ -16,6 +16,13 @@ class Project
     @log = log
     @name = @config.name
     @events = {} of String => BaseEvent
+    hydrate_event_handlers!
+  end
+
+  protected def hydrate_event_handlers!
+    @config.events.each do |event|
+      @events[event.type] = EventRegistry.create_event(event.type, event, @log)
+    end
   end
 
   # Checks for an event and handles it if the event type is registered.
@@ -23,6 +30,7 @@ class Project
   # @param event [Event] The event to check for.
   def check_for_event(event : Event)
     @log.info { "checking for event #{event.type} - project: #{@name}" }
+
     @events[event.type].check_for_event
   end
 end

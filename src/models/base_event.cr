@@ -1,3 +1,5 @@
+require "./config"
+
 # `BaseEvent` is an abstract base class for all event types.
 # It provides a common interface for handling and checking for events.
 abstract class BaseEvent
@@ -42,12 +44,12 @@ module EventRegistry
   # Creates an instance of an event class based on the event type.
   #
   # @param event_type [String] The unique identifier for the event class.
-  # @param event_config [EventConfig] The configuration for the event.
+  # @param event_config [Event] The configuration for the event.
   # @return [BaseEvent] The created event instance.
   # @raise [RuntimeError] If the event type is unknown.
-  def self.create_event(event_type : String, event_config : EventConfig) : BaseEvent
+  def self.create_event(event_type : String, event_config : Event, log : Log) : BaseEvent
     event_class = @@events[event_type]?
     raise "Unknown event type: #{event_type}" unless event_class
-    event_class.new(event_config)
+    event_class.new(log, event_config)
   end
 end
