@@ -19,6 +19,7 @@ class Project
     hydrate_event_handlers!
   end
 
+  # Hydrates all the event handles for the project.
   protected def hydrate_event_handlers!
     @config.events.each do |event|
       @events[event.type] = EventRegistry.create_event(event.type, event, @log)
