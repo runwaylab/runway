@@ -17,7 +17,7 @@ module Runway
 
       # octokit.cr wipes out the loggers, so we need to re-apply them
       # fetch the current log level
-      log_level = @log.level  
+      log_level = @log.level
 
       # create the client
       client = Octokit::Client.new(access_token: token)
