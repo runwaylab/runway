@@ -19,13 +19,13 @@ class ExampleEvent < BaseEvent
   # This method will actually handle the event and make the deployment. For example, if you want to deploy a new release...
   # ... you might write custom code here to deploy the new release
   def handle_event
-    @log.info { "Handling GitHub Deployment event" }
+    @log.info { "processing a deployment event!" }
   end
 
   # This method is called by the scheduler to check if the event should be handled
   # Here you will do any checks to see if the event should be handled
   # Example: Reach out to the GitHub API and see if a new release has been made that you want to upgrade to
   def check_for_event
-    @log.info { "Checking for GitHub Deployment event" }
+    @log.info { "checking if a deployable event has occurred" }
   end
 end

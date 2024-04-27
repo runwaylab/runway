@@ -1,4 +1,8 @@
 require "spec"
+require "../src/models/config"
+
+CONFIG = RunwayConfiguration.from_yaml(File.open("./config.yml"))
+EVENT  = CONFIG.projects.first.events.first
 
 CRONS = [
   "0 0 * * *",
