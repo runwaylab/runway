@@ -30,7 +30,7 @@ module Runway
       client.auto_paginate = ENV.fetch("OCTOKIT_CR_AUTO_PAGINATE", "true") == "true"
       client.per_page = ENV.fetch("OCTOKIT_CR_PER_PAGE", "100").to_i
 
-      @log : Log = RunwayLogger.setup_logger(log_level.to_s.upcase)
+      @log = RunwayLogger.setup_logger(log_level.to_s.upcase)
 
       return client
     end
