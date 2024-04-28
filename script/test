@@ -14,6 +14,11 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && pwd )"
 
 echo -e "🧪 ${BLUE}running unit tests...${OFF}"
 
-crystal spec
+if [ ! -f "$DIR/bin/kcov" ]; then
+  echo "WARN: the kcov binary cannot be found at $DIR/bin/kcov - no code coverage report will be generated"
+  crystal spec
+else
+  $DIR/bin/crkcov --cleanup-coverage-before --coverage-dir $DIR/coverage --fail-below-low 100 --kcov-executable $DIR/bin/kcov
+fi
 
 echo -e "✅ ${GREEN}tests complete!${OFF}"

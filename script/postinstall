@@ -2,8 +2,31 @@
 
 # set the working directory to the root of the project
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && pwd )"
+LINUX_VENDOR_DIR="$DIR/vendor/linux_x86_64/bin"
 
 mkdir -p "$DIR/bin"
+
+# Determine if the system is a Mac or Linux
+os="unknown"
+if [[ "$OSTYPE" == "linux-gnu" ]]; then
+  os="linux"
+  if [ "$CI" = true ]; then
+    echo "running in CI mode, copying vendored binaries to bin/ directory"
+    cp "$LINUX_VENDOR_DIR/ameba" "$DIR/bin/ameba"
+    cp "$LINUX_VENDOR_DIR/crkcov" "$DIR/bin/crkcov"
+    cp "$LINUX_VENDOR_DIR/kcov" "$DIR/bin/kcov"
+  fi
+elif [[ "$OSTYPE" == "darwin"* ]]; then
+  os="mac"
+else
+  os="unknown"
+fi
+
+# check if the $DIR/bin/kcov binary exists
+if [ ! -f "$DIR/bin/kcov" ]; then
+  echo "WARN: the kcov binary does not exist in the bin/ directory"
+  echo "  you will need to install kcov (and place it in ./bin) if you wish to use code coverage"
+fi
 
 # ensure the ameba binary is built and available in the bin directory
 AMEBA_UP_TO_DATE=false
