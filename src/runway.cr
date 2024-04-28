@@ -1,4 +1,5 @@
 require "tasker"
+require "uuid"
 require "./runway/lib/common"
 require "./runway/lib/time"
 require "./runway/models/project"
@@ -29,7 +30,16 @@ module Runway
       @log.info { Emoji.emojize(":airplane: starting runway - version: v#{VERSION}") }
 
       @config.projects.each do |project_config|
+        # assign a uuid to the project
+        project_config.uuid = UUID.random.to_s
+
         @log.info { Emoji.emojize(":package: starting project #{project_config.name}") }
+
+        # iterate over all the events in the project and assign uuids to them
+        project_config.events.each do |event_config|
+          event_config.uuid = UUID.random.to_s
+        end
+
         project = Project.new(@log, project_config)
         schedule_events(project, project_config.events)
       end

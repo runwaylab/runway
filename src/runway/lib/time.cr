@@ -28,7 +28,7 @@ module Runway
     # @param timezone [String, nil] The timezone to use for the schedule, or `nil` for UTC.
     #   Example string: "America/New_York".
     # @return [Time::Location] The Time::Location object for the timezone.
-    protected def self.timezone(timezone : String?) : Time::Location
+    def self.timezone(timezone : String?) : Time::Location
       return Time::Location.load("UTC") if timezone.nil?
 
       return Time::Location.load(timezone)

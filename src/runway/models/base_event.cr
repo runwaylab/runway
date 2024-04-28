@@ -17,7 +17,7 @@ abstract class BaseEvent
   # In general, handling an event means performing a deployment.
   # Example: A GitHub deployment was triggered, and the check_for_event method detected it...
   # ...now the handle_event method will be called to perform the deployment.
-  abstract def handle_event
+  abstract def handle_event(payload : _)
 
   # Checks for the event.
   # Subclasses must implement this method.

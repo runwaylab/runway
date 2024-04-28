@@ -31,6 +31,10 @@ class ProjectConfig
 
   # @return [Array(Event)] The array of events for the project.
   property events : Array(Event)
+
+  # @return [String, nil] The UUID for the project, or `nil` if not specified.
+  # The application will generate a UUID for the event if one is not provided.
+  property uuid : String?
 end
 
 # The `Event` class represents an event that triggers a deployment for a project.
@@ -49,6 +53,16 @@ class Event
 
   # @return [Schedule] The schedule for the event.
   property schedule : Schedule
+
+  # @return [String, nil] The UUID for the event, or `nil` if not specified.
+  # The application will generate a UUID for the event if one is not provided.
+  property uuid : String?
+
+  # @return [Int32, nil] The deployment filter for the event, or `nil` if not specified.
+  # Deployment filters are used to filter out deployments to X number of most recent deployments
+  # This helps save on API requests and prevent unnecessary deployments
+  # This property is specific to the github_deployment event type
+  property deployment_filter : Int32?
 end
 
 # The `Schedule` class represents the schedule for an event.
