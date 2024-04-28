@@ -20,7 +20,7 @@ describe ExampleEvent do
     it "runs both" do
       # Call the methods
       subject.check_for_event
-      subject.handle_event
+      subject.handle_event(nil)
     end
   end
 
