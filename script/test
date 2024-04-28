@@ -34,7 +34,7 @@ else
   test_output=$($DIR/bin/crkcov --cleanup-coverage-before --coverage-dir $DIR/coverage --kcov-executable $DIR/bin/kcov --output)
   echo "$test_output"
   # if the exact string of `Total covored:	100` is not found in the output, the tests failed
-  if [[ $test_output != *"Total covered: 100%"* ]]; then
+  if [[ $test_output != *"Total covered: 100.00"* ]]; then
     echo -e "❌ ${RED}incomplete test coverage${OFF}"
     exit 1
   fi
