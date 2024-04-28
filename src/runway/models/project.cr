@@ -30,7 +30,7 @@ class Project
   #
   # @param event [Event] The event to check for.
   def check_for_event(event : Event)
-    @log.info { "checking for event #{event.type} - project: #{@name}" }
+    @log.info { Emoji.emojize(":eyes: #{@name} is checking for a #{event.type} event") }
 
     @events[event.type].check_for_event
   end
