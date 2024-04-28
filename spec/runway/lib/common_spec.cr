@@ -1,5 +1,5 @@
-require "../src/runway"
-require "./spec_helper"
+require "../../../src/runway/lib/common"
+require "../../spec_helper"
 
 module Runway
   describe ".cron?" do

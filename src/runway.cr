@@ -1,8 +1,8 @@
 require "tasker"
-require "./lib/common"
-require "./lib/time"
-require "./models/project"
-require "./models/config"
+require "./runway/lib/common"
+require "./runway/lib/time"
+require "./runway/models/project"
+require "./runway/models/config"
 require "./version"
 
 module Runway

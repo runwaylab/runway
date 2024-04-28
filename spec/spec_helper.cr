@@ -1,5 +1,6 @@
 require "spec"
-require "../src/models/config"
+require "log"
+require "../src/runway/models/config"
 
 CONFIG = RunwayConfiguration.from_yaml(File.open("./config.yml"))
 EVENT  = CONFIG.projects.first.events.first
