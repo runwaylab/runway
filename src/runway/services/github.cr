@@ -4,6 +4,7 @@ require "../lib/logger"
 module Runway
   class GitHub
     @client : Octokit::Client
+    getter client : Octokit::Client
 
     # The octokit class for interacting with GitHub's API
     # @param log [Log] the logger to use
