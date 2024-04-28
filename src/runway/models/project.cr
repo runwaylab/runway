@@ -1,3 +1,4 @@
+require "uuid"
 require "./events/*"
 
 # The `Project` class represents a project that can handle different types of events.
@@ -22,7 +23,7 @@ class Project
   # Hydrates all the event handles for the project.
   protected def hydrate_event_handlers!
     @config.events.each do |event|
-      @events[event.type] = EventRegistry.create_event(event.type, event, @log)
+      @events[event.uuid.not_nil!] = EventRegistry.create_event(event.type, event, @log)
     end
   end
 
@@ -30,8 +31,8 @@ class Project
   #
   # @param event [Event] The event to check for.
   def check_for_event(event : Event)
-    @log.info { "checking for event #{event.type} - project: #{@name}" }
+    @log.info { Emoji.emojize(":eyes: #{@name} is checking for a #{event.type} event") }
 
-    @events[event.type].check_for_event
+    @events[event.uuid.not_nil!].check_for_event
   end
 end

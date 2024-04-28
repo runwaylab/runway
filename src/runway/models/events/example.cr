@@ -18,7 +18,7 @@ class ExampleEvent < BaseEvent
   # If `check_for_event` determines that the event should be handled, call this method next!
   # This method will actually handle the event and make the deployment. For example, if you want to deploy a new release...
   # ... you might write custom code here to deploy the new release
-  def handle_event
+  def handle_event(payload : _)
     @log.info { "processing a deployment event!" }
   end
 

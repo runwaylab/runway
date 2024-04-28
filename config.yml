@@ -9,14 +9,15 @@ projects:
       - type: github_deployment # github deployment event
         repo: runwayapp/test-flight # the repository to check for deployment events
         environment: production # the specific environment to check for
+        deployment_filter: 1 # only look at the most recent deployment (based on the created_at field) - this field is required only for the github_deployment type event. It helps to save on API requests to GitHub. If not provided, it defaults to 1
         schedule:
-          interval: 1s # intervals can be in milliseconds, seconds or minutes (ms, s, or m) - or a cron expression
+          interval: 3s # intervals can be in milliseconds, seconds or minutes (ms, s, or m) - or a cron expression
           timezone: UTC # the timezone to use for the schedule (default is UTC) - ex: Europe/Berlin or America/New_York - see https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
       - type: github_deployment
         repo: runwayapp/test-flight
         environment: staging
         schedule:
-          interval: 4s
+          interval: 5s
 
   - name: project-2
     type: "git"
@@ -27,4 +28,4 @@ projects:
         repo: runwayapp/test-flight
         environment: development
         schedule:
-          interval: 3s
+          interval: 10s
