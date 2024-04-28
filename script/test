@@ -14,9 +14,22 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && pwd )"
 
 echo -e "🧪 ${BLUE}running unit tests...${OFF}"
 
-if [ ! -f "$DIR/bin/kcov" ]; then
+skip_coverage=false
+for arg in "$@"; do
+  if [ "$arg" == "-s" ]; then
+    skip_coverage=true
+    break
+  fi
+done
+
+# if -s was supplied as an argument, skip coverage reports (they can be slow)
+if $skip_coverage; then
+  crystal spec
+# if the kcov binary cannot be found, warn and run specs without coverage
+elif [ ! -f "$DIR/bin/kcov" ]; then
   echo "WARN: the kcov binary cannot be found at $DIR/bin/kcov - no code coverage report will be generated"
   crystal spec
+# otherwise, run specs with coverage
 else
   $DIR/bin/crkcov --cleanup-coverage-before --coverage-dir $DIR/coverage --fail-below-low 100 --kcov-executable $DIR/bin/kcov
 fi
