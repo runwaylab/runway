@@ -2,9 +2,9 @@ require "option_parser"
 require "log"
 require "emoji"
 require "colorize"
-require "./models/config"
+require "./runway/models/config"
 require "./runway"
-require "./lib/logger"
+require "./runway/lib/logger"
 
 module Runway
   module Cli
