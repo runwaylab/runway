@@ -22,6 +22,9 @@ dependencies:
   tasker:
     github: spider-gazelle/tasker
     version: ~> 2.1.4
+  retriable:
+    github: Sija/retriable.cr
+    version: ~> 0.2.5
 
 development_dependencies:
   ameba:
