@@ -1,4 +1,4 @@
-name: base-template
+name: runway
 version: 0.1.0
 
 authors:
@@ -27,6 +27,6 @@ development_dependencies:
   ameba:
     github: crystal-ameba/ameba
     version: ~> 1.6.1
-  coverage:
-    github: anykeyh/crystal-coverage
-    commit: e781f8c70812c9dc4d5bf1d1e396e1f5c9ef1051
+  crystal-kcov:
+    github: crystal-community/crystal-kcov
+    commit: 7e49fe22d7d47040c9de77eb77a6daa76ce0655d
