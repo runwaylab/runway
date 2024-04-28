@@ -15,7 +15,7 @@ license: MIT
 dependencies:
   octokit:
     github: grantbirki/octokit.cr
-    version: ~> 0.2.1
+    version: ~> 0.2.2
   emoji:
     github: veelenga/emoji.cr
     version: ~> 0.5.0

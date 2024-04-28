@@ -1,3 +1,4 @@
+require "uri"
 require "../models/repos"
 require "../models/repo_deployments"
 
@@ -47,7 +48,7 @@ module Octokit
       #
       # Filter deployments by environment:
       # ```
-      # Octokit.deployments("monalisa/app", {"environment": "production"})
+      # Octokit.deployments("monalisa/app", {"environment" => "production"})
       # ```
       # An alias method exists for `deployments` called `list_deployments` which can be used interchangeably
       def deployments(repo : String, params : Hash(String, String) = {} of String => String, **options)
