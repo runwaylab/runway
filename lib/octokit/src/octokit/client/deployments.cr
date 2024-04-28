@@ -52,7 +52,7 @@ module Octokit
       # ```
       # An alias method exists for `deployments` called `list_deployments` which can be used interchangeably
       def deployments(repo : String, params : Hash(String, String) = {} of String => String, **options)
-        query_string = params.map { |k, v| "#{URI.escape(k)}=#{URI.escape(v)}" }.join("&")
+        query_string = params.map { |k, v| "#{URI.encode_path(k)}=#{URI.encode_path(v)}" }.join("&")
         url = "#{Repository.path(repo)}/deployments"
         url += "?#{query_string}" unless query_string.empty?
         get(url, options)

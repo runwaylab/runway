@@ -30,7 +30,7 @@ shards:
 
   octokit:
     git: https://github.com/grantbirki/octokit.cr.git
-    version: 0.2.2
+    version: 0.2.3
 
   tasker:
     git: https://github.com/spider-gazelle/tasker.git
