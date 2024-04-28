@@ -17,7 +17,11 @@ class GitHubDeployment < BaseEvent
   def handle_event(payload)
     @log.debug { "received a handle_event() request for deployment.id: #{payload["id"]} from event.uuid: #{@event.uuid}" }
     @log.info { "handling a deployment event for #{@repo} in the #{@event.environment} environment" }
-    result = @client.create_deployment_status(@repo, payload["id"].to_s.to_i, "success")
+
+    result = Retriable.retry do
+      @client.create_deployment_status(@repo, payload["id"].to_s.to_i, "success")
+    end
+
     @log.debug { "deployment status result: #{JSON.parse(result).to_pretty_json}" }
     return true
   rescue error : Exception

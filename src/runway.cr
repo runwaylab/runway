@@ -5,6 +5,7 @@ require "./runway/lib/time"
 require "./runway/models/project"
 require "./runway/models/config"
 require "./version"
+require "./runway/lib/retry"
 
 module Runway
   # The `Service` class is responsible for starting the Runway service.
@@ -28,6 +29,9 @@ module Runway
     # schedules events for each project, and then keeps the service running until it is stopped.
     def start!
       @log.info { Emoji.emojize(":airplane: starting runway - version: v#{VERSION}") }
+
+      # setup the retry configuration
+      Retry.setup!(@log)
 
       @config.projects.each do |project_config|
         # assign a uuid to the project
