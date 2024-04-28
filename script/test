@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 # COLORS
 OFF='\033[0m'
 RED='\033[0;31m'
@@ -29,6 +31,7 @@ elif [ ! -f "$DIR/bin/kcov" ]; then
   crystal spec
 # otherwise, run specs with coverage
 else
+  set +e
   test_output=$($DIR/bin/crkcov --cleanup-coverage-before --coverage-dir $DIR/coverage --kcov-executable $DIR/bin/kcov --output)
   echo "$test_output"
 
@@ -36,6 +39,7 @@ else
   total_covered=$(echo "$test_output" | grep "Total covored:")
   echo "$total_covered" | grep -q "100\.00"
   coverage_passed=$?
+  set -e
 
   # check if the line contains the desired coverage percentage anywhere in the line
   if [ $coverage_passed -ne 0 ]; then
