@@ -16,7 +16,7 @@ class GitHubDeployment < BaseEvent
 
   def handle_event(payload)
     @log.debug { "received a handle_event() request for deployment.id: #{payload["id"]} from event.uuid: #{@event.uuid}" }
-    @log.info { "handling a deployment event for #{@repo} in the #{@event.environment} environment" }
+    @log.info { Emoji.emojize(":hammer_and_wrench:  handling a deployment event for #{@repo} in the #{@event.environment} environment") }
 
     # create a success deployment status
     result = Retriable.retry do
@@ -24,6 +24,11 @@ class GitHubDeployment < BaseEvent
     end
 
     @log.debug { "deployment status result: #{JSON.parse(result).to_pretty_json}" }
+
+    raise "Unexpected deployment status result" unless JSON.parse(result)["state"] == "success"
+
+    @log.info { Emoji.emojize(":rocket: successfully deployed #{@repo} to the #{@event.environment} environment!") }
+
     return true
   rescue error : Exception
     @log.error { "error handling deployment event: #{error.message}" }
@@ -75,6 +80,13 @@ class GitHubDeployment < BaseEvent
       # if the most recent status is "in_progress", we have our deployment
       if statuses.first["state"] == "in_progress"
         @log.debug { "found a deployment in_progress deployment for #{@repo} in the #{@event.environment} environment" }
+
+        if deployment["sha"].nil?
+          @log.warn { Emoji.emojize(":warning: deployment sha is missing from the deployment payload") }
+        else
+          @log.debug { "in_progress deployment sha for #{@repo}: #{deployment["sha"]}" }
+        end
+
         return handle_event(deployment)
       end
     end

@@ -13,7 +13,7 @@ module Runway
   # starts the service, and schedules events for each project in the configuration.
   ERROR_PREFIX    = ":boom: error while checking for event:"
   SCHEDULE_PREFIX = ":clock1: scheduling event with"
-  QUIET = ENV.fetch("RUNWAY_QUIET", "false") == "true" # suppress the logs a bit
+  QUIET           = ENV.fetch("RUNWAY_QUIET", "false") == "true" # suppress the logs a bit
 
   class Service
     # Initializes a new `Service`.
@@ -48,6 +48,8 @@ module Runway
         project = Project.new(@log, project_config)
         schedule_events(project, project_config.events)
       end
+
+      @log.info { Emoji.emojize(":rocket: runway is ready and all events have been setup!") }
 
       # keep the service running until it is stopped (e.g. by a signal or ctrl + c)
       sleep
