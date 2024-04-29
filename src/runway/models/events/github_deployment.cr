@@ -5,6 +5,7 @@ class GitHubDeployment < BaseEvent
   EventRegistry.register_event("github_deployment", self)
   @deployment_filter : Int32
   @repo : String
+  @miniumum_rate_limit : Int32
 
   def initialize(log : Log, event : Event)
     super(log, event)
@@ -12,6 +13,32 @@ class GitHubDeployment < BaseEvent
     @deployment_filter = (@event.deployment_filter.try(&.to_i) || 1)
     @repo = @event.repo.not_nil!
     @timezone = Runway::TimeHelpers.timezone(@event.schedule.timezone)
+    @miniumum_rate_limit = ENV.fetch("GITHUB_MINIMUM_RATE_LIMIT", "10").to_s.to_i
+  end
+
+  # A helper method to check the rate limit of the GitHub API
+  # if the rate limit is exceeded, we'll wait until the rate limit resets
+  # this is a blocking operation
+  def check_rate_limit!
+    # Octokit::RateLimit(@limit=5000, @remaining=4278, @resets_at=2024-04-29 06:23:52.0 UTC, @resets_in=1784)
+    rate_limit = @client.rate_limit
+
+    # if rate_limit.remaining is nil, exit early
+    if rate_limit.remaining.nil?
+      @log.warn { "the GitHub API rate limit is nil - waiting 60 seconds before checking again" }
+      sleep(60)
+      return
+    end
+
+    # if the rate limit is below the minimum, we'll wait until the rate limit resets
+    rate_limit_remaining = rate_limit.remaining.try(&.to_i).not_nil!
+    if rate_limit_remaining < @miniumum_rate_limit
+      resets = rate_limit.resets_in.try(&.to_i).not_nil!
+      reset_sleep = resets + 1
+      @log.warn { "the GitHub API rate limit is almost exceeded - waiting #{resets} seconds until the rate limit resets" }
+      @log.debug { "GitHub rate_limit.remaining: #{rate_limit.remaining} - rate_limit.resets_at: #{rate_limit.resets_at} - rate_limit.resets_in: #{rate_limit.resets_in} - sleeping: #{reset_sleep} seconds" }
+      sleep(reset_sleep + 1)
+    end
   end
 
   def handle_event(payload)
@@ -20,6 +47,7 @@ class GitHubDeployment < BaseEvent
 
     # create a success deployment status
     result = Retriable.retry do
+      check_rate_limit!
       @client.create_deployment_status(@repo, payload["id"].to_s.to_i, "success")
     end
 
@@ -33,6 +61,7 @@ class GitHubDeployment < BaseEvent
   rescue error : Exception
     @log.error { "error handling deployment event: #{error.message}" }
     result = Retriable.retry do
+      check_rate_limit!
       @client.create_deployment_status(@repo, payload["id"].to_s.to_i, "failure")
     end
 
@@ -44,6 +73,7 @@ class GitHubDeployment < BaseEvent
     @log.debug { "received a check_for_event() request for event.uuid: #{@event.uuid}" }
     @log.info { "checking #{@repo} for a #{@event.environment} deployment event" } unless Runway::QUIET
     deployments = Retriable.retry do
+      check_rate_limit!
       @client.deployments(@repo, {"environment" => @event.environment.not_nil!})
     end
     deployments = JSON.parse(deployments)
@@ -68,6 +98,7 @@ class GitHubDeployment < BaseEvent
     deployments.each do |deployment|
       deployment_id = deployment["id"].to_s.to_i
       statuses = Retriable.retry do
+        check_rate_limit!
         @client.list_deployment_statuses(@event.repo.not_nil!, deployment_id)
       end
       statuses = JSON.parse(statuses.records.to_json)
