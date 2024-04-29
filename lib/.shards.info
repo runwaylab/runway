@@ -9,7 +9,7 @@ shards:
     version: 0.12.0
   octokit:
     git: https://github.com/grantbirki/octokit.cr.git
-    version: 0.2.3
+    version: 0.2.4
   ameba:
     git: https://github.com/crystal-ameba/ameba.git
     version: 1.6.1
