@@ -51,7 +51,7 @@ class GitHubDeployment < BaseEvent
       @client.create_deployment_status(@repo, payload["id"].to_s.to_i, "success")
     end
 
-    @log.debug { "deployment status result: #{JSON.parse(result).to_pretty_json}" }
+    @log.debug { "deployment status result: #{JSON.parse(result).to_pretty_json}" } if Runway::VERBOSE
 
     raise "Unexpected deployment status result" unless JSON.parse(result)["state"] == "success"
 
