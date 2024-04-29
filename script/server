@@ -7,7 +7,13 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && pwd )"
 
 # if the script was invoked with the --dev flag, run the development version
 if [ "$1" == "--dev" ]; then
-  SHARDS_CACHE_PATH="$DIR/.cache/shards" shards run --debug --error-trace -- -c config.yml --log-level DEBUG
+
+  LOG_LEVEL="DEBUG"
+  if [ "$2" == "--log-level" ]; then
+    LOG_LEVEL="$3"
+  fi
+
+  SHARDS_CACHE_PATH="$DIR/.cache/shards" shards run --debug --error-trace -- -c config.yml --log-level $LOG_LEVEL
 else
   SHARDS_CACHE_PATH="$DIR/.cache/shards" shards run --release --debug --error-trace
 fi
