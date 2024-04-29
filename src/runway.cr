@@ -13,6 +13,7 @@ module Runway
   # starts the service, and schedules events for each project in the configuration.
   ERROR_PREFIX    = ":boom: error while checking for event:"
   SCHEDULE_PREFIX = ":clock1: scheduling event with"
+  QUIET = ENV.fetch("RUNWAY_QUIET", "false") == "true" # suppress the logs a bit
 
   class Service
     # Initializes a new `Service`.
@@ -28,7 +29,7 @@ module Runway
     # It logs the start of the service, creates a `Project` for each project in the configuration,
     # schedules events for each project, and then keeps the service running until it is stopped.
     def start!
-      @log.info { Emoji.emojize(":airplane: starting runway - version: v#{VERSION}") }
+      @log.info { Emoji.emojize(":flight_departure: starting runway - version: v#{VERSION}") }
 
       # setup the retry configuration
       Retry.setup!(@log)
@@ -70,7 +71,7 @@ module Runway
     private def schedule_event(project : Project, event_config)
       interval = event_config.schedule.interval
       if Runway::Common.cron?(interval)
-        @log.info { Emoji.emojize("#{SCHEDULE_PREFIX} cron schedule #{interval}") }
+        @log.info { Emoji.emojize("#{SCHEDULE_PREFIX} cron schedule #{interval} for #{project.name}") }
         Tasker.cron(interval, Runway::TimeHelpers.timezone(event_config.schedule.timezone)) do
           begin
             project.check_for_event(event_config)
@@ -79,7 +80,7 @@ module Runway
           end
         end
       else
-        @log.info { Emoji.emojize("#{SCHEDULE_PREFIX} interval #{interval}") }
+        @log.info { Emoji.emojize("#{SCHEDULE_PREFIX} interval #{interval} for #{project.name}") }
         Tasker.every(Runway::TimeHelpers.interval(interval)) do
           begin
             project.check_for_event(event_config)

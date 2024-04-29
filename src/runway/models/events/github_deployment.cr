@@ -37,7 +37,7 @@ class GitHubDeployment < BaseEvent
 
   def check_for_event
     @log.debug { "received a check_for_event() request for event.uuid: #{@event.uuid}" }
-    @log.info { "checking #{@repo} for a #{@event.environment} deployment event" }
+    @log.info { "checking #{@repo} for a #{@event.environment} deployment event" } unless Runway::QUIET
     deployments = Retriable.retry do
       @client.deployments(@repo, {"environment" => @event.environment.not_nil!})
     end

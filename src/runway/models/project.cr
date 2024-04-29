@@ -7,6 +7,7 @@ class Project
   # Provides read access to the `events` instance variable.
   # @return [Hash(String, BaseEvent)] A hash mapping event types to event handlers.
   getter events : Hash(String, BaseEvent)
+  getter name : String
 
   # Initializes a new `Project`.
   #
@@ -31,7 +32,7 @@ class Project
   #
   # @param event [Event] The event to check for.
   def check_for_event(event : Event)
-    @log.info { Emoji.emojize(":eyes: #{@name} is checking for a #{event.type} event") }
+    @log.info { Emoji.emojize(":eyes: #{@name} is checking for a #{event.type} event") } unless Runway::QUIET
 
     @events[event.uuid.not_nil!].check_for_event
   end
