@@ -17,7 +17,7 @@ module Runway
       log.debug { "attempting to load config from #{opts[:config_path]}" }
       config = RunwayConfiguration.from_yaml(File.open(opts[:config_path]))
       log.info { Emoji.emojize(":white_check_mark: loaded configuration successfully") }
-      log.info { "#{config.projects.size} #{config.projects.size == 1 ? "project" : "projects"} loaded" }
+      log.info { Emoji.emojize(":truck: #{config.projects.size} #{config.projects.size == 1 ? "project" : "projects"} loaded") }
 
       Runway::Service.new(log, config).start!
     end

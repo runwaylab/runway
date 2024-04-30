@@ -4,6 +4,7 @@ require "../lib/logger"
 module Runway
   class GitHub
     @client : Octokit::Client
+    @miniumum_rate_limit : Int32
     getter client : Octokit::Client
 
     # The octokit class for interacting with GitHub's API
@@ -12,6 +13,32 @@ module Runway
     def initialize(log : Log, token : String? = ENV.fetch("GITHUB_TOKEN", nil))
       @log = log
       @client = create_client(token)
+      @miniumum_rate_limit = ENV.fetch("GITHUB_MINIMUM_RATE_LIMIT", "10").to_s.to_i
+    end
+
+    # A helper method to check the rate limit of the GitHub API
+    # if the rate limit is exceeded, we'll wait until the rate limit resets
+    # this is a blocking operation
+    def check_rate_limit!
+      # Octokit::RateLimit(@limit=5000, @remaining=4278, @resets_at=2024-04-29 06:23:52.0 UTC, @resets_in=1784)
+      rate_limit = @client.rate_limit
+
+      # if rate_limit.remaining is nil, exit early
+      if rate_limit.remaining.nil?
+        @log.warn { "the GitHub API rate limit is nil - waiting 60 seconds before checking again" }
+        sleep(60)
+        return
+      end
+
+      # if the rate limit is below the minimum, we'll wait until the rate limit resets
+      rate_limit_remaining = rate_limit.remaining.try(&.to_i).not_nil!
+      if rate_limit_remaining < @miniumum_rate_limit
+        resets = rate_limit.resets_in.try(&.to_i).not_nil!
+        reset_sleep = resets + 1
+        @log.warn { "the GitHub API rate limit is almost exceeded - waiting #{resets} seconds until the rate limit resets" }
+        @log.debug { "GitHub rate_limit.remaining: #{rate_limit.remaining} - rate_limit.resets_at: #{rate_limit.resets_at} - rate_limit.resets_in: #{rate_limit.resets_in} - sleeping: #{reset_sleep} seconds" }
+        sleep(reset_sleep + 1)
+      end
     end
 
     # Creates an octokit.cr client with the given token (can be nil aka unauthenticated)
