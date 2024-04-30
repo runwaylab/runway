@@ -2,9 +2,10 @@
 
 projects:
   - name: project-1
-    type: "git"
-    location: "local" # local or remote
-    path: "/path/to/project-1" # local path or remote url
+    deployment: # the deployment configuration to run when an event is triggered
+      type: command # this deployment type runs a command on the local machine or remote server (via SSH)
+      location: local # local or remote
+      path: /path/to/project-1 # local path or remote url
     events: # events that runway looks for to trigger a deployment
       - type: github_deployment # github deployment event
         repo: runwayapp/test-flight # the repository to check for deployment events
@@ -20,9 +21,10 @@ projects:
           interval: 5s
 
   - name: project-2
-    type: "git"
-    location: "local"
-    path: "/path/to/project-2"
+    deployment:
+      type: command
+      location: local
+      path: /path/to/project-1
     events:
       - type: github_deployment
         repo: runwayapp/test-flight
