@@ -1,7 +1,7 @@
 require "../base_event"
 
 # This class demonstrates how you can extend the BaseEvent class to create a new event type!
-# Event types are defined in the config file for run way.
+# Event types are defined in the config file for runway. (event.type in the config file)
 # This class defines how events are "checked" when their schedule runs and how they are "handled" when a deployment should be made
 #
 # You should copy/paste this entire file as a starting point for creating a new event type
