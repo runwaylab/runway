@@ -3,6 +3,7 @@
 # The class is designed to be used as a data structure and should not contain any logic
 # Feel free to open a PR and add more fields to this class if you need
 class Payload
+  getter? ship_it : Bool
   getter sha : String?
   getter ref : String?
   getter tag : String?
@@ -23,6 +24,7 @@ class Payload
 
   # Here is a rough description of what each field *could* be used for
   # All of these fields are optional and can be used as needed - they default to nil
+  # @param ship_it [Bool] - A flag to indicate if the deployment was triggered or not - most important field as its used everywhere
   # @param sha [String or nil] - The commit sha that triggered the deployment or the sha to actually deploy
   # @param ref [String or nil] - The branch or tag that triggered the deployment or the ref to actually deploy
   # @param tag [String or nil] - The tag that triggered the deployment or the tag to actually deploy/use
@@ -41,6 +43,7 @@ class Payload
   # @param description [String or nil] - A description of the deployment or the reason for the deployment
   # @param user [String or nil] - The user that triggered the deployment or the user that is responsible for the deployment
   def initialize(
+    @ship_it : Bool = false, # defaults to false - set this value to true to indicate that the deployment should be triggered
     @sha : String? = nil,
     @ref : String? = nil,
     @tag : String? = nil,

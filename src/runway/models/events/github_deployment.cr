@@ -15,7 +15,7 @@ class GitHubDeployment < BaseEvent
     @timezone = Runway::TimeHelpers.timezone(@event.schedule.timezone)
   end
 
-  def handle_event(payload)
+  def handle_event(payload) : Bool
     @log.debug { "received a handle_event() request for deployment.id: #{payload["id"]} from event.uuid: #{@event.uuid}" }
     @log.info { Emoji.emojize(":hammer_and_wrench:  handling a deployment event for #{@repo} in the #{@event.environment} environment") }
 
@@ -43,7 +43,7 @@ class GitHubDeployment < BaseEvent
     return false
   end
 
-  def check_for_event
+  def check_for_event : Payload
     @log.debug { "received a check_for_event() request for event.uuid: #{@event.uuid}" }
     @log.info { "checking #{@repo} for a #{@event.environment} deployment event" } unless Runway::QUIET
     deployments = Retriable.retry do
@@ -92,8 +92,12 @@ class GitHubDeployment < BaseEvent
           @log.debug { "in_progress deployment sha for #{@repo}: #{deployment["sha"]}" }
         end
 
-        return handle_event(deployment)
+        handle_event(deployment)
+        return Payload.new(ship_it: true)
       end
     end
+
+    # if we've reached this point, we didn't find a deployment in_progress
+    return Payload.new(ship_it: false)
   end
 end

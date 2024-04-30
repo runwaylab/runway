@@ -25,7 +25,12 @@ class ExampleEvent < BaseEvent
   # This method is called by the scheduler to check if the event should be handled
   # Here you will do any checks to see if the event should be handled
   # Example: Reach out to the GitHub API and see if a new release has been made that you want to upgrade to
-  def check_for_event
+  def check_for_event : Payload
     @log.info { "checking if a deployable event has occurred" }
+
+    # add contitional logic here to determine if the event should be handled
+    # for this example we always just return a Payload that indicates the event should be handled
+    # by setting ship_it to true, we are telling the project to deploy the event when the event returns Payload with this value set to true
+    return Payload.new(ship_it: true)
   end
 end

@@ -10,7 +10,7 @@ class Project
   getter events : Hash(String, BaseEvent)
 
   # Provides read access to the name of the project.
-  # @return [String] The name of the project. 
+  # @return [String] The name of the project.
   getter name : String
 
   @deployment : BaseDeployment
@@ -36,10 +36,10 @@ class Project
   end
 
   # Hydrates the deployment configuration for the project.
-  # Note: there should only be one deployment configuration per project. 
+  # Note: there should only be one deployment configuration per project.
   protected def hydrate_deployment!
     DeploymentRegistry.create_deployment(@config.deployment.type, @config.deployment, @log)
-  end 
+  end
 
   # Checks for an event and handles it if the event type is registered.
   # If the event was triggered (any return value other than `nil`), the project's deployment configuration is run.
@@ -52,6 +52,6 @@ class Project
     payload = @events[event.uuid.not_nil!].check_for_event
 
     # If the event was triggered, run the project's deployment configuration
-    @deployment.deploy(payload) if payload
+    @deployment.deploy(payload) if payload.ship_it?
   end
 end

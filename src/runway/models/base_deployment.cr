@@ -1,4 +1,5 @@
 require "./config"
+require "./deployment_payload"
 
 # `BaseDeployment` is an abstract base class for all deployment types.
 # It provides a common interface for handling deployments
@@ -18,7 +19,8 @@ abstract class BaseDeployment
   # Example: A GitHub deployment was triggered, and the check_for_event method detected it...
   # ... since the check_for_event method returns a payload, the deploy method is called with the payload to complete the deployment...
   # ... depending on the event type, there may even be a post_deploy hook that is called after the deployment is complete.
-  abstract def deploy(payload : _)
+  # @param payload [Payload] The payload containing deployment information (it could be an empty Payload object) but it is required. You might not need it but in case you do, it is there. Certain event types will set rich data on this object and others will not. Check out the `deployment_payload.cr` file to see what attributes *might* be available on the Payload object.
+  abstract def deploy(payload : Payload)
 end
 
 # The `DeploymentRegistry` module is a registry for deployment classes.

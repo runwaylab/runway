@@ -7,7 +7,7 @@ class CommandDeployment < BaseDeployment
     super(log, deployment_config)
   end
 
-  def deploy(payload)
+  def deploy(payload : Payload)
     @log.debug { "received a deploy() request" }
   end
 end
