@@ -1,0 +1,63 @@
+# The payload class is used as a data structure to hold the data that is passed from event triggers to deployment handlers
+# This class is highly flexible and can be used to pass all sorts of data between the two components
+# The class is designed to be used as a data structure and should not contain any logic
+# Feel free to open a PR and add more fields to this class if you need
+class Payload
+  getter sha : String?
+  getter ref : String?
+  getter tag : String?
+  getter environment : String?
+  getter repo : String?
+  getter production : Bool?
+  getter id : String?
+  getter status : String?
+  getter state : String?
+  getter created_at : String?
+  getter updated_at : String?
+  getter locked : Bool?
+  getter timezone : String?
+  getter type : String?
+  getter url : String?
+  getter description : String?
+  getter user : String?
+
+  # Here is a rough description of what each field *could* be used for
+  # All of these fields are optional and can be used as needed - they default to nil
+  # @param sha [String or nil] - The commit sha that triggered the deployment or the sha to actually deploy
+  # @param ref [String or nil] - The branch or tag that triggered the deployment or the ref to actually deploy
+  # @param tag [String or nil] - The tag that triggered the deployment or the tag to actually deploy/use
+  # @param environment [String or nil] - The environment that the deployment is targeting or should be deployed to
+  # @param repo [String or nil] - The repository that the deployment is targeting or related to
+  # @param production [Bool or nil] - A flag to indicate if the deployment is targeting a production environment
+  # @param id [String or nil] - The unique identifier for the deployment, probably something like "123abc123" - its a string just in case
+  # @param status [String or nil] - The status of the deployment, probably something like "pending" or "success" or "in_progress"
+  # @param state [String or nil] - The state of the deployment, probably something like "success" or "failure"
+  # @param created_at [String or nil] - The timestamp when the deployment was created - hopefully in a format that can be parsed by Time
+  # @param updated_at [String or nil] - The timestamp when the deployment was last updated - hopefully in a format that can be parsed by Time
+  # @param locked [Bool or nil] - A flag to indicate if the deployment environment is locked or not
+  # @param timezone [String or nil] - The timezone that the timestamps (or deployments) are in, probably something like "UTC" or "America/New_York"
+  # @param type [String or nil] - The type of deployment, probably something like "deploy" or "rollback" or "promote"
+  # @param url [String or nil] - The URL to the deployment or the deployment status page
+  # @param description [String or nil] - A description of the deployment or the reason for the deployment
+  # @param user [String or nil] - The user that triggered the deployment or the user that is responsible for the deployment
+  def initialize(
+    @sha : String? = nil,
+    @ref : String? = nil,
+    @tag : String? = nil,
+    @environment : String? = nil,
+    @repo : String? = nil,
+    @production : Bool? = nil,
+    @id : String? = nil,
+    @status : String? = nil,
+    @state : String? = nil,
+    @created_at : String? = nil,
+    @updated_at : String? = nil,
+    @locked : Bool? = nil,
+    @timezone : String? = nil,
+    @type : String? = nil,
+    @url : String? = nil,
+    @description : String? = nil,
+    @user : String? = nil
+  )
+  end
+end
