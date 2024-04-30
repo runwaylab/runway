@@ -49,9 +49,12 @@ class Project
     @log.info { Emoji.emojize(":eyes: #{@name} is checking for a #{event.type} event") } unless Runway::QUIET
 
     # Check if the desired event type had a deployable event occur
-    payload = @events[event.uuid.not_nil!].check_for_event
+    payload = @events[event.uuid].check_for_event
 
     # If the event was triggered, run the project's deployment configuration
     @deployment.deploy(payload) if payload.ship_it?
+
+    # Run post deployment logic if the event handler implements it
+    @events[event.uuid].post_deploy(payload) if payload.ship_it?
   end
 end

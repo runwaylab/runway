@@ -13,6 +13,11 @@ abstract class BaseEvent
     @event = event
   end
 
+  def post_deploy(payload : Payload) : Payload
+    @log.debug { "post_deploy action for event type #{@event.type} has not been implemented" }
+    return payload
+  end
+
   # Checks for the event.
   # Subclasses must implement this method.
   # In general, checking for an event means polling a source (e.g. GitHub) for new events.
