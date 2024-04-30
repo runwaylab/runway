@@ -37,10 +37,13 @@ class DeploymentConfig
   property type : String
 
   # @return [String] The location of the project.
-  property location : String
+  property location : String?
 
   # @return [String] The path of the project.
-  property path : String
+  property path : String?
+
+  # @return [Array(String)] The command(s) to run for the project when a deployment event is triggered.
+  property cmd : Array(String)?
 end
 
 # The `Event` class represents an event that triggers a deployment for a project.
