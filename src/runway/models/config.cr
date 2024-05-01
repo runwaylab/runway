@@ -42,7 +42,10 @@ class DeploymentConfig
   # @return [String] The path of the project.
   property path : String?
 
-  # @return [Array(String)] The command(s) to run for the project when a deployment event is triggered.
+  # @return [String] The command/entrypoint to run for the project.
+  property entrypoint : String?
+
+  # @return [Array(String)] The arguments to pass to the command.
   property cmd : Array(String)?
 end
 

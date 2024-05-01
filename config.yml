@@ -6,7 +6,8 @@ projects:
       type: command # this deployment type runs a command on the local machine or remote server (via SSH)
       location: local # local or remote
       path: spec/acceptance/project-1 # local path or remote url
-      cmd: ["echo", "deployed project-1!"] # the command to run - this can be a single command or a list of commands
+      entrypoint: bash # the command/binary/entrypoint - like docker syntax!
+      cmd: ["-c", "echo 'hello world' > test-example.txt"] # the command to run using the entrypoint - like docker syntax!
     events: # events that runway looks for to trigger a deployment
       - type: github_deployment # github deployment event
         repo: runwaylab/test-flight # the repository to check for deployment events
@@ -26,7 +27,8 @@ projects:
       type: command
       location: local
       path: spec/acceptance/project-1
-      cmd: ["echo", "deployed project-2!"]
+      entrypoint: echo
+      cmd: ["deployed project-2!"]
     events:
       - type: github_deployment
         repo: runwaylab/test-flight
