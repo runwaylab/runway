@@ -67,7 +67,7 @@ class GitHubDeployment < BaseEvent
   end
 
   # Check for a GitHub deployment event in the specified environment
-  # This method uses post_deploy hooks to create a deployment status for the deployment after a deployment completes/fails 
+  # This method uses post_deploy hooks to create a deployment status for the deployment after a deployment completes/fails
   def check_for_event : Payload
     payload = Payload.new(ship_it: false, run_post_deploy: true)
 
