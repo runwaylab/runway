@@ -23,7 +23,7 @@ jobs:
         run: echo "crystal=$(cat .crystal-version)"
 
       - name: install crystal
-        uses: crystal-lang/install-crystal@v1.8.1
+        uses: crystal-lang/install-crystal@v1.8.2
         with:
           crystal: ${{ steps.crystal-version.outputs.crystal }}
 
