@@ -26,7 +26,7 @@ class CommandDeployment < BaseDeployment
     cmd = Cmd.new(@entrypoint, cmd: @cmd, directory: @path)
     cmd.run
 
-    @log.debug { "status: #{cmd.status}, stdout: #{cmd.stdout}, stderr: #{cmd.stderr}" }
+    @log.debug { "status: #{cmd.status}, stdout: #{cmd.stdout}, stderr: #{cmd.stderr} - success: #{cmd.success?}" }
 
     payload.success = cmd.success?
     return payload
@@ -35,25 +35,39 @@ end
 
 class Cmd
   getter? success : Bool?
+  getter? running : Bool?
   getter status : Process::Status?
   getter stdout : String
   getter stderr : String
 
-  def initialize(entrypoint : String, cmd : Array(String) = [] of String, directory : String = ".")
+  def initialize(
+    entrypoint : String,
+    cmd : Array(String) = [] of String,
+    directory : String = ".", # defaults to the current directory
+    timeout : Int32 = 300     # defaults to 5 minutes
+  )
     @entrypoint = entrypoint
     @cmd = cmd
     @directory = directory
+    @timeout = timeout
     @stdout = ""
     @stderr = ""
     @success = nil
     @status = nil
+    @running = false
   end
 
   def run
+    raise "already running command process" if @running
+
+    @running = true
     stdout = IO::Memory.new
     stderr = IO::Memory.new
+    done_channel = Channel(Nil).new
+    timeout_channel = Channel(Nil).new
 
-    status = Process.run(
+    # start the process
+    process = Process.new(
       @entrypoint,
       @cmd,
       shell: true,
@@ -62,9 +76,40 @@ class Cmd
       output: stdout
     )
 
-    @status = status
-    @stdout = stdout.to_s.strip
-    @stderr = stderr.to_s.strip
-    @success = status.success?
+    # check for the process to finish in a separate fiber
+    spawn do
+      status = process.wait # block until the process has finished
+
+      done_channel.send(nil) # signal that the process has finished
+
+      # collect info about the process after it has finished
+      @status = status
+      @stdout = stdout.to_s.strip
+      @stderr = stderr.to_s.strip
+      @success = status.success?
+    end
+
+    # start a new fiber that will send a timeout kill signal after X seconds
+    spawn do
+      sleep @timeout.seconds
+      timeout_channel.send(nil)
+    end
+
+    # wait for the process to finish or for the timeout to occur
+    select
+    when done_channel.receive
+      # do nothing if the process has already finished
+    when timeout_channel.receive
+      sleep 1.second # give the process a chance to finish (tie goes to the runner)
+      process.try &.terminate(graceful: false) unless process.terminated?
+      @stderr = "cmd.run: command timed out after #{@timeout} seconds"
+      @success = false
+    end
+
+    @running = false
+  rescue ex : Exception
+    @stderr = ex.message.to_s
+    @success = false
+    @running = false
   end
 end
