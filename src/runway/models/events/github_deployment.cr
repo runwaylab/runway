@@ -90,18 +90,21 @@ class GitHubDeployment < BaseEvent
     return payload
   end
 
-  def filter_deployments(deployments : JSON::Any) : Array
-    # filter deployments by environment
-    # this should already have been done by the GitHub API, but we'll do it again out of extra caution
-    deployments = deployments.as_a.select do |deployment|
+  # filter deployments by environment
+  # this should already have been done by the GitHub API, but we'll do it again out of extra caution
+  # @param deployments [JSON::Any] the deployments to filter
+  # @return [Array] the filtered deployments
+  protected def filter_deployments(deployments : JSON::Any) : Array
+    deployments.as_a.select do |deployment|
       deployment["environment"] == @event.environment
     end
-
-    return deployments
   end
 
-  def sort_deployments(deployments : Array) : Array
-    # sort deployments by created_at date with the most recent first
+  # sort deployments by created_at date with the most recent first
+  # uses the deployment_filter attribute to only grab the X most recent deployments
+  # @param deployments [Array] the deployments to sort
+  # @return [Array] the sorted deployments
+  protected def sort_deployments(deployments : Array) : Array
     deployments = deployments.sort_by do |deployment|
       Time.parse(deployment["created_at"].as_s, "%FT%T%z", @timezone)
     end.reverse!
@@ -110,7 +113,10 @@ class GitHubDeployment < BaseEvent
     return deployments.first(@deployment_filter)
   end
 
-  def find_in_progress_deployment(deployments : Array) : JSON::Any?
+  # A helper method to find the most recent deployment with an "in_progress" status and return it (if it exists)
+  # @param deployments [Array] the deployments to search through
+  # @return [JSON::Any] the deployment with an "in_progress" status or nil if it doesn't exist
+  protected def find_in_progress_deployment(deployments : Array) : JSON::Any?
     # loop through all filtered deployments and get their deployment statuses
     # the first deployment to have an "in_progress" status will be the one we're looking for
     # however, the "in_progress" status must be the most recent status for the deployment or we'll ignore it
@@ -138,8 +144,11 @@ class GitHubDeployment < BaseEvent
     return nil
   end
 
+  # set the payload attributes based on the detected deployment
+  # @param payload [Payload] the payload object to set attributes on
+  # @param detected_deployment [JSON::Any] the detected deployment to get attributes from
+  # @return [Payload] the payload object with attributes set
   protected def set_payload_attributes(payload : Payload, detected_deployment : JSON::Any) : Payload
-    # set the payload attributes
     payload.id = detected_deployment["id"].to_s.not_nil!
     payload.environment = detected_deployment.try(&.["environment"]).try(&.to_s) || nil
     payload.created_at = detected_deployment.try(&.["created_at"]).try(&.to_s) || nil
@@ -153,14 +162,17 @@ class GitHubDeployment < BaseEvent
     return payload
   end
 
+  # logging for debugging purposes
+  # @param payload [Payload] the payload to log warnings for
   protected def log_payload_warnings(payload : Payload) : Nil
-    # logging for debugging purposes
     @log.warn { Emoji.emojize(":warning: deployment sha is missing from the deployment payload") } if payload.sha.nil?
     @log.debug { "in_progress deployment sha for #{@repo}: #{payload.sha}" }
     @log.warn { Emoji.emojize(":warning: deployment ref is missing from the deployment payload") } if payload.ref.nil?
     @log.debug { "in_progress deployment ref for #{@repo}: #{payload.ref}" }
   end
 
+  # A helper method to retrieve deployments from the GitHub API
+  # @return [String] the deployments raw JSON response
   protected def retrieve_deployments : String
     Retriable.retry do
       @github.check_rate_limit!
@@ -168,6 +180,11 @@ class GitHubDeployment < BaseEvent
     end
   end
 
+  # A helper method to parse and filter deployments
+  # It parses the raw JSON response and filters deployments by environment
+  # It then sorts the deployments as well
+  # @param deployments [String] the deployments raw JSON response
+  # @return [Array] the parsed, filtered, and sorted deployments
   protected def parse_and_filter_deployments(deployments : String) : Array
     deployments = JSON.parse(deployments)
     deployments = filter_deployments(deployments)
