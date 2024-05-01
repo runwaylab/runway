@@ -20,7 +20,9 @@ class ExampleDeployment < BaseDeployment
   # This method will actually handle the event and make the deployment. For example, if you want to deploy a new release...
   # ... you might write custom code here to deploy the new release
   # @param payload - the payload object that contains the event data (see the `base_deployment.cr` file for more info on the payload object) - you should do so if you are writing a new deployment type, it can be extremely helpful
-  def deploy(payload : Payload)
+  # @return - the payload object that contains the event data (see the `base_deployment` file for more info on the payload object) 
+  def deploy(payload : Payload) : Payload
     @log.info { "processing a deployment event!" }
+    return payload
   end
 end

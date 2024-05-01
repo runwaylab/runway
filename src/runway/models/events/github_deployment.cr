@@ -13,43 +13,72 @@ class GitHubDeployment < BaseEvent
     @deployment_filter = (@event.deployment_filter.try(&.to_i) || 1)
     @repo = @event.repo.not_nil!
     @timezone = Runway::TimeHelpers.timezone(@event.schedule.timezone)
+    @success = "success"
+    @failure = "failure"
   end
 
-  def handle_event(payload) : Bool
-    @log.debug { "received a handle_event() request for deployment.id: #{payload["id"]} from event.uuid: #{@event.uuid}" }
+  # This method is called after the project's deployment has completed
+  # It will create a GitHub deployment status that reflects the deployment's success or failure
+  # The deployment status to use comes from the Payload.status attribute (success or failure)
+  # @param payload [Payload] the payload object that contains the deployment status and other information
+  # @return [Payload] the payload object that was passed in with possibly updated information/attributes
+  def post_deploy(payload : Payload) : Payload
+    @log.debug { "received a post_deploy() request for deployment.id: #{payload.id} from event.uuid: #{@event.uuid}" }
+    @log.debug { "post_deploy() payload: #{payload.inspect}" } if Runway::VERBOSE
+
+    # exit early if the payload doesn't have a run_post_deploy? attribute
+    return payload unless payload.run_post_deploy? == true
+
+    if payload.success?
+      payload.status = @success
+    else
+      payload.status = @failure
+    end
+
     @log.info { Emoji.emojize(":hammer_and_wrench:  handling a deployment event for #{@repo} in the #{@event.environment} environment") }
 
-    # create a success deployment status
+    deployment_id = payload.id.to_s.to_i64.not_nil!
+    status = payload.status.not_nil!
+
+    # create a deployment status
     result = Retriable.retry do
       @github.check_rate_limit!
-      @client.create_deployment_status(@repo, payload["id"].to_s.to_i, "success")
+      @client.create_deployment_status(@repo, deployment_id, status)
     end
 
     @log.debug { "deployment status result: #{JSON.parse(result).to_pretty_json}" } if Runway::VERBOSE
 
-    raise "Unexpected deployment status result" unless JSON.parse(result)["state"] == "success"
+    raise "Unexpected deployment status result" unless JSON.parse(result)["state"] == @success
 
-    @log.info { Emoji.emojize(":rocket: successfully deployed #{@repo} to the #{@event.environment} environment!") }
+    # logs about the deployment status
+    @log.info { Emoji.emojize(":rocket: successfully deployed #{@repo} to the #{@event.environment} environment!") } if status == @success
+    @log.error { Emoji.emojize(":x: deployment failed for #{@repo} in the #{@event.environment} environment") } if status != @success
 
-    return true
+    return payload
   rescue error : Exception
-    @log.error { "error handling deployment event: #{error.message}" }
+    @log.error { "error handling deployment event: #{error.message} - attempting to set a 'failure' statue on the deployment" }
     result = Retriable.retry do
       @github.check_rate_limit!
-      @client.create_deployment_status(@repo, payload["id"].to_s.to_i, "failure")
+      @client.create_deployment_status(@repo, payload.id.to_s.to_i64.not_nil!, @failure)
     end
 
     @log.debug { "deployment status result (on error): #{JSON.parse(result).to_pretty_json}" }
-    return false
+    return payload
   end
 
+  # Check for a GitHub deployment event in the specified environment
+  # This method uses post_deploy hooks to create a deployment status for the deployment after a deployment completes/fails 
   def check_for_event : Payload
+    payload = Payload.new(ship_it: false, run_post_deploy: true)
+
     @log.debug { "received a check_for_event() request for event.uuid: #{@event.uuid}" }
     @log.info { "checking #{@repo} for a #{@event.environment} deployment event" } unless Runway::QUIET
     deployments = Retriable.retry do
       @github.check_rate_limit!
       @client.deployments(@repo, {"environment" => @event.environment.not_nil!})
     end
+
+    @log.debug { "GitHubDeployment -> check_for_event() deployments: #{deployments}" } if Runway::VERBOSE
     deployments = JSON.parse(deployments)
 
     # filter deployments by environment
@@ -84,20 +113,31 @@ class GitHubDeployment < BaseEvent
 
       # if the most recent status is "in_progress", we have our deployment
       if statuses.first["state"] == "in_progress"
-        @log.debug { "found a deployment in_progress deployment for #{@repo} in the #{@event.environment} environment" }
+        @log.debug { "found an in_progress deployment for #{@repo} in the #{@event.environment} environment" }
 
-        if deployment["sha"].nil?
-          @log.warn { Emoji.emojize(":warning: deployment sha is missing from the deployment payload") }
-        else
-          @log.debug { "in_progress deployment sha for #{@repo}: #{deployment["sha"]}" }
-        end
+        # set the payload attributes
+        payload.id = deployment_id.to_s.not_nil!
+        payload.environment = deployment.try(&.["environment"]).try(&.to_s) || nil
+        payload.created_at = deployment.try(&.["created_at"]).try(&.to_s) || nil
+        payload.updated_at = deployment.try(&.["updated_at"]).try(&.to_s) || nil
+        payload.description = deployment.try(&.["description"]).try(&.to_s) || nil
+        payload.user = deployment.try(&.["creator"]).try(&.["login"]).try(&.to_s) || nil
+        payload.sha = deployment.try(&.["sha"]).try(&.to_s) || nil
+        payload.ref = deployment.try(&.["ref"]).try(&.to_s) || nil
+        payload.status = "in_progress"
+        payload.ship_it = true
 
-        handle_event(deployment)
-        return Payload.new(ship_it: true)
+        # logging for debugging purposes
+        @log.warn { Emoji.emojize(":warning: deployment sha is missing from the deployment payload") } if payload.sha.nil?
+        @log.debug { "in_progress deployment sha for #{@repo}: #{payload.sha}" }
+        @log.warn { Emoji.emojize(":warning: deployment ref is missing from the deployment payload") } if payload.ref.nil?
+        @log.debug { "in_progress deployment ref for #{@repo}: #{payload.ref}" }
+
+        return payload
       end
     end
 
     # if we've reached this point, we didn't find a deployment in_progress
-    return Payload.new(ship_it: false)
+    return payload
   end
 end

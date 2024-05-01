@@ -52,7 +52,7 @@ class Project
     payload = @events[event.uuid].check_for_event
 
     # If the event was triggered, run the project's deployment configuration
-    @deployment.deploy(payload) if payload.ship_it?
+    payload = @deployment.deploy(payload).not_nil! if payload.ship_it?
 
     # Run post deployment logic if the event handler implements it
     @events[event.uuid].post_deploy(payload) if payload.ship_it?
