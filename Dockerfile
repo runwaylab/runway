@@ -41,4 +41,4 @@ WORKDIR /app
 COPY --from=builder --chown=nonroot:nonroot /app/bin/runway .
 
 # run the binary
-CMD ["./runway"]
+ENTRYPOINT ["./runway"]

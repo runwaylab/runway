@@ -78,6 +78,12 @@ class Event
   # This helps save on API requests and prevent unnecessary deployments
   # This property is specific to the github_deployment event type
   property deployment_filter : Int32?
+
+  # @return [String, nil] A path for a file, or `nil` if not specified. Used by a few event types.
+  property path : String?
+
+  # @return [Bool, nil] A flag to enable property cleanup, or `nil` if not specified. Used by a few event types.
+  property cleanup : Bool?
 end
 
 # The `Schedule` class represents the schedule for an event.

@@ -3,13 +3,17 @@
 services:
   runway:
     container_name: runway
-    restart: unless-stopped
+    restart: 'no'
     build:
-      context: .
+      context: ../../
       dockerfile: Dockerfile
+    command: ["-c", "spec/acceptance/config/config.yml"]
     environment:
       LOG_LEVEL: DEBUG
       CRYSTAL_ENV: development
+    volumes:
+      - projects:/app/spec/acceptance/projects
+      - config:/app/spec/acceptance/config
     # ports:
     #   - 8080:8080
     # healthcheck:
@@ -18,3 +22,17 @@ services:
     #   timeout: 5s
     #   retries: 3
     #   start_period: 15s
+
+volumes:
+  projects:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${PWD}/spec/acceptance/projects
+  config:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${PWD}/spec/acceptance/config

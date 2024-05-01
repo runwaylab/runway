@@ -15,11 +15,18 @@ class ExampleEvent < BaseEvent
     super(log, event) # this is required
   end
 
-  # If `check_for_event` determines that the event should be handled, call this method next!
-  # This method will actually handle the event and make the deployment. For example, if you want to deploy a new release...
-  # ... you might write custom code here to deploy the new release
-  def handle_event(payload : _)
-    @log.info { "processing a deployment event!" }
+  # If `post_deploy` is defined in the event class, it will be called after the deployment is complete and...
+  # ... if the payload has a run_post_deploy? attribute set to true
+  # the check_for_event method should set the run_post_deploy? attribute to true if you want this method to be called
+  def post_deploy(payload : Payload) : Payload
+    @log.debug { "post_deploy() payload: #{payload.inspect}" } if Runway::VERBOSE
+
+    # exit early if the payload doesn't have a run_post_deploy? attribute
+    return payload unless payload.run_post_deploy? == true
+
+    @log.debug { "post_deploy() running post deploy logic" }
+
+    return payload
   end
 
   # This method is called by the scheduler to check if the event should be handled
@@ -31,6 +38,7 @@ class ExampleEvent < BaseEvent
     # add contitional logic here to determine if the event should be handled
     # for this example we always just return a Payload that indicates the event should be handled
     # by setting ship_it to true, we are telling the project to deploy the event when the event returns Payload with this value set to true
-    return Payload.new(ship_it: true)
+    # we are also letting the project know that the post_deploy method should be called by setting run_post_deploy to true
+    return Payload.new(ship_it: true, run_post_deploy: true)
   end
 end

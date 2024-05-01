@@ -1,0 +1,25 @@
+projects:
+  - name: project-1
+    deployment:
+      type: command
+      location: local
+      path: spec/acceptance/projects/project-1/
+      timeout: 5
+      entrypoint: bash
+      cmd: ["-c", "echo 'success' > result.txt"]
+    events:
+      - type: file
+        path: spec/acceptance/projects/project-1/ship-it.txt
+        cleanup: true # remove the file after the event
+        schedule:
+          interval: 3s
+
+  # - name: project-2
+  #   deployment:
+  #     type: example_deployment
+  #   events:
+  #     - type: github_deployment
+  #       repo: runwaylab/test-flight
+  #       environment: development
+  #       schedule:
+  #         interval: 10s

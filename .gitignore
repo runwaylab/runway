@@ -26,4 +26,6 @@ coverage/
 !/lib/coverage/
 
 # ignore testing files
-spec/acceptance/project-1/test-example.txt
+spec/acceptance/projects/*/test-example.txt
+spec/acceptance/projects/*/ship-it.txt
+spec/acceptance/projects/*/result.txt

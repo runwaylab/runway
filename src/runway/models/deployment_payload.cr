@@ -23,6 +23,7 @@ class Payload
   getter url : String?
   getter description : String?
   getter user : String?
+  getter path : String?
 
   # Here is a rough description of what each field *could* be used for
   # All of these fields are optional and can be used as needed - they default to nil
@@ -46,6 +47,7 @@ class Payload
   # @param url [String or nil] - The URL to the deployment or the deployment status page
   # @param description [String or nil] - A description of the deployment or the reason for the deployment
   # @param user [String or nil] - The user that triggered the deployment or the user that is responsible for the deployment
+  # @param path [String or nil] - The path to a file that is related to the deployment or the deployment itself
   def initialize(
     @ship_it : Bool = false,         # defaults to false - set this value to true to indicate that the deployment should be triggered
     @run_post_deploy : Bool = false, # defaults to false - set this value to true to indicate that the post_deploy hook should be run
@@ -66,7 +68,8 @@ class Payload
     @type : String? = nil,
     @url : String? = nil,
     @description : String? = nil,
-    @user : String? = nil
+    @user : String? = nil,
+    @path : String? = nil
   )
   end
 
@@ -96,4 +99,5 @@ class Payload
   setter url : String?
   setter description : String?
   setter user : String?
+  setter path : String?
 end
