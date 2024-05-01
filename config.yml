@@ -2,30 +2,33 @@
 
 projects:
   - name: project-1
-    type: "git"
-    location: "local" # local or remote
-    path: "/path/to/project-1" # local path or remote url
+    deployment: # the deployment configuration to run when an event is triggered
+      type: command # this deployment type runs a command on the local machine or remote server (via SSH)
+      location: local # local or remote
+      path: spec/acceptance/project-1 # local path or remote url
+      timeout: 300 # the maximum time in seconds that a cmd can run before it is killed and the deployment fails - default is 300
+      entrypoint: bash # the command/binary/entrypoint - like docker syntax!
+      cmd: ["-c", "echo 'hello world' > test-example.txt"] # the command to run using the entrypoint - like docker syntax!
     events: # events that runway looks for to trigger a deployment
       - type: github_deployment # github deployment event
-        repo: runwayapp/test-flight # the repository to check for deployment events
+        repo: runwaylab/test-flight # the repository to check for deployment events
         environment: production # the specific environment to check for
         deployment_filter: 1 # only look at the most recent deployment (based on the created_at field) - this field is required only for the github_deployment type event. It helps to save on API requests to GitHub. If not provided, it defaults to 1
         schedule:
           interval: 3s # intervals can be in milliseconds, seconds or minutes (ms, s, or m) - or a cron expression
           timezone: UTC # the timezone to use for the schedule (default is UTC) - ex: Europe/Berlin or America/New_York - see https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
       - type: github_deployment
-        repo: runwayapp/test-flight
+        repo: runwaylab/test-flight
         environment: staging
         schedule:
           interval: 5s
 
   - name: project-2
-    type: "git"
-    location: "local"
-    path: "/path/to/project-2"
+    deployment:
+      type: example_deployment
     events:
       - type: github_deployment
-        repo: runwayapp/test-flight
+        repo: runwaylab/test-flight
         environment: development
         schedule:
           interval: 10s

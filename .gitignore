@@ -9,7 +9,6 @@ dist/
 # do not ignore vendor/*/bin directories
 !/vendor/*/bin/
 
-
 # non-critical vendored crystal files
 lib/**/.github/
 lib/**/docs/
@@ -25,3 +24,6 @@ coverage/
 
 # do not ignore lib/coverage directory
 !/lib/coverage/
+
+# ignore testing files
+spec/acceptance/project-1/test-example.txt

@@ -1,4 +1,5 @@
 require "./config"
+require "./deployment_payload"
 
 # `BaseEvent` is an abstract base class for all event types.
 # It provides a common interface for handling and checking for events.
@@ -12,18 +13,20 @@ abstract class BaseEvent
     @event = event
   end
 
-  # Handles the event.
-  # Subclasses must implement this method.
-  # In general, handling an event means performing a deployment.
-  # Example: A GitHub deployment was triggered, and the check_for_event method detected it...
-  # ...now the handle_event method will be called to perform the deployment.
-  abstract def handle_event(payload : _)
+  def post_deploy(payload : Payload) : Payload
+    @log.debug { "post_deploy action for event type #{@event.type} has not been implemented" }
+    return payload
+  end
 
   # Checks for the event.
   # Subclasses must implement this method.
   # In general, checking for an event means polling a source (e.g. GitHub) for new events.
   # This could also mean checking for a new release, an updated commit, etc.
-  abstract def check_for_event
+  # All event types must have a Payload object as their return type
+  # Example: `return Payload.new(ship_it: true)` where ship_it is a boolean and indicates if a deployment should be triggered from the event or not
+  # Note: The `ship_it` field is important throughout the codebase and should be set to `true` if a deployment should be triggered, and `false` otherwise
+  # After setting this value, it can be accessed with `payload.ship_it?` where it will return a boolean
+  abstract def check_for_event : Payload
 end
 
 # The `EventRegistry` module is a registry for event classes.

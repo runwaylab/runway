@@ -20,21 +20,36 @@ class ProjectConfig
   # @return [String] The name of the project.
   property name : String
 
-  # @return [String] The type of the project.
-  property type : String
-
-  # @return [String] The location of the project.
-  property location : String
-
-  # @return [String] The path of the project.
-  property path : String
-
   # @return [Array(Event)] The array of events for the project.
   property events : Array(Event)
+
+  property deployment : DeploymentConfig
 
   # @return [String, nil] The UUID for the project, or `nil` if not specified.
   # The application will generate a UUID for the event if one is not provided.
   property uuid : String?
+end
+
+class DeploymentConfig
+  include YAML::Serializable
+
+  # @return [String] The type of the project.
+  property type : String
+
+  # @return [String] The location of the project.
+  property location : String?
+
+  # @return [String] The path of the project.
+  property path : String?
+
+  # @return [String] The command/entrypoint to run for the project.
+  property entrypoint : String?
+
+  # @return [Array(String)] The arguments to pass to the command.
+  property cmd : Array(String)?
+
+  # @return [Int32, nil] The timeout for the command, or `nil` if not specified.
+  property timeout : Int32?
 end
 
 # The `Event` class represents an event that triggers a deployment for a project.
