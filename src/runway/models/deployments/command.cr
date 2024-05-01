@@ -6,6 +6,7 @@ require "../base_deployment"
 class CommandDeployment < BaseDeployment
   DeploymentRegistry.register_deployment("command", self)
 
+  @timeout : Int32
   @entrypoint : String
   @cmd : Array(String)
   @path : String
@@ -13,6 +14,7 @@ class CommandDeployment < BaseDeployment
 
   def initialize(log : Log, deployment_config : DeploymentConfig)
     super(log, deployment_config)
+    @timeout = deployment_config.timeout || 300
     @entrypoint = deployment_config.entrypoint.not_nil!
     @cmd = deployment_config.cmd || [] of String
     @path = deployment_config.path.not_nil!
@@ -23,7 +25,7 @@ class CommandDeployment < BaseDeployment
     @log.debug { "received a deploy() request for #{@deployment_config.type}" }
 
     # execute the command on the local system if the location is local
-    cmd = Cmd.new(@entrypoint, cmd: @cmd, directory: @path)
+    cmd = Cmd.new(@entrypoint, cmd: @cmd, directory: @path, timeout: @timeout, log: @log)
     cmd.run
 
     @log.debug { "status: #{cmd.status}, stdout: #{cmd.stdout}, stderr: #{cmd.stderr} - success: #{cmd.success?}" }
@@ -44,12 +46,14 @@ class Cmd
     entrypoint : String,
     cmd : Array(String) = [] of String,
     directory : String = ".", # defaults to the current directory
-    timeout : Int32 = 300     # defaults to 5 minutes
+    timeout : Int32 = 300,     # defaults to 5 minutes
+    log : Log = nil
   )
     @entrypoint = entrypoint
     @cmd = cmd
     @directory = directory
     @timeout = timeout
+    @log = log
     @stdout = ""
     @stderr = ""
     @success = nil
@@ -58,9 +62,11 @@ class Cmd
   end
 
   def run
+    @log.debug { "running command: #{@entrypoint} #{@cmd.join(" ")}" } if @log
     raise "already running command process" if @running
 
     @running = true
+    killed = false
     stdout = IO::Memory.new
     stderr = IO::Memory.new
     done_channel = Channel(Nil).new
@@ -101,10 +107,17 @@ class Cmd
       # do nothing if the process has already finished
     when timeout_channel.receive
       sleep 1.second # give the process a chance to finish (tie goes to the runner)
-      process.try &.terminate(graceful: false) unless process.terminated?
-      @stderr = "cmd.run: command timed out after #{@timeout} seconds"
-      @success = false
+      unless process.terminated?
+        process.try &.terminate(graceful: false) 
+        @stderr = "cmd.run: command timed out after #{@timeout} seconds"
+        @success = false
+        killed = true
+      end
+
+      # if we make it here, something kinda unexpected happened
     end
+
+    @log.debug { "command was killed due to exceeding the timeout" } if killed && @log
 
     @running = false
   rescue ex : Exception

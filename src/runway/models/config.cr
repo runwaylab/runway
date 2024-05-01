@@ -47,6 +47,9 @@ class DeploymentConfig
 
   # @return [Array(String)] The arguments to pass to the command.
   property cmd : Array(String)?
+
+  # @return [Int32, nil] The timeout for the command, or `nil` if not specified.
+  property timeout : Int32?
 end
 
 # The `Event` class represents an event that triggers a deployment for a project.
