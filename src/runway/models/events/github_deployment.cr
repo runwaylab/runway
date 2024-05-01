@@ -73,39 +73,19 @@ class GitHubDeployment < BaseEvent
 
     @log.debug { "received a check_for_event() request for event.uuid: #{@event.uuid}" }
     @log.info { "checking #{@repo} for a #{@event.environment} deployment event" } unless Runway::QUIET
-    deployments = Retriable.retry do
-      @github.check_rate_limit!
-      @client.deployments(@repo, {"environment" => @event.environment.not_nil!})
-    end
+    deployments = retrieve_deployments
 
     @log.debug { "GitHubDeployment -> check_for_event() deployments: #{deployments}" } if Runway::VERBOSE
-    deployments = JSON.parse(deployments)
 
-    deployments = filter_deployments(deployments)
-    deployments = sort_deployments(deployments)
+    deployments = parse_and_filter_deployments(deployments)
 
     detected_deployment = find_in_progress_deployment(deployments)
 
     # exit early if we didn't find a deployment in_progress
     return payload unless detected_deployment
 
-    # set the payload attributes
-    payload.id = detected_deployment["id"].to_s.not_nil!
-    payload.environment = detected_deployment.try(&.["environment"]).try(&.to_s) || nil
-    payload.created_at = detected_deployment.try(&.["created_at"]).try(&.to_s) || nil
-    payload.updated_at = detected_deployment.try(&.["updated_at"]).try(&.to_s) || nil
-    payload.description = detected_deployment.try(&.["description"]).try(&.to_s) || nil
-    payload.user = detected_deployment.try(&.["creator"]).try(&.["login"]).try(&.to_s) || nil
-    payload.sha = detected_deployment.try(&.["sha"]).try(&.to_s) || nil
-    payload.ref = detected_deployment.try(&.["ref"]).try(&.to_s) || nil
-    payload.status = "in_progress"
-    payload.ship_it = true
-
-    # logging for debugging purposes
-    @log.warn { Emoji.emojize(":warning: deployment sha is missing from the deployment payload") } if payload.sha.nil?
-    @log.debug { "in_progress deployment sha for #{@repo}: #{payload.sha}" }
-    @log.warn { Emoji.emojize(":warning: deployment ref is missing from the deployment payload") } if payload.ref.nil?
-    @log.debug { "in_progress deployment ref for #{@repo}: #{payload.ref}" }
+    payload = set_payload_attributes(payload, detected_deployment)
+    log_payload_warnings(payload)
 
     return payload
   end
@@ -156,5 +136,41 @@ class GitHubDeployment < BaseEvent
 
     # if we've reached this point, we didn't find a deployment in_progress
     return nil
+  end
+
+  protected def set_payload_attributes(payload : Payload, detected_deployment : JSON::Any) : Payload
+    # set the payload attributes
+    payload.id = detected_deployment["id"].to_s.not_nil!
+    payload.environment = detected_deployment.try(&.["environment"]).try(&.to_s) || nil
+    payload.created_at = detected_deployment.try(&.["created_at"]).try(&.to_s) || nil
+    payload.updated_at = detected_deployment.try(&.["updated_at"]).try(&.to_s) || nil
+    payload.description = detected_deployment.try(&.["description"]).try(&.to_s) || nil
+    payload.user = detected_deployment.try(&.["creator"]).try(&.["login"]).try(&.to_s) || nil
+    payload.sha = detected_deployment.try(&.["sha"]).try(&.to_s) || nil
+    payload.ref = detected_deployment.try(&.["ref"]).try(&.to_s) || nil
+    payload.status = "in_progress"
+    payload.ship_it = true
+    return payload
+  end
+
+  protected def log_payload_warnings(payload : Payload) : Nil
+    # logging for debugging purposes
+    @log.warn { Emoji.emojize(":warning: deployment sha is missing from the deployment payload") } if payload.sha.nil?
+    @log.debug { "in_progress deployment sha for #{@repo}: #{payload.sha}" }
+    @log.warn { Emoji.emojize(":warning: deployment ref is missing from the deployment payload") } if payload.ref.nil?
+    @log.debug { "in_progress deployment ref for #{@repo}: #{payload.ref}" }
+  end
+
+  protected def retrieve_deployments : String
+    Retriable.retry do
+      @github.check_rate_limit!
+      @client.deployments(@repo, {"environment" => @event.environment.not_nil!})
+    end
+  end
+
+  protected def parse_and_filter_deployments(deployments : String) : Array
+    deployments = JSON.parse(deployments)
+    deployments = filter_deployments(deployments)
+    sort_deployments(deployments)
   end
 end
