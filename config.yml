@@ -6,6 +6,7 @@ projects:
       type: command # this deployment type runs a command on the local machine or remote server (via SSH)
       location: local # local or remote
       path: spec/acceptance/project-1 # local path or remote url
+      timeout: 300 # the maximum time in seconds that a cmd can run before it is killed and the deployment fails - default is 300
       entrypoint: bash # the command/binary/entrypoint - like docker syntax!
       cmd: ["-c", "echo 'hello world' > test-example.txt"] # the command to run using the entrypoint - like docker syntax!
     events: # events that runway looks for to trigger a deployment
@@ -24,11 +25,7 @@ projects:
 
   - name: project-2
     deployment:
-      type: command
-      location: local
-      path: spec/acceptance/project-1
-      entrypoint: echo
-      cmd: ["deployed project-2!"]
+      type: example_deployment
     events:
       - type: github_deployment
         repo: runwaylab/test-flight
