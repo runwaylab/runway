@@ -21,8 +21,22 @@ class ExampleDeployment < BaseDeployment
   # ... you might write custom code here to deploy the new release
   # @param payload - the payload object that contains the event data (see the `base_deployment.cr` file for more info on the payload object) - you should do so if you are writing a new deployment type, it can be extremely helpful
   # @return - the payload object that contains the event data (see the `base_deployment` file for more info on the payload object)
+  # Note: this method serves as a good starter template for creating a new deployment type
   def deploy(payload : Payload) : Payload
     @log.info { "processing a deployment event!" }
+
+    # do your deployment logic here
+    # ...
+    # ..
+    # .
+
+    # conditionally set the payload.success attribute to true or false based on the operations your custom deployment type performed
+    payload.success = true
+
+    # write some logs if you want
+    @log.debug { "the deployment was a #{payload.success? ? "success" : "failure"} for #{@deployment_config.type}!" }
+
+    # return the payload object
     return payload
   end
 end

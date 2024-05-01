@@ -10,7 +10,7 @@ class CommandDeployment < BaseDeployment
   end
 
   def deploy(payload : Payload) : Payload
-    @log.debug { "received a deploy() request" }
+    @log.debug { "received a deploy() request for #{@deployment_config.type}" }
     payload.success = true
     return payload
   end
