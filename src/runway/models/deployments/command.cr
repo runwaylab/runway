@@ -46,7 +46,7 @@ class Cmd
     entrypoint : String,
     cmd : Array(String) = [] of String,
     directory : String = ".", # defaults to the current directory
-    timeout : Int32 = 300,     # defaults to 5 minutes
+    timeout : Int32 = 300,    # defaults to 5 minutes
     log : Log = nil
   )
     @entrypoint = entrypoint
@@ -108,7 +108,7 @@ class Cmd
     when timeout_channel.receive
       sleep 1.second # give the process a chance to finish (tie goes to the runner)
       unless process.terminated?
-        process.try &.terminate(graceful: false) 
+        process.try &.terminate(graceful: false)
         @stderr = "cmd.run: command timed out after #{@timeout} seconds"
         @success = false
         killed = true
