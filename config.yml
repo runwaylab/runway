@@ -5,7 +5,7 @@ projects:
     deployment: # the deployment configuration to run when an event is triggered
       type: command # this deployment type runs a command on the local machine or remote server (via SSH)
       location: local # local or remote
-      path: /path/to/project-1 # local path or remote url
+      path: spec/acceptance/project-1 # local path or remote url
       cmd: ["echo", "deployed project-1!"] # the command to run - this can be a single command or a list of commands
     events: # events that runway looks for to trigger a deployment
       - type: github_deployment # github deployment event
@@ -25,7 +25,7 @@ projects:
     deployment:
       type: command
       location: local
-      path: /path/to/project-1
+      path: spec/acceptance/project-1
       cmd: ["echo", "deployed project-2!"]
     events:
       - type: github_deployment
