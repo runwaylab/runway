@@ -81,20 +81,56 @@ class GitHubDeployment < BaseEvent
     @log.debug { "GitHubDeployment -> check_for_event() deployments: #{deployments}" } if Runway::VERBOSE
     deployments = JSON.parse(deployments)
 
+    deployments = filter_deployments(deployments)
+    deployments = sort_deployments(deployments)
+
+    detected_deployment = find_in_progress_deployment(deployments)
+
+    # exit early if we didn't find a deployment in_progress
+    return payload unless detected_deployment
+
+    # set the payload attributes
+    payload.id = detected_deployment["id"].to_s.not_nil!
+    payload.environment = detected_deployment.try(&.["environment"]).try(&.to_s) || nil
+    payload.created_at = detected_deployment.try(&.["created_at"]).try(&.to_s) || nil
+    payload.updated_at = detected_deployment.try(&.["updated_at"]).try(&.to_s) || nil
+    payload.description = detected_deployment.try(&.["description"]).try(&.to_s) || nil
+    payload.user = detected_deployment.try(&.["creator"]).try(&.["login"]).try(&.to_s) || nil
+    payload.sha = detected_deployment.try(&.["sha"]).try(&.to_s) || nil
+    payload.ref = detected_deployment.try(&.["ref"]).try(&.to_s) || nil
+    payload.status = "in_progress"
+    payload.ship_it = true
+
+    # logging for debugging purposes
+    @log.warn { Emoji.emojize(":warning: deployment sha is missing from the deployment payload") } if payload.sha.nil?
+    @log.debug { "in_progress deployment sha for #{@repo}: #{payload.sha}" }
+    @log.warn { Emoji.emojize(":warning: deployment ref is missing from the deployment payload") } if payload.ref.nil?
+    @log.debug { "in_progress deployment ref for #{@repo}: #{payload.ref}" }
+
+    return payload
+  end
+
+  def filter_deployments(deployments : JSON::Any) : Array
     # filter deployments by environment
     # this should already have been done by the GitHub API, but we'll do it again out of extra caution
     deployments = deployments.as_a.select do |deployment|
       deployment["environment"] == @event.environment
     end
 
+    return deployments
+  end
+
+  def sort_deployments(deployments : Array) : Array
     # sort deployments by created_at date with the most recent first
     deployments = deployments.sort_by do |deployment|
       Time.parse(deployment["created_at"].as_s, "%FT%T%z", @timezone)
     end.reverse!
 
     # only grab the X most recent deployments (based on event.filters.deployments)
-    deployments = deployments.first(@deployment_filter)
+    return deployments.first(@deployment_filter)
+  end
 
+  def find_in_progress_deployment(deployments : Array) : JSON::Any?
     # loop through all filtered deployments and get their deployment statuses
     # the first deployment to have an "in_progress" status will be the one we're looking for
     # however, the "in_progress" status must be the most recent status for the deployment or we'll ignore it
@@ -114,30 +150,11 @@ class GitHubDeployment < BaseEvent
       # if the most recent status is "in_progress", we have our deployment
       if statuses.first["state"] == "in_progress"
         @log.debug { "found an in_progress deployment for #{@repo} in the #{@event.environment} environment" }
-
-        # set the payload attributes
-        payload.id = deployment_id.to_s.not_nil!
-        payload.environment = deployment.try(&.["environment"]).try(&.to_s) || nil
-        payload.created_at = deployment.try(&.["created_at"]).try(&.to_s) || nil
-        payload.updated_at = deployment.try(&.["updated_at"]).try(&.to_s) || nil
-        payload.description = deployment.try(&.["description"]).try(&.to_s) || nil
-        payload.user = deployment.try(&.["creator"]).try(&.["login"]).try(&.to_s) || nil
-        payload.sha = deployment.try(&.["sha"]).try(&.to_s) || nil
-        payload.ref = deployment.try(&.["ref"]).try(&.to_s) || nil
-        payload.status = "in_progress"
-        payload.ship_it = true
-
-        # logging for debugging purposes
-        @log.warn { Emoji.emojize(":warning: deployment sha is missing from the deployment payload") } if payload.sha.nil?
-        @log.debug { "in_progress deployment sha for #{@repo}: #{payload.sha}" }
-        @log.warn { Emoji.emojize(":warning: deployment ref is missing from the deployment payload") } if payload.ref.nil?
-        @log.debug { "in_progress deployment ref for #{@repo}: #{payload.ref}" }
-
-        return payload
+        return deployment
       end
     end
 
     # if we've reached this point, we didn't find a deployment in_progress
-    return payload
+    return nil
   end
 end
