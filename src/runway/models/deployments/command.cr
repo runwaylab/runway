@@ -14,7 +14,7 @@ class CommandDeployment < BaseDeployment
   def initialize(log : Log, deployment_config : DeploymentConfig)
     super(log, deployment_config)
     @entrypoint = deployment_config.entrypoint.not_nil!
-    @cmd = deployment_config.cmd || [""]
+    @cmd = deployment_config.cmd || [] of String
     @path = deployment_config.path.not_nil!
     @location = deployment_config.location.not_nil!
   end
@@ -39,7 +39,7 @@ class Cmd
   getter stdout : String
   getter stderr : String
 
-  def initialize(entrypoint : String, cmd : Array(String) = [] of ElementType, directory : String = ".")
+  def initialize(entrypoint : String, cmd : Array(String) = [] of String, directory : String = ".")
     @entrypoint = entrypoint
     @cmd = cmd
     @directory = directory
@@ -63,8 +63,8 @@ class Cmd
     )
 
     @status = status
-    @stdout = @stdout.to_s.strip
-    @stderr = @stderr.to_s.strip
+    @stdout = stdout.to_s.strip
+    @stderr = stderr.to_s.strip
     @success = status.success?
   end
 end
