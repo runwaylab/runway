@@ -1,5 +1,5 @@
 require "uuid"
-require "./events/*"
+require "../events/*"
 require "../deployments/*"
 
 # The `Project` class represents a project that can handle different types of events.

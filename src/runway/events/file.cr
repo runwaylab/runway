@@ -1,4 +1,4 @@
-require "../base_event"
+require "../models/base_event"
 
 # This class demonstrates is mostly used for acceptance tests but can be used for actual deployment events too!
 # This event handler is extremely simple and just looks for the existence of a file in the directory
