@@ -5,7 +5,7 @@ projects:
     deployment: # the deployment configuration to run when an event is triggered
       type: command # this deployment type runs a command on the local machine or remote server (via SSH)
       location: local # local or remote
-      path: spec/acceptance/project-1 # local path or remote url
+      path: spec/outputs # local path or remote url
       timeout: 300 # the maximum time in seconds that a cmd can run before it is killed and the deployment fails - default is 300
       entrypoint: bash # the command/binary/entrypoint - like docker syntax!
       cmd: ["-c", "echo 'hello world' > test-example.txt"] # the command to run using the entrypoint - like docker syntax!

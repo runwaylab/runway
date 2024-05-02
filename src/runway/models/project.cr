@@ -50,9 +50,14 @@ class Project
 
     # Check if the desired event type had a deployable event occur
     payload = @events[event.uuid].check_for_event
+    @log.debug { "deployment event triggered from event.type #{event.type} for #{@name} - event.uuid #{event.uuid}" } if payload.ship_it?
 
     # If the event was triggered, run the project's deployment configuration
     payload = @deployment.deploy(payload).not_nil! if payload.ship_it?
+
+    # log a success (or failure) message
+    @log.info { Emoji.emojize(":rocket: successfully deployed #{@name}#{payload.environment ? " to #{payload.environment}" : ""}!") } if payload.ship_it? && payload.success?
+    @log.error { Emoji.emojize(":boom: deployment failed for #{@name}#{payload.environment ? " to #{payload.environment}" : ""}!") } if payload.ship_it? && !payload.success?
 
     # Run post deployment logic if the event handler implements it
     @events[event.uuid].post_deploy(payload) if payload.ship_it?

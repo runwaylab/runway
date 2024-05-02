@@ -35,7 +35,7 @@ class GitHubDeployment < BaseEvent
       payload.status = @failure
     end
 
-    @log.info { Emoji.emojize(":hammer_and_wrench:  handling a deployment event for #{@repo} in the #{@event.environment} environment") }
+    @log.info { Emoji.emojize(":hammer_and_wrench:  handling a deployment event for #{@repo} in the #{@event.environment} environment") } unless Runway::QUIET
 
     deployment_id = payload.id.to_s.to_i64.not_nil!
     status = payload.status.not_nil!
@@ -51,8 +51,8 @@ class GitHubDeployment < BaseEvent
     raise "Unexpected deployment status result" unless JSON.parse(result)["state"] == @success
 
     # logs about the deployment status
-    @log.info { Emoji.emojize(":rocket: successfully deployed #{@repo} to the #{@event.environment} environment!") } if status == @success
-    @log.error { Emoji.emojize(":x: deployment failed for #{@repo} in the #{@event.environment} environment") } if status != @success
+    @log.info { Emoji.emojize(":white_check_mark: successfully completed deployment for #{@repo} in the #{@event.environment} environment") } if status == @success unless Runway::QUIET
+    @log.error { Emoji.emojize(":x: failed to complete deployment for #{@repo} in the #{@event.environment} environment") } if status != @success
 
     return payload
   rescue error : Exception

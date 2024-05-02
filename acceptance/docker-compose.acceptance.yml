@@ -1,0 +1,46 @@
+# To build the entire stack run 'make run'
+
+services:
+  runway:
+    container_name: runway
+    restart: 'no'
+    build:
+      context: ../
+      dockerfile: Dockerfile
+    entrypoint: bash
+    command: ["-c", "./runway -c acceptance/config/config.yml | tee /app/acceptance/logs/runway.log"]
+    environment:
+      LOG_LEVEL: DEBUG
+      CRYSTAL_ENV: development
+    volumes:
+      - projects:/app/acceptance/projects
+      - config:/app/acceptance/config
+      - logs:/app/acceptance/logs
+    # ports:
+    #   - 8080:8080
+    # healthcheck:
+    #   test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+    #   interval: 30s
+    #   timeout: 5s
+    #   retries: 3
+    #   start_period: 15s
+
+volumes:
+  projects:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${PWD}/acceptance/projects
+  config:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${PWD}/acceptance/config
+  logs:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${PWD}/acceptance/logs

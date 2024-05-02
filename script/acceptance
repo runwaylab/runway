@@ -10,7 +10,33 @@ PURPLE='\033[0;35m'
 # set the working directory to the root of the project
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && pwd )"
 
-# start the docker compose stack
-make run
+echo -e "${BLUE}🚗 starting acceptance test suite...${OFF}"
 
-echo -e "${BLUE}waiting for the service to start...${OFF}"
+COMPOSE_FILE="$DIR/acceptance/docker-compose.acceptance.yml"
+
+# bring down the stack if it is running
+docker compose -f $COMPOSE_FILE down --remove-orphans -v -t 1
+
+# prime the acceptance test suite
+crystal run --debug --error-trace $DIR/acceptance/primer.cr
+
+# start the stack
+docker compose -f $COMPOSE_FILE up --build -d
+
+# debugging if LOG_LEVEL is set to DEBUG
+if [ "$LOG_LEVEL" == "DEBUG" ]; then
+  sleep 3
+  docker compose -f $COMPOSE_FILE ps
+  docker compose -f $COMPOSE_FILE logs
+
+  ls -lah $DIR/acceptance/logs
+fi
+
+# wait for all artifacts to be created before continuing
+crystal run --debug --error-trace $DIR/acceptance/wait-for-artifacts.cr
+
+# bring the stack down now that the artifacts are created
+docker compose -f $COMPOSE_FILE down --remove-orphans -v -t 1
+
+# run the acceptance test suite
+crystal run --debug --error-trace $DIR/acceptance/acceptance.cr

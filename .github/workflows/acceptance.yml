@@ -18,5 +18,23 @@ jobs:
       - name: checkout
         uses: actions/checkout@v4
 
+      - name: fetch crystal version
+        id: crystal-version
+        run: echo "crystal=$(cat .crystal-version)"
+
+      - name: install crystal
+        uses: crystal-lang/install-crystal@v1.8.2
+        with:
+          crystal: ${{ steps.crystal-version.outputs.crystal }}
+
+      - name: bootstrap
+        run: script/bootstrap
+
+      - name: set directory permissions (for ci)
+        run: chmod -R 777 ./acceptance
+
       - name: acceptance
+        env:
+          LOG_LEVEL: DEBUG
+          CRYSTAL_ENV: development
         run: script/acceptance

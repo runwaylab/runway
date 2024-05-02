@@ -1,0 +1,19 @@
+DEBUG: log level set to DEBUG
+INFO: 📖 loading runway configuration
+DEBUG: attempting to load config from acceptance/config/config.yml
+INFO: ✅ loaded configuration successfully
+INFO: 🚚 1 project loaded
+INFO: 🛫 starting runway - version: v0.0.0
+INFO: 📦 starting project project-1
+INFO: 🕐 scheduling event with interval 3s for project-1
+INFO: 🚀 runway is ready and all events have been setup!
+INFO: 👀 project-1 is checking for a file event
+INFO: checking if file 'acceptance/projects/project-1/ship-it.txt' exists
+INFO: file exists at path: acceptance/projects/project-1/ship-it.txt
+DEBUG: deployment event triggered from event.type file for project-1 - event.uuid 087e34e4-c3df-4d8e-b6e2-39297863906f
+DEBUG: received a deploy() request for command
+DEBUG: running command: bash -c echo 'success' > result.txt
+DEBUG: status: 0, stdout: , stderr:  - success: true
+INFO: 🚀 successfully deployed project-1!
+DEBUG: post_deploy() running post deploy logic for event.type file - event.uuid 087e34e4-c3df-4d8e-b6e2-39297863906f
+DEBUG: post_deploy() post deploy logic complete for event.type file - event.uuid 087e34e4-c3df-4d8e-b6e2-39297863906f
