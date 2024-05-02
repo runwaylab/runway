@@ -23,12 +23,12 @@ class FileEvent < BaseEvent
     # exit early if the payload doesn't have a run_post_deploy? attribute
     return payload unless payload.run_post_deploy? == true
 
-    @log.debug { "post_deploy() running post deploy logic for event.id #{@event.uuid}" }
+    @log.debug { "post_deploy() running post deploy logic for event.type #{@event.type} - event.uuid #{@event.uuid}" }
 
     # delete the file if the cleanup flag is set to true
     File.delete(@path) if @cleanup == true
 
-    @log.debug { "post_deploy() post deploy logic complete for event.id #{@event.uuid}" }
+    @log.debug { "post_deploy() post deploy logic complete for event.type #{@event.type} - event.uuid #{@event.uuid}" }
     return payload
   end
 

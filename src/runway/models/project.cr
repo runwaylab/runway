@@ -50,7 +50,7 @@ class Project
 
     # Check if the desired event type had a deployable event occur
     payload = @events[event.uuid].check_for_event
-    @log.debug { "deployment event triggered from event.uuid #{event.uuid} for #{@name}" } if payload.ship_it?
+    @log.debug { "deployment event triggered from event.type #{event.type} for #{@name} - event.uuid #{event.uuid}" } if payload.ship_it?
 
     # If the event was triggered, run the project's deployment configuration
     payload = @deployment.deploy(payload).not_nil! if payload.ship_it?
