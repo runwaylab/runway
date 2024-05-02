@@ -1,7 +1,7 @@
 # This file helps to "prime" or "boot" the acceptance test suite
 
 require "emoji"
-require "../../src/runway/lib/logger"
+require "../src/runway/lib/logger"
 
 log = RunwayLogger.setup_logger(ENV.fetch("LOG_LEVEL", "INFO").upcase)
 ACCEPTANCE_DIR = File.dirname(__FILE__)
@@ -11,7 +11,7 @@ log.info { Emoji.emojize(":mag: waiting for all artifacts to be created...") }
 
 ARTIFACTS = [
   "#{ACCEPTANCE_DIR}/projects/project-1/result.txt",
-  "#{ACCEPTANCE_DIR}/logs/runway.log"
+  "#{ACCEPTANCE_DIR}/logs/runway.log",
 ]
 
 TOTAL_ATTEMPTS = 30

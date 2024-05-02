@@ -26,10 +26,10 @@ coverage/
 !/lib/coverage/
 
 # ignore testing files
-spec/acceptance/projects/*/test-example.txt
-spec/acceptance/projects/*/ship-it.txt
-spec/acceptance/projects/*/result.txt
-spec/acceptance/logs/*
+acceptance/projects/*/test-example.txt
+acceptance/projects/*/ship-it.txt
+acceptance/projects/*/result.txt
+acceptance/logs/*
 
-!spec/acceptance/logs/.gitkeep
-!spec/acceptance/logs/expected.log
+!acceptance/logs/.gitkeep
+!acceptance/logs/expected.log

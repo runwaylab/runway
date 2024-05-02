@@ -1,6 +1,6 @@
 require "spec"
 require "emoji"
-require "../../src/runway/lib/logger"
+require "../src/runway/lib/logger"
 
 log = RunwayLogger.setup_logger(ENV.fetch("LOG_LEVEL", "INFO").upcase)
 ACCEPTANCE_DIR = File.dirname(__FILE__)
@@ -12,8 +12,9 @@ log.info { Emoji.emojize("🧪 starting acceptance test suite") }
 
 def load_and_scrub_logs(file_path)
   File.read_lines(file_path).map do |line|
-    line.gsub(UUID_REGEX, "<UUID>")
-    line.gsub(SEMVER_REGEX, "<SEMVER>")
+    line = line.gsub(UUID_REGEX, "<UUID>")
+    line = line.gsub(SEMVER_REGEX, "<SEMVER>")
+    line
   end
 end
 

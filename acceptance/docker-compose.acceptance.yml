@@ -5,17 +5,17 @@ services:
     container_name: runway
     restart: 'no'
     build:
-      context: ../../
+      context: ../
       dockerfile: Dockerfile
     entrypoint: bash
-    command: ["-c", "./runway -c spec/acceptance/config/config.yml | tee /app/spec/acceptance/logs/runway.log"]
+    command: ["-c", "./runway -c acceptance/config/config.yml | tee /app/acceptance/logs/runway.log"]
     environment:
       LOG_LEVEL: DEBUG
       CRYSTAL_ENV: development
     volumes:
-      - projects:/app/spec/acceptance/projects
-      - config:/app/spec/acceptance/config
-      - logs:/app/spec/acceptance/logs
+      - projects:/app/acceptance/projects
+      - config:/app/acceptance/config
+      - logs:/app/acceptance/logs
     # ports:
     #   - 8080:8080
     # healthcheck:
@@ -31,16 +31,16 @@ volumes:
     driver_opts:
       o: bind
       type: none
-      device: ${PWD}/spec/acceptance/projects
+      device: ${PWD}/acceptance/projects
   config:
     driver: local
     driver_opts:
       o: bind
       type: none
-      device: ${PWD}/spec/acceptance/config
+      device: ${PWD}/acceptance/config
   logs:
     driver: local
     driver_opts:
       o: bind
       type: none
-      device: ${PWD}/spec/acceptance/logs
+      device: ${PWD}/acceptance/logs

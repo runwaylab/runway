@@ -12,22 +12,22 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && pwd )"
 
 echo -e "${BLUE}🚗 starting acceptance test suite...${OFF}"
 
-COMPOSE_FILE="$DIR/spec/acceptance/docker-compose.acceptance.yml"
+COMPOSE_FILE="$DIR/acceptance/docker-compose.acceptance.yml"
 
 # bring down the stack if it is running
 docker compose -f $COMPOSE_FILE down --remove-orphans -v -t 1
 
 # prime the acceptance test suite
-crystal run --debug --error-trace $DIR/spec/acceptance/primer.cr
+crystal run --debug --error-trace $DIR/acceptance/primer.cr
 
 # start the stack
 docker compose -f $COMPOSE_FILE up --build -d
 
 # wait for all artifacts to be created before continuing
-crystal run --debug --error-trace $DIR/spec/acceptance/wait-for-artifacts.cr
+crystal run --debug --error-trace $DIR/acceptance/wait-for-artifacts.cr
 
 # bring the stack down now that the artifacts are created
 docker compose -f $COMPOSE_FILE down --remove-orphans -v -t 1
 
 # run the acceptance test suite
-crystal run --debug --error-trace $DIR/spec/acceptance/acceptance.cr
+crystal run --debug --error-trace $DIR/acceptance/acceptance.cr
