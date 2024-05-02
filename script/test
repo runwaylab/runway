@@ -14,6 +14,13 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && pwd )"
 
 echo -e "🧪 ${BLUE}running unit tests...${OFF}"
 
+os="unknown"
+if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+  os="linux"
+elif [[ "$OSTYPE" == "darwin"* ]]; then
+  os="mac"
+fi
+
 skip_coverage=false
 for arg in "$@"; do
   if [ "$arg" == "-s" ]; then
@@ -24,6 +31,9 @@ done
 
 # if -s was supplied as an argument, skip coverage reports (they can be slow)
 if $skip_coverage; then
+  crystal spec
+elif [ "$os" == "mac" ]; then
+  # on mac, code coverage isn't working for a reason I couldn't fix
   crystal spec
 # if the kcov binary cannot be found, warn and run specs without coverage
 elif [ ! -f "$DIR/bin/kcov" ]; then
