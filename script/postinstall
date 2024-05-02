@@ -3,6 +3,7 @@
 # set the working directory to the root of the project
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && pwd )"
 LINUX_VENDOR_DIR="$DIR/vendor/linux_x86_64/bin"
+DARWIN_VENDOR_DIR="$DIR/vendor/darwin_x86_64/bin"
 
 mkdir -p "$DIR/bin"
 
@@ -11,13 +12,21 @@ os="unknown"
 if [[ "$OSTYPE" == "linux-gnu" ]]; then
   os="linux"
   if [ "$CI" = true ]; then
-    echo "running in CI mode, copying vendored binaries to bin/ directory"
+    echo "OSTYPE: $OSTYPE"
+    echo "running in CI mode, copying vendored binaries to bin/ directory (linux)"
     cp "$LINUX_VENDOR_DIR/ameba" "$DIR/bin/ameba"
     cp "$LINUX_VENDOR_DIR/crkcov" "$DIR/bin/crkcov"
     cp "$LINUX_VENDOR_DIR/kcov" "$DIR/bin/kcov"
   fi
 elif [[ "$OSTYPE" == "darwin"* ]]; then
   os="mac"
+  if [ "$CI" = true ]; then
+    echo "OSTYPE: $OSTYPE"
+    echo "running in CI mode, copying vendored binaries to bin/ directory (mac)"
+    cp "$DARWIN_VENDOR_DIR/ameba" "$DIR/bin/ameba"
+    cp "$DARWIN_VENDOR_DIR/crkcov" "$DIR/bin/crkcov"
+    cp "$DARWIN_VENDOR_DIR/kcov" "$DIR/bin/kcov"
+  fi
 else
   os="unknown"
 fi
@@ -26,6 +35,7 @@ fi
 if [ ! -f "$DIR/bin/kcov" ]; then
   echo "WARN: the kcov binary does not exist in the bin/ directory"
   echo "  you will need to install kcov (and place it in ./bin) if you wish to use code coverage"
+  echo "  check out the vendor/ dir for precompiled binaries that may be compatible with your system"
 fi
 
 # ensure the ameba binary is built and available in the bin directory

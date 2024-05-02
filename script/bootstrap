@@ -63,6 +63,11 @@ if [[ ! -z "$compatability_warning" && "$SUPPRESS_BOOTSTRAP_WARNINGS" != "true" 
   echo -e "You can set ${PURPLE}SUPPRESS_BOOTSTRAP_WARNINGS=true${OFF} in your environment to suppress this warning"
 fi
 
+if [[ "$os" == "mac" && "$CI" == "true" ]]; then
+  echo "setting custom macos CRYSTAL_OPTS for CI"
+  export CRYSTAL_OPTS="--link-flags=-Wl,-ld_classic"
+fi
+
 script/preinstall
 
 # if the cache directory doesn't exist, run script/update
