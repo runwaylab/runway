@@ -1,6 +1,17 @@
 require "../../../src/runway/lib/common"
 require "../../spec_helper"
 
+CRONS = [
+  "0 0 * * *",
+  "* * * * *",
+  "0 22 * * 1-5",
+  "0 */5 13,18 * * *",
+  "0 0-5 13 * * *",
+  "0 30 9 * * MON-FRI",
+  "0 30 9 15 * *",
+  "0 0 0 */5 * *",
+]
+
 module Runway
   describe ".cron?" do
     CRONS.each do |value|
