@@ -1,5 +1,4 @@
 require "./spec_helper.cr"
-require "../src/version"
 
 Spectator.describe "Runway::VERSION" do
   describe Runway::VERSION do

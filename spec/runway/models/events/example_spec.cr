@@ -1,5 +1,4 @@
 require "../../../spec_helper"
-require "../../../../src/runway/events/example"
 
 Spectator.describe "ExampleEvent" do
   describe ExampleEvent do

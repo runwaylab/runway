@@ -1,5 +1,4 @@
 require "../../spec_helper"
-require "../../../src/runway/lib/time"
 
 Spectator.describe "Runway::TimeHelpers" do
   describe Runway::TimeHelpers do

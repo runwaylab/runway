@@ -1,5 +1,4 @@
 require "../../spec_helper"
-require "../../../src/runway/lib/common"
 
 Spectator.describe "Runway::Common" do
   describe Runway::Common do

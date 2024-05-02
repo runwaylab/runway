@@ -1,5 +1,4 @@
 require "../../spec_helper"
-require "../../../src/runway/lib/retry"
 
 Spectator.describe "Retry" do
   describe Retry do
