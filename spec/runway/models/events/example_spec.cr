@@ -16,19 +16,16 @@ describe ExampleEvent do
     end
   end
 
-  describe "#check_for_event and #handle_event runs" do
-    it "runs both" do
-      # Call the methods
+  describe "#check_for_event" do
+    it "finds a deployable event" do
       payload = subject.check_for_event
-      subject.post_deploy(payload)
+      payload.ship_it?.should be_true
+      payload.run_post_deploy?.should be_true
     end
-  end
 
-  describe "check logs" do
-    it "checks the logs" do
-      # Check the log output
-      log_output.to_s.should contain("checking if a deployable event has occurred")
-      # log_output.to_s.should contain("processing a deployment event!")
+    it "runs post_deploy logic" do
+      payload = subject.post_deploy(Payload.new(ship_it: true, run_post_deploy: true))
+      payload.status.should eq("success")
     end
   end
 end
