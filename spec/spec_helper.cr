@@ -1,4 +1,5 @@
-require "../src/*"
+require "../src/version"
+require "../src/runway/**"
 require "spectator"
 require "log"
 
