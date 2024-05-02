@@ -1,4 +1,4 @@
-require "../base_deployment"
+require "../models/base_deployment"
 
 # This class demonstrates how you can extend the BaseDeployment class to create a new deployment type!
 # Deployment types are defined in the config file for runway. (deployment.type in the config file)

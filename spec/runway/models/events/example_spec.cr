@@ -1,5 +1,5 @@
 require "../../../spec_helper"
-require "../../../../src/runway/models/events/example"
+require "../../../../src/runway/events/example"
 
 describe ExampleEvent do
   # Create a mock Log and Event for testing

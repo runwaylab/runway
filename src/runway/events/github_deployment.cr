@@ -1,5 +1,5 @@
-require "../base_event"
-require "../../services/github"
+require "../models/base_event"
+require "../services/github"
 
 class GitHubDeployment < BaseEvent
   EventRegistry.register_event("github_deployment", self)

@@ -3,15 +3,15 @@ require "log"
 require "emoji"
 require "colorize"
 require "./runway/models/config"
-require "./runway"
-require "./runway/lib/logger"
+require "./runway/core/runway"
+require "./runway/core/logger"
 
 module Runway
   module Cli
     def self.run
       opts = self.opts
 
-      log = RunwayLogger.setup_logger(opts[:log_level])
+      log = Runway.setup_logger(opts[:log_level])
       log.info { Emoji.emojize(":book: loading runway configuration") }
 
       log.debug { "attempting to load config from #{opts[:config_path]}" }
@@ -19,7 +19,7 @@ module Runway
       log.info { Emoji.emojize(":white_check_mark: loaded configuration successfully") }
       log.info { Emoji.emojize(":truck: #{config.projects.size} #{config.projects.size == 1 ? "project" : "projects"} loaded") }
 
-      Runway::Service.new(log, config).start!
+      Runway::Core.new(log, config).start!
     end
 
     # Parse command line options

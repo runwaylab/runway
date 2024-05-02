@@ -1,4 +1,4 @@
-require "../base_event"
+require "../models/base_event"
 
 # This class demonstrates how you can extend the BaseEvent class to create a new event type!
 # Event types are defined in the config file for runway. (event.type in the config file)

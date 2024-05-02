@@ -1,5 +1,5 @@
 require "process"
-require "../base_deployment"
+require "../models/base_deployment"
 
 # This deployment type runs a command on the local machine (where runway is running) or a remote server (via SSH)
 # The actualy DeploymentConfig setup for the related project determines the command to run

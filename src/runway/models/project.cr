@@ -1,6 +1,6 @@
 require "uuid"
-require "./events/*"
-require "./deployments/*"
+require "../events/*"
+require "../deployments/*"
 
 # The `Project` class represents a project that can handle different types of events.
 # It uses an `EventRegistry` to create event handlers based on the event type.
