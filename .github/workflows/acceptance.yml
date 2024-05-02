@@ -31,4 +31,7 @@ jobs:
         run: script/bootstrap
 
       - name: acceptance
+        env:
+          LOG_LEVEL: DEBUG
+          CRYSTAL_ENV: development
         run: script/acceptance

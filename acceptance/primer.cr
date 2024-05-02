@@ -13,6 +13,8 @@ FILES_TO_CREATE = [
   "#{ACCEPTANCE_DIR}/projects/project-1/ship-it.txt",
 ]
 
+log.debug { "creating files: #{FILES_TO_CREATE}..." }
+
 FILES_TO_CREATE.each do |file|
   log.debug { "creating file: #{file}" }
   File.touch(file) unless File.exists?(file)

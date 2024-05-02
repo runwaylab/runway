@@ -14,6 +14,8 @@ ARTIFACTS = [
   "#{ACCEPTANCE_DIR}/logs/runway.log",
 ]
 
+log.debug { "artifacts to wait for: #{ARTIFACTS}" }
+
 TOTAL_ATTEMPTS = 300
 SLEEP_DURATION = 1.second
 all_artifacts_ready = false
