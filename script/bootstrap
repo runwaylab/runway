@@ -66,9 +66,6 @@ fi
 if [[ "$os" == "mac" && "$CI" == "true" ]]; then
   echo "setting custom macos CRYSTAL_OPTS for CI"
   export CRYSTAL_OPTS="--link-flags=-Wl,-ld_classic"
-
-  echo "installing libyaml via brew for CI - macos runners only"
-  brew install libyaml
 fi
 
 script/preinstall

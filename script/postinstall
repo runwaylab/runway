@@ -12,7 +12,8 @@ os="unknown"
 if [[ "$OSTYPE" == "linux-gnu" ]]; then
   os="linux"
   if [ "$CI" = true ]; then
-    echo "running in CI mode, copying vendored binaries to bin/ directory"
+    echo "OSTYPE: $OSTYPE"
+    echo "running in CI mode, copying vendored binaries to bin/ directory (linux)"
     cp "$LINUX_VENDOR_DIR/ameba" "$DIR/bin/ameba"
     cp "$LINUX_VENDOR_DIR/crkcov" "$DIR/bin/crkcov"
     cp "$LINUX_VENDOR_DIR/kcov" "$DIR/bin/kcov"
@@ -20,7 +21,8 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
 elif [[ "$OSTYPE" == "darwin"* ]]; then
   os="mac"
   if [ "$CI" = true ]; then
-    echo "running in CI mode, copying vendored binaries to bin/ directory"
+    echo "OSTYPE: $OSTYPE"
+    echo "running in CI mode, copying vendored binaries to bin/ directory (mac)"
     cp "$DARWIN_VENDOR_DIR/ameba" "$DIR/bin/ameba"
     cp "$DARWIN_VENDOR_DIR/crkcov" "$DIR/bin/crkcov"
     cp "$DARWIN_VENDOR_DIR/kcov" "$DIR/bin/kcov"
