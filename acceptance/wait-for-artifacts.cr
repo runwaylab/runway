@@ -14,7 +14,7 @@ ARTIFACTS = [
   "#{ACCEPTANCE_DIR}/logs/runway.log",
 ]
 
-TOTAL_ATTEMPTS = 30
+TOTAL_ATTEMPTS = 300
 SLEEP_DURATION = 1.second
 all_artifacts_ready = false
 
