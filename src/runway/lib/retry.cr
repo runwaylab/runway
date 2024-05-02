@@ -6,8 +6,6 @@ module Retry
   # Should the number of retries be reached without success, the last exception will be raised
   # :param log: the logger to use for retriable logging
   def self.setup!(log : Log)
-    raise "ArgumentError: a logger must be provided" if log.nil?
-
     do_this_on_each_retry = ->(ex : Exception, attempt : Int32, elapsed_time : Time::Span, next_interval : Time::Span) do
       log.warn { "[attempt ##{attempt}] #{ex.class} - #{ex.message} - attempt in #{elapsed_time} seconds and #{next_interval} seconds until the next retry" }
       log.debug { "[attempt ##{attempt}] #{ex.class} - backtrace: #{ex.backtrace.join("\n")}" }
