@@ -1,7 +1,9 @@
-require "spec"
+require "../src/version"
+require "../src/runway/**"
+require "spectator"
 require "log"
-require "../src/runway/core/env"
-require "../src/runway/models/config"
 
-CONFIG = RunwayConfiguration.from_yaml(File.open("./config.yml"))
-EVENT  = CONFIG.projects.first.events.first
+CONFIG         = RunwayConfiguration.from_yaml(File.open("./config.yml"))
+CONFIG_FIXTURE = RunwayConfiguration.from_yaml(File.open("./spec/fixtures/config.yml"))
+EVENT          = CONFIG.projects.first.events.first
+LOG            = Runway.setup_logger("ERROR")

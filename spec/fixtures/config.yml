@@ -1,0 +1,25 @@
+projects:
+  - name: project-1
+    deployment:
+      type: command
+      location: local
+      path: spec/outputs/
+      timeout: 30
+      entrypoint: bash
+      cmd: ["-c", "echo 'success'"]
+    events:
+      - type: file
+        path: test1.txt
+        cleanup: false
+        schedule:
+          interval: 3s
+
+  - name: project-2
+    deployment:
+      type: example_deployment
+    events:
+      - type: file
+        path: test2.txt
+        cleanup: false
+        schedule:
+          interval: 5s

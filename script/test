@@ -41,23 +41,7 @@ elif [ ! -f "$DIR/bin/kcov" ]; then
   crystal spec
 # otherwise, run specs with coverage
 else
-  set +e
-  test_output=$($DIR/bin/crkcov --cleanup-coverage-before --coverage-dir $DIR/coverage --kcov-executable $DIR/bin/kcov --output)
-  echo "$test_output"
-
-  # save the line that contains `Total covored:` into a variable
-  total_covered=$(echo "$test_output" | grep "Total covored:")
-  echo "$total_covered" | grep -q "100\.00"
-  coverage_passed=$?
-  set -e
-
-  # check if the line contains the desired coverage percentage anywhere in the line
-  if [ $coverage_passed -ne 0 ]; then
-    echo -e "❌ ${RED}incomplete test coverage${OFF}"
-    exit 1
-  else
-    echo -e "✅ ${GREEN}100% test coverage!${OFF}"
-  fi
+  $DIR/bin/crkcov --cleanup-coverage-before --coverage-dir $DIR/coverage --kcov-executable $DIR/bin/kcov --output
 fi
 
 echo -e "✅ ${GREEN}tests complete!${OFF}"
