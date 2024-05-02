@@ -10,17 +10,18 @@ PURPLE='\033[0;35m'
 # set the working directory to the root of the project
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && pwd )"
 
+echo -e "${BLUE}🚗 starting acceptance test suite...${OFF}"
+
 COMPOSE_FILE="$DIR/spec/acceptance/docker-compose.acceptance.yml"
 
 # bring down the stack if it is running
 docker compose -f $COMPOSE_FILE down --remove-orphans -v -t 1
 
-# create the event files if they don't exist
-if [ ! -f "$DIR/spec/acceptance/projects/project-1/ship-it.txt" ]; then
-  touch "$DIR/spec/acceptance/projects/project-1/ship-it.txt"
-fi
+# prime the acceptance test suite
+crystal run --debug --error-trace $DIR/spec/acceptance/primer.cr
 
 # start the stack
 docker compose -f $COMPOSE_FILE up --build -d
 
-echo -e "${BLUE}waiting for the service to start...${OFF}"
+echo "\n"
+crystal run --debug --error-trace $DIR/spec/acceptance/acceptance.cr

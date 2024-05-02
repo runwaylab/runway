@@ -7,13 +7,15 @@ services:
     build:
       context: ../../
       dockerfile: Dockerfile
-    command: ["-c", "spec/acceptance/config/config.yml"]
+    entrypoint: bash
+    command: ["-c", "./runway -c spec/acceptance/config/config.yml > /app/spec/acceptance/logs/runway.log"]
     environment:
       LOG_LEVEL: DEBUG
       CRYSTAL_ENV: development
     volumes:
       - projects:/app/spec/acceptance/projects
       - config:/app/spec/acceptance/config
+      - logs:/app/spec/acceptance/logs
     # ports:
     #   - 8080:8080
     # healthcheck:
@@ -36,3 +38,9 @@ volumes:
       o: bind
       type: none
       device: ${PWD}/spec/acceptance/config
+  logs:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${PWD}/spec/acceptance/logs

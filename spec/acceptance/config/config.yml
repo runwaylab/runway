@@ -3,7 +3,7 @@ projects:
     deployment:
       type: command
       location: local
-      path: spec/acceptance/projects/project-1/
+      path: spec/acceptance/projects/project-1/ # go to this path before running the command
       timeout: 5
       entrypoint: bash
       cmd: ["-c", "echo 'success' > result.txt"]

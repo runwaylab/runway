@@ -29,3 +29,4 @@ coverage/
 spec/acceptance/projects/*/test-example.txt
 spec/acceptance/projects/*/ship-it.txt
 spec/acceptance/projects/*/result.txt
+spec/acceptance/logs/*

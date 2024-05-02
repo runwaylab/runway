@@ -1,3 +1,7 @@
+require "log"
+require "colorize"
+require "emoji"
+
 module RunwayLogger
   # setup a logger for the entire application
   # :param log_level: the log level to set
