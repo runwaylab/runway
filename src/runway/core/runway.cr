@@ -26,7 +26,7 @@ module Runway
     # It logs the start of the service, creates a `Project` for each project in the configuration,
     # schedules events for each project, and then keeps the service running until it is stopped.
     def start!
-      @log.info { Emoji.emojize(":flight_departure: starting runway - version: v#{VERSION}") }
+      @log.info { Emoji.emojize(":flight_departure: starting runway - version: #{VERSION}") }
 
       # setup the retry configuration
       Retry.setup!(@log)
