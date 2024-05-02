@@ -8,7 +8,7 @@ services:
       context: ../../
       dockerfile: Dockerfile
     entrypoint: bash
-    command: ["-c", "./runway -c spec/acceptance/config/config.yml > /app/spec/acceptance/logs/runway.log"]
+    command: ["-c", "./runway -c spec/acceptance/config/config.yml | tee /app/spec/acceptance/logs/runway.log"]
     environment:
       LOG_LEVEL: DEBUG
       CRYSTAL_ENV: development
