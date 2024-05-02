@@ -25,7 +25,7 @@ class ExampleEvent < BaseEvent
     return payload unless payload.run_post_deploy? == true
 
     @log.debug { "post_deploy() running post deploy logic" }
-    
+
     payload.status = "success" # maybe you want to update the status of the payload after the deployment is complete
 
     return payload
