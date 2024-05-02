@@ -47,7 +47,7 @@ else
 
   # save the line that contains `Total covored:` into a variable
   total_covered=$(echo "$test_output" | grep "Total covored:")
-  echo "$total_covered" | grep -q "90\.00"
+  echo "$total_covered" | grep -Pq "(9[0-9]|100)(\.[0-9]+)?" # 90% coverage or higher
   coverage_passed=$?
   set -e
 
