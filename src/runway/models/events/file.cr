@@ -28,6 +28,7 @@ class FileEvent < BaseEvent
     # delete the file if the cleanup flag is set to true
     File.delete(@path) if @cleanup == true
 
+    @log.debug { "post_deploy() post deploy logic complete for event.id #{@event.uuid}" }
     return payload
   end
 
