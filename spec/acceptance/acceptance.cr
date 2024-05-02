@@ -4,6 +4,23 @@ require "../../src/runway/lib/logger"
 
 log = RunwayLogger.setup_logger(ENV.fetch("LOG_LEVEL", "INFO").upcase)
 ACCEPTANCE_DIR = File.dirname(__FILE__)
+UUID_REGEX     = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i
 
 log.debug { "acceptance tests directory: #{ACCEPTANCE_DIR}" }
 log.info { Emoji.emojize("🧪 starting acceptance test suite") }
+
+def load_and_scrub_logs(file_path)
+  File.read_lines(file_path).map do |line|
+    line.gsub(UUID_REGEX, "<UUID>")
+  end
+end
+
+expected_logs = load_and_scrub_logs(File.join(ACCEPTANCE_DIR, "logs", "expected.log"))
+actual_logs = load_and_scrub_logs(File.join(ACCEPTANCE_DIR, "logs", "runway.log"))
+
+# ensure that the actual logs contain the expected logs, for this test case order does not matter
+expected_logs.each do |expected_log|
+  it "contains the expected log" do
+    actual_logs.includes?(expected_log).should be_true
+  end
+end 
