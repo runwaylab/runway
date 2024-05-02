@@ -33,3 +33,6 @@ acceptance/logs/*
 
 !acceptance/logs/.gitkeep
 !acceptance/logs/expected.log
+
+spec/outputs/*
+!spec/outputs/.gitkeep
