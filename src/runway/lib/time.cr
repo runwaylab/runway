@@ -6,7 +6,7 @@ module Runway
     #   Example string: "1m" for 1 minute.
     #   Intervals must be in the format of a number followed by a unit of time (ms, s, m) and be whole numbers.
     # @return [Time::Span] The Time::Span object for the interval pattern.
-    protected def self.interval(interval : String) : Time::Span
+    def self.interval(interval : String) : Time::Span
       interval_regex = /^(\d+)(ms|s|m)$/
       match = interval_regex.match(interval)
 
