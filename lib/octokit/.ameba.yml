@@ -25,4 +25,4 @@ Naming/BlockParameterName:
 Globs:
   - "**/*.cr"
   - "!lib"
-  - "!acceptance/acceptance.cr"
+  - "!spec/acceptance/acceptance.cr"

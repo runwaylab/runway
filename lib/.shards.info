@@ -10,18 +10,9 @@ shards:
   octokit:
     git: https://github.com/grantbirki/octokit.cr.git
     version: 0.2.4
-  ameba:
-    git: https://github.com/crystal-ameba/ameba.git
-    version: 1.6.1
   emoji:
     git: https://github.com/veelenga/emoji.cr.git
     version: 0.5.0
-  readline:
-    git: https://github.com/crystal-lang/crystal-readline.git
-    version: 0.1.1+git.commit.69ecf33d7cad5568d7d19333510cfd9d17cb1bbd
-  icr:
-    git: https://github.com/crystal-community/icr.git
-    version: 0.9.0
   cron_parser:
     git: https://github.com/kostya/cron_parser.git
     version: 0.4.0
@@ -31,12 +22,12 @@ shards:
   tasker:
     git: https://github.com/spider-gazelle/tasker.git
     version: 2.1.4
-  coverage:
-    git: https://github.com/anykeyh/crystal-coverage.git
-    version: 0.1.0+git.commit.e781f8c70812c9dc4d5bf1d1e396e1f5c9ef1051
-  crystal-kcov:
-    git: https://github.com/crystal-community/crystal-kcov.git
-    version: 0.2.3+git.commit.7e49fe22d7d47040c9de77eb77a6daa76ce0655d
   retriable:
     git: https://github.com/sija/retriable.cr.git
     version: 0.2.5
+  ameba:
+    git: https://github.com/crystal-ameba/ameba.git
+    version: 1.6.1
+  crystal-kcov:
+    git: https://github.com/crystal-community/crystal-kcov.git
+    version: 0.2.3+git.commit.7e49fe22d7d47040c9de77eb77a6daa76ce0655d
