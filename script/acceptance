@@ -28,6 +28,8 @@ if [ "$LOG_LEVEL" == "DEBUG" ]; then
   sleep 3
   docker compose -f $COMPOSE_FILE ps
   docker compose -f $COMPOSE_FILE logs
+
+  ls -lah $DIR/acceptance/logs
 fi
 
 # wait for all artifacts to be created before continuing
