@@ -30,6 +30,9 @@ jobs:
       - name: bootstrap
         run: script/bootstrap
 
+      - name: set directory permissions (for ci)
+        run: chmod -R 777 ./acceptance
+
       - name: acceptance
         env:
           LOG_LEVEL: DEBUG
