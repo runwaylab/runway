@@ -3,7 +3,7 @@ require "log"
 require "emoji"
 require "colorize"
 require "./runway/models/config"
-require "./runway"
+require "./runway/core/runway"
 require "./runway/lib/logger"
 
 module Runway
@@ -19,7 +19,7 @@ module Runway
       log.info { Emoji.emojize(":white_check_mark: loaded configuration successfully") }
       log.info { Emoji.emojize(":truck: #{config.projects.size} #{config.projects.size == 1 ? "project" : "projects"} loaded") }
 
-      Runway::Service.new(log, config).start!
+      Runway::Core.new(log, config).start!
     end
 
     # Parse command line options

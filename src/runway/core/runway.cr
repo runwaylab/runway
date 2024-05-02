@@ -1,23 +1,19 @@
 require "tasker"
 require "uuid"
-require "./runway/lib/common"
-require "./runway/lib/time"
-require "./runway/models/project"
-require "./runway/models/config"
-require "./version"
-require "./runway/lib/retry"
+require "./env"
+require "../../version"
+require "../lib/common"
+require "../lib/time"
+require "../models/project"
+require "../models/config"
+require "../lib/retry"
 
 module Runway
-  # The `Service` class is responsible for starting the Runway service.
+  # The `Core` class is responsible for starting the Runway service.
   # It initializes the service with a logger and a configuration,
   # starts the service, and schedules events for each project in the configuration.
-  ERROR_PREFIX    = ":boom: error while checking for event:"
-  SCHEDULE_PREFIX = ":clock1: scheduling event with"
-  QUIET           = ENV.fetch("RUNWAY_QUIET", "false") == "true"   # suppress the logs a bit
-  VERBOSE         = ENV.fetch("RUNWAY_VERBOSE", "false") == "true" # print very verbose debug logs
-
-  class Service
-    # Initializes a new `Service`.
+  class Core
+    # Initializes a new `Core`.
     #
     # @param log [Log] The logger to use.
     # @param config [RunwayConfiguration] The configuration for the service.
