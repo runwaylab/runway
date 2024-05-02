@@ -1,5 +1,5 @@
 require "octokit"
-require "../lib/logger"
+require "../core/logger"
 
 module Runway
   class GitHub
@@ -58,7 +58,7 @@ module Runway
       client.auto_paginate = ENV.fetch("OCTOKIT_CR_AUTO_PAGINATE", "true") == "true"
       client.per_page = ENV.fetch("OCTOKIT_CR_PER_PAGE", "100").to_i
 
-      @log = RunwayLogger.setup_logger(log_level.to_s.upcase)
+      @log = Runway.setup_logger(log_level.to_s.upcase)
 
       return client
     end

@@ -1,8 +1,8 @@
 require "spec"
 require "emoji"
-require "../src/runway/lib/logger"
+require "../src/runway/core/logger"
 
-log = RunwayLogger.setup_logger(ENV.fetch("LOG_LEVEL", "INFO").upcase)
+log = Runway.setup_logger(ENV.fetch("LOG_LEVEL", "INFO").upcase)
 ACCEPTANCE_DIR = File.dirname(__FILE__)
 UUID_REGEX     = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i
 SEMVER_REGEX   = /v\d+\.\d+\.\d+/
