@@ -22,6 +22,7 @@ module Runway
 
     # setup a custom formatter that even supports colors
     formatter = Log::Formatter.new do |entry, io|
+      # nocov-start
       message = entry.message
 
       logger_colors = {
@@ -48,6 +49,8 @@ module Runway
     log.backend = Log::IOBackend.new(formatter: formatter)
 
     log.debug { "log level set to #{log_level}" }
+
+    # nocov-end
 
     return log
   end

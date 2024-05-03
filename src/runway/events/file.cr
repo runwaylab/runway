@@ -1,4 +1,5 @@
 require "../models/base_event"
+require "../lib/fs"
 
 # This class demonstrates is mostly used for acceptance tests but can be used for actual deployment events too!
 # This event handler is extremely simple and just looks for the existence of a file in the directory
@@ -26,9 +27,10 @@ class FileEvent < BaseEvent
     @log.debug { "post_deploy() running post deploy logic for event.type #{@event.type} - event.uuid #{@event.uuid}" }
 
     # delete the file if the cleanup flag is set to true
-    File.delete(@path) if @cleanup == true
+    FS.delete(@path) if @cleanup == true && FS.exists?(@path)
 
     @log.debug { "post_deploy() post deploy logic complete for event.type #{@event.type} - event.uuid #{@event.uuid}" }
+    payload.status = "success"
     return payload
   end
 
@@ -37,7 +39,7 @@ class FileEvent < BaseEvent
     @log.info { "checking if file '#{@path}' exists" } unless Runway::QUIET
 
     # check to see if the file exists
-    if File.exists?(@path)
+    if FS.exists?(@path)
       @log.info { "file exists at path: #{@path}" }
     else
       @log.info { "file does not exist at path: #{@path}" }
