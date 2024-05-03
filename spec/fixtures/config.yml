@@ -10,7 +10,7 @@ projects:
     events:
       - type: file
         path: test1.txt
-        cleanup: false
+        cleanup: true
         schedule:
           interval: 3s
 
