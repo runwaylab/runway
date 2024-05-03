@@ -41,7 +41,7 @@ elif [ ! -f "$DIR/bin/kcov" ]; then
   crystal spec
 # otherwise, run specs with coverage
 else
-  $DIR/bin/crkcov --cleanup-coverage-before --coverage-dir $DIR/coverage --kcov-executable $DIR/bin/kcov --output
+  $DIR/bin/crkcov --cleanup-coverage-before --coverage-dir $DIR/coverage --kcov-executable $DIR/bin/kcov --output --kcov-args="--exclude-region=nocov-start:nocov-end"
 fi
 
 echo -e "✅ ${GREEN}tests complete!${OFF}"
