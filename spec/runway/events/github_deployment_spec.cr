@@ -13,7 +13,7 @@ Spectator.describe "GitHubDeployment" do
       File.read("spec/fixtures/github/deployments.json")
     end
     let(all_dev_deployments) do
-        File.read("spec/fixtures/github/all_dev_deployments.json")
+      File.read("spec/fixtures/github/all_dev_deployments.json")
     end
     let(deployment_statuses) do
       File.read("spec/fixtures/github/deployment_statuses.json")
