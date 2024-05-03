@@ -3,9 +3,8 @@ require "../core/logger"
 
 module Runway
   class GitHub
-    @client : Octokit::Client
     @miniumum_rate_limit : Int32
-    getter client : Octokit::Client
+    @client : Octokit::Client
 
     # The octokit class for interacting with GitHub's API
     # @param log [Log] the logger to use
@@ -14,6 +13,29 @@ module Runway
       @log = log
       @client = create_client(token)
       @miniumum_rate_limit = ENV.fetch("GITHUB_MINIMUM_RATE_LIMIT", "10").to_s.to_i
+    end
+
+    def create_deployment_status(repo : String, deployment_id : Int64, status : String) : String
+      Retriable.retry do
+        check_rate_limit!
+        @client.create_deployment_status(repo, deployment_id, status)
+      end
+    end
+
+    def list_deployment_statuses(repo : String, deployment_id : Int32) : Array(JSON::Any)
+      statuses = Retriable.retry do
+        check_rate_limit!
+        @client.list_deployment_statuses(repo, deployment_id)
+      end
+
+      return JSON.parse(statuses.records.to_json).as_a
+    end
+
+    def deployments(repo : String, environment : String) : String
+      Retriable.retry do
+        check_rate_limit!
+        @client.deployments(repo, {"environment" => environment})
+      end
     end
 
     # A helper method to check the rate limit of the GitHub API

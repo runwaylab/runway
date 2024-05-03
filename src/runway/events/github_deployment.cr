@@ -9,7 +9,6 @@ class GitHubDeployment < BaseEvent
   def initialize(log : Log, event : Event)
     super(log, event)
     @github = Runway::GitHub.new(log)
-    @client = @github.client
     @deployment_filter = (@event.deployment_filter.try(&.to_i) || 1)
     @repo = @event.repo.not_nil!
     @timezone = Runway::TimeHelpers.timezone(@event.schedule.timezone)
@@ -41,10 +40,7 @@ class GitHubDeployment < BaseEvent
     status = payload.status.not_nil!
 
     # create a deployment status
-    result = Retriable.retry do
-      @github.check_rate_limit!
-      @client.create_deployment_status(@repo, deployment_id, status)
-    end
+    result = @github.create_deployment_status(@repo, deployment_id, status)
 
     @log.debug { "deployment status result: #{JSON.parse(result).to_pretty_json}" } if Runway::VERBOSE
 
@@ -57,11 +53,7 @@ class GitHubDeployment < BaseEvent
     return payload
   rescue error : Exception
     @log.error { "error handling deployment event: #{error.message} - attempting to set a 'failure' statue on the deployment" }
-    result = Retriable.retry do
-      @github.check_rate_limit!
-      @client.create_deployment_status(@repo, payload.id.to_s.to_i64.not_nil!, @failure)
-    end
-
+    result = @github.create_deployment_status(@repo, payload.id.to_s.to_i64.not_nil!, @failure)
     @log.debug { "deployment status result (on error): #{JSON.parse(result).to_pretty_json}" }
     return payload
   end
@@ -73,7 +65,7 @@ class GitHubDeployment < BaseEvent
 
     @log.debug { "received a check_for_event() request for event.uuid: #{@event.uuid}" }
     @log.info { "checking #{@repo} for a #{@event.environment} deployment event" } unless Runway::QUIET
-    deployments = retrieve_deployments
+    deployments = @github.deployments(@repo, @event.environment.not_nil!)
 
     @log.debug { "GitHubDeployment -> check_for_event() deployments: #{deployments}" } if Runway::VERBOSE
 
@@ -122,14 +114,10 @@ class GitHubDeployment < BaseEvent
     # however, the "in_progress" status must be the most recent status for the deployment or we'll ignore it
     deployments.each do |deployment|
       deployment_id = deployment["id"].to_s.to_i
-      statuses = Retriable.retry do
-        @github.check_rate_limit!
-        @client.list_deployment_statuses(@event.repo.not_nil!, deployment_id)
-      end
-      statuses = JSON.parse(statuses.records.to_json)
+      statuses = @github.list_deployment_statuses(@event.repo.not_nil!, deployment_id)
 
       # sort statuses by created_at date with the most recent first
-      statuses = statuses.as_a.sort_by do |status|
+      statuses = statuses.sort_by do |status|
         Time.parse(status["created_at"].as_s, "%FT%T%z", @timezone)
       end.reverse!
 
@@ -169,15 +157,6 @@ class GitHubDeployment < BaseEvent
     @log.debug { "in_progress deployment sha for #{@repo}: #{payload.sha}" }
     @log.warn { Emoji.emojize(":warning: deployment ref is missing from the deployment payload") } if payload.ref.nil?
     @log.debug { "in_progress deployment ref for #{@repo}: #{payload.ref}" }
-  end
-
-  # A helper method to retrieve deployments from the GitHub API
-  # @return [String] the deployments raw JSON response
-  protected def retrieve_deployments : String
-    Retriable.retry do
-      @github.check_rate_limit!
-      @client.deployments(@repo, {"environment" => @event.environment.not_nil!})
-    end
   end
 
   # A helper method to parse and filter deployments
