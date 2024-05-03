@@ -115,6 +115,7 @@ class GitHubDeployment < BaseEvent
     deployments.each do |deployment|
       deployment_id = deployment["id"].to_s.to_i
       statuses = @github.list_deployment_statuses(@event.repo.not_nil!, deployment_id)
+      statuses = JSON.parse(statuses.records.to_json).as_a
 
       # sort statuses by created_at date with the most recent first
       statuses = statuses.sort_by do |status|

@@ -1,0 +1,24 @@
+# This is an example configuration file for runway
+
+projects:
+  - name: project-1
+    deployment:
+      type: command
+      location: local
+      path: spec/outputs
+      timeout: 300
+      entrypoint: bash
+      cmd: ["-c", "echo 'hello world'"]
+    events:
+      - type: github_deployment
+        repo: runwaylab/test-flight
+        environment: production
+        deployment_filter: 1
+        schedule:
+          interval: 3s
+          timezone: UTC
+      - type: github_deployment
+        repo: runwaylab/test-flight
+        environment: staging
+        schedule:
+          interval: 5s

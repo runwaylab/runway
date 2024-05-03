@@ -22,13 +22,11 @@ module Runway
       end
     end
 
-    def list_deployment_statuses(repo : String, deployment_id : Int32) : Array(JSON::Any)
-      statuses = Retriable.retry do
+    def list_deployment_statuses(repo : String, deployment_id : Int32) : Octokit::Connection::Paginator(Octokit::Models::DeploymentStatus)
+      Retriable.retry do
         check_rate_limit!
         @client.list_deployment_statuses(repo, deployment_id)
       end
-
-      return JSON.parse(statuses.records.to_json).as_a
     end
 
     def deployments(repo : String, environment : String) : String
