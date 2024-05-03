@@ -10,23 +10,25 @@ class FS
     File.delete(path)
   end
 
-  def self.touch(path)
-    File.touch(path)
-  end
+  # all the commented out methods aren't used at this time, but I'm keeping them here for future reference
 
-  def self.dirname(path)
-    File.dirname(path)
-  end
+  # def self.touch(path)
+  #   File.touch(path)
+  # end
 
-  def self.read_lines(path)
-    File.read_lines(path)
-  end
+  # def self.dirname(path)
+  #   File.dirname(path)
+  # end
 
-  def self.join(*args)
-    File.join(*args)
-  end
+  # def self.read_lines(path)
+  #   File.read_lines(path)
+  # end
 
-  def self.open(path, mode, &block)
-    File.open(path, mode, &block)
-  end
+  # def self.join(*args)
+  #   File.join(*args)
+  # end
+
+  # def self.open(path, mode, &block)
+  #   File.open(path, mode, &block)
+  # end
 end
