@@ -1,5 +1,5 @@
 # Note: the File class in Crystal is a low-level class that interacts directly with the file system, and it's not designed to be mocked or subclassed
-# Due to this, I created a wrapper class to encapsulate the File class, so I can mock it in the tests 
+# Due to this, I created a wrapper class to encapsulate the File class, so I can mock it in the tests
 
 class FS
   def self.exists?(path)
