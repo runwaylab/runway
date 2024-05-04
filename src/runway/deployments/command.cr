@@ -76,7 +76,7 @@ class RemoteCmd
     result = IO::Memory.new
     IO::MultiWriter.new(result)
 
-    Retriable.retry(max_attempts: 300, backoff: false, base_interval: 1.second, on: {SSH2::SSH2Error, SSH2::SessionError, Socket::ConnectError}) do
+    Retriable.retry(on: {SSH2::SSH2Error, SSH2::SessionError, Socket::ConnectError}) do
       Retriable.retry(on: Tasker::Timeout, backoff: false) do
         Tasker.timeout(5.seconds) do
           SSH2::Session.open(host, 2222) do |session|
