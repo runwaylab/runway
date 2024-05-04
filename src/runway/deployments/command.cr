@@ -25,7 +25,7 @@ class CommandDeployment < BaseDeployment
     @log.debug { "received a deploy() request for #{@deployment_config.type}" }
 
     # execute the command on the local system if the location is local
-    cmd = Cmd.new(@entrypoint, cmd: @cmd, directory: @path, timeout: @timeout, log: @log)
+    cmd = LocalCmd.new(@entrypoint, cmd: @cmd, directory: @path, timeout: @timeout, log: @log)
     cmd.run
 
     @log.debug { "status: #{cmd.status}, stdout: #{cmd.stdout}, stderr: #{cmd.stderr} - success: #{cmd.success?}" }
@@ -35,7 +35,7 @@ class CommandDeployment < BaseDeployment
   end
 end
 
-class Cmd
+class LocalCmd
   getter? success : Bool?
   getter? running : Bool?
   getter status : Process::Status?
