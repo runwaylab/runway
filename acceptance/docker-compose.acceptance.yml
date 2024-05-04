@@ -25,6 +25,8 @@ services:
       dockerfile: acceptance/ssh_server/Dockerfile
     environment:
       LOG_LEVEL: DEBUG
+    volumes:
+      - logs:/app/logs
     ports:
       - 2222:22
 
