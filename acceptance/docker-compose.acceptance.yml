@@ -16,14 +16,17 @@ services:
       - projects:/app/acceptance/projects
       - config:/app/acceptance/config
       - logs:/app/acceptance/logs
-    # ports:
-    #   - 8080:8080
-    # healthcheck:
-    #   test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
-    #   interval: 30s
-    #   timeout: 5s
-    #   retries: 3
-    #   start_period: 15s
+
+  ssh_server:
+    container_name: ssh_server
+    restart: 'no'
+    build:
+      context: ../
+      dockerfile: acceptance/ssh_server/Dockerfile
+    environment:
+      LOG_LEVEL: DEBUG
+    ports:
+      - 2222:22
 
 volumes:
   projects:
