@@ -1,4 +1,5 @@
 require "process"
+require "ssh2"
 require "../models/base_deployment"
 
 # This deployment type runs a command on the local machine (where runway is running) or a remote server (via SSH)
@@ -25,13 +26,83 @@ class CommandDeployment < BaseDeployment
     @log.debug { "received a deploy() request for #{@deployment_config.type}" }
 
     # execute the command on the local system if the location is local
-    cmd = LocalCmd.new(@entrypoint, cmd: @cmd, directory: @path, timeout: @timeout, log: @log)
+    if @location == "local"
+      cmd = LocalCmd.new(@entrypoint, cmd: @cmd, directory: @path, timeout: @timeout, log: @log)
+    elsif @location == "remote"
+      cmd = RemoteCmd.new(@entrypoint, cmd: @cmd, directory: @path, timeout: @timeout, log: @log)
+    else
+      raise "unsupported location: #{@location}"
+    end
+
     cmd.run
 
-    @log.debug { "status: #{cmd.status}, stdout: #{cmd.stdout}, stderr: #{cmd.stderr} - success: #{cmd.success?}" }
+    # @log.debug { "status: #{cmd.status}, stdout: #{cmd.stdout}, stderr: #{cmd.stderr} - success: #{cmd.success?}" }
 
     payload.success = cmd.success?
     return payload
+  end
+end
+
+class RemoteCmd
+  getter? success : Bool?
+  getter stdout : String
+  getter stderr : String
+
+  def initialize(
+    entrypoint : String,
+    cmd : Array(String) = [] of String,
+    directory : String = ".", # defaults to the current directory
+    timeout : Int32 = 300,    # defaults to 5 minutes
+    log : Log = nil
+  )
+    @entrypoint = entrypoint
+    @cmd = cmd
+    @directory = directory
+    @timeout = timeout
+    @log = log
+    @stdout = ""
+    @stderr = ""
+    @success = nil
+  end
+
+  def run
+    @log.debug { "running command: #{@entrypoint} #{@cmd.join(" ")}" } if @log
+
+    host = "localhost"
+    pub_key = "acceptance/ssh_server/keys/public/id_rsa.pub"
+    priv_key = "acceptance/ssh_server/keys/private/id_rsa"
+    use_ssh_agent = false
+
+    result = IO::Memory.new
+    IO::MultiWriter.new(result)
+
+    Retriable.retry(max_attempts: 300, backoff: false, base_interval: 1.second, on: {SSH2::SSH2Error, SSH2::SessionError, Socket::ConnectError}) do
+      Retriable.retry(on: Tasker::Timeout, backoff: false) do
+        Tasker.timeout(5.seconds) do
+          SSH2::Session.open(host, 2222) do |session|
+            session.timeout = 5000
+            session.knownhosts.delete_if { |h| h.name == host }
+
+            if use_ssh_agent
+              session.login_with_agent("root")
+            else
+              session.login_with_pubkey("root", priv_key, pub_key)
+            end
+
+            session.open_session do |channel|
+              channel.command("cd /app/logs && ls -lah")
+              IO.copy(channel, result)
+            end
+          end
+        end
+      end
+    end
+
+    @stdout = result.to_s.chomp
+    @success = true
+  rescue ex : Exception
+    @stderr = ex.message.to_s
+    @success = false
   end
 end
 
