@@ -25,6 +25,9 @@ dependencies:
   retriable:
     github: Sija/retriable.cr
     version: ~> 0.2.5
+  ssh2:
+    github: spider-gazelle/ssh2.cr
+    version: ~> 1.6.1
 
 development_dependencies:
   ameba:
