@@ -26,6 +26,10 @@ RUN script/build
 
 FROM crystallang/crystal:1.12.1
 
+# install deps
+# RUN brew install libssh2
+# RUN apt-get install libssh2-1-dev
+
 # add curl for healthchecks
 # RUN apt-get update && apt-get install -y curl
 
