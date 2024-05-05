@@ -50,7 +50,7 @@ class CommandDeployment < BaseDeployment
 
     cmd.run
 
-    # @log.debug { "output: #{cmd.output}, - success: #{cmd.success?}" }
+    @log.debug { "output: #{cmd.output}, - success: #{cmd.success?}" }
 
     payload.success = cmd.success?
     return payload

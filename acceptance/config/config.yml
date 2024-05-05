@@ -6,7 +6,7 @@ projects:
       path: acceptance/projects/project-1/ # go to this path before running the command
       timeout: 5
       entrypoint: bash
-      cmd: ["-c", "echo 'success' > result.txt"]
+      cmd: ["-c", "echo 'success' > result.txt && echo 'complete!'"]
     events:
       - type: file
         path: acceptance/projects/project-1/ship-it.txt
@@ -26,7 +26,7 @@ projects:
         private_key_path: /app/acceptance/ssh_server/keys/private/id_rsa
       timeout: 5
       entrypoint: bash
-      cmd: ["-c", "'echo success > /app/logs/result-remote.txt'"] # shell escaping need to be fixed here
+      cmd: ["-c", "'echo success > /app/logs/result-remote.txt && echo complete-remote'"] # shell escaping need to be fixed here
     events:
       - type: file
         path: acceptance/projects/project-2/ship-it.txt
