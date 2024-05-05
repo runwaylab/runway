@@ -1,6 +1,7 @@
 require "process"
 require "ssh2"
 require "../models/base_deployment"
+require "../models/configs/remote_config"
 
 # This deployment type runs a command on the local machine (where runway is running) or a remote server (via SSH)
 # The actualy DeploymentConfig setup for the related project determines the command to run
@@ -18,7 +19,7 @@ class CommandDeployment < BaseDeployment
     @timeout = deployment_config.timeout || 300
     @entrypoint = deployment_config.entrypoint.not_nil!
     @cmd = deployment_config.cmd || [] of String
-    @path = deployment_config.path.not_nil!
+    @path = deployment_config.path || "."
     @location = deployment_config.location.not_nil!
   end
 
@@ -36,6 +37,7 @@ class CommandDeployment < BaseDeployment
       )
     elsif @location == "remote"
       cmd = RemoteCmd.new(
+        @deployment_config.remote.not_nil!,
         @entrypoint,
         cmd: @cmd,
         directory: @path,
@@ -60,12 +62,14 @@ class RemoteCmd
   getter output : String
 
   def initialize(
+    remote_config : RemoteConfig,
     entrypoint : String,
     cmd : Array(String) = [] of String,
     directory : String = ".", # defaults to the current directory
     timeout : Int32 = 300,    # defaults to 5 minutes
     log : Log = nil
   )
+    @remote_config = remote_config
     @entrypoint = entrypoint
     @cmd = cmd
     @directory = directory
@@ -76,31 +80,74 @@ class RemoteCmd
   end
 
   def run
-    @log.debug { "running command: #{@entrypoint} #{@cmd.join(" ")}" } if @log
+    # required fields
+    host = @remote_config.host.not_nil!
+    port = @remote_config.port || 22
+    username = @remote_config.username.not_nil!
+    use_ssh_agent = @remote_config.auth.not_nil! == "agent"
+    use_basic_password = @remote_config.auth.not_nil! == "password"
+    use_public_key = @remote_config.auth.not_nil! == "publickey"
 
-    host = "localhost"
-    pub_key = "acceptance/ssh_server/keys/public/id_rsa.pub"
-    priv_key = "acceptance/ssh_server/keys/private/id_rsa"
-    use_ssh_agent = false
+    # optional fields (other auth methods may require them)
+    password_env_var_name = @remote_config.password || "RUNWAY_REMOTE_SSH_DEPLOY_PASSWORD"
+    passphrase_env_var_name = @remote_config.passphrase || "RUNWAY_REMOTE_SSH_DEPLOY_PASSPHRASE"
+    password = ENV.fetch(password_env_var_name, nil)
+    passphrase = ENV.fetch(passphrase_env_var_name, nil)
 
     result = IO::Memory.new
     IO::MultiWriter.new(result)
 
     Retriable.retry(on: {SSH2::SSH2Error, SSH2::SessionError, Socket::ConnectError}) do
       Retriable.retry(on: Tasker::Timeout, backoff: false) do
-        Tasker.timeout(5.seconds) do
-          SSH2::Session.open(host, 2222) do |session|
-            session.timeout = 5000
+        Tasker.timeout(@timeout.seconds) do
+          SSH2::Session.open(host, port) do |session|
+            session.timeout = @timeout
             session.knownhosts.delete_if { |knownhost| knownhost.name == host }
 
             if use_ssh_agent
-              session.login_with_agent("root")
-            else
-              session.login_with_pubkey("root", priv_key, pub_key)
+              @log.debug { "attempting to log in with ssh-agent" } if @log
+              session.login_with_agent(username)
+            elsif use_public_key
+              @log.debug { "attempting to log in with public key" } if @log
+
+              # if a passphrase_env_var_name was provided, but no passphrase was found for that variable, log a warning
+              if passphrase.nil?
+                @log.debug { "no private key passphrase was provided - using an empty passphrase..." }
+              end
+
+              pub_key = @remote_config.public_key_path.not_nil!
+              priv_key = @remote_config.private_key_path.not_nil!
+
+              # set the permissions of the keys to 600 (required by ssh2) before attempting to login
+              @log.debug { "setting ssh key permissions..." } if @log
+              File.chmod(priv_key, File::Permissions.new(0o600))
+              File.chmod(pub_key, File::Permissions.new(0o600))
+              @log.debug { "ssh key permissions set" } if @log
+
+              @log.debug { "logging in with public key" } if @log
+              @log.debug { "username: #{username}" } if @log
+              @log.debug { "priv_key: #{priv_key}" } if @log
+              @log.debug { "pub_key: #{pub_key}" } if @log
+              session.login_with_pubkey(username, priv_key, pub_key, passphrase)
+            elsif use_basic_password
+              @log.debug { "attempting to log in with a username + password" } if @log
+              raise "deployment.remote.password should point to an environment variable" if password.nil?
+              session.login(username, password)
             end
 
             session.open_session do |channel|
-              channel.command("cd /app/logs && ls -lah")
+              # construct the command to run
+              command = ""
+              if @directory == "."
+                # if no directory is specified, just run the command in the current directory
+                command = @entrypoint + " " + @cmd.join(" ")
+              else
+                raise "custom directories are not yet supported in remote deployments"
+              end
+
+              @log.debug { "running command: #{command}" } if @log
+
+              channel.command(command)
               IO.copy(channel, result)
             end
           end
@@ -186,7 +233,7 @@ class LocalCmd
     select
     when done_channel.receive
       # set the value of output depending on the success of the process
-      @output = @success ? @stdout : @stderr 
+      @output = @success ? @stdout : @stderr
     when timeout_channel.receive
       sleep 1.second # give the process a chance to finish (tie goes to the runner)
       unless process.terminated?

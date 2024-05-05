@@ -1,4 +1,5 @@
 require "yaml"
+require "./configs/*"
 
 # The `RunwayConfiguration` class represents the configuration for the Runway service.
 # It includes an array of `ProjectConfig` objects, each representing a project's configuration.
@@ -50,6 +51,9 @@ class DeploymentConfig
 
   # @return [Int32, nil] The timeout for the command, or `nil` if not specified.
   property timeout : Int32?
+
+  # @return [RemoteConfig, nil] The remote configuration for the deployment, or `nil` if not specified.
+  property remote : RemoteConfig?
 end
 
 # The `Event` class represents an event that triggers a deployment for a project.

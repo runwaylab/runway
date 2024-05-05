@@ -24,7 +24,7 @@ end
 FILES_TO_DELETE = [
   "#{ACCEPTANCE_DIR}/projects/project-1/result.txt",
   "#{ACCEPTANCE_DIR}/logs/runway.log",
-  "#{ACCEPTANCE_DIR}/projects/logs/result-remote.txt",
+  "#{ACCEPTANCE_DIR}/logs/result-remote.txt",
 ]
 
 FILES_TO_DELETE.each do |file|
