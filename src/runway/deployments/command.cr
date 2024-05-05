@@ -27,16 +27,28 @@ class CommandDeployment < BaseDeployment
 
     # execute the command on the local system if the location is local
     if @location == "local"
-      cmd = LocalCmd.new(@entrypoint, cmd: @cmd, directory: @path, timeout: @timeout, log: @log)
+      cmd = LocalCmd.new(
+        @entrypoint,
+        cmd: @cmd,
+        directory: @path,
+        timeout: @timeout,
+        log: @log
+      )
     elsif @location == "remote"
-      cmd = RemoteCmd.new(@entrypoint, cmd: @cmd, directory: @path, timeout: @timeout, log: @log)
+      cmd = RemoteCmd.new(
+        @entrypoint,
+        cmd: @cmd,
+        directory: @path,
+        timeout: @timeout,
+        log: @log
+      )
     else
-      raise "unsupported location: #{@location}"
+      raise "unsupported location: #{@location} - must be 'local' or 'remote'"
     end
 
     cmd.run
 
-    # @log.debug { "status: #{cmd.status}, stdout: #{cmd.stdout}, stderr: #{cmd.stderr} - success: #{cmd.success?}" }
+    # @log.debug { "output: #{cmd.output}, - success: #{cmd.success?}" }
 
     payload.success = cmd.success?
     return payload
@@ -45,8 +57,7 @@ end
 
 class RemoteCmd
   getter? success : Bool?
-  getter stdout : String
-  getter stderr : String
+  getter output : String
 
   def initialize(
     entrypoint : String,
@@ -60,8 +71,7 @@ class RemoteCmd
     @directory = directory
     @timeout = timeout
     @log = log
-    @stdout = ""
-    @stderr = ""
+    @output = ""
     @success = nil
   end
 
@@ -81,7 +91,7 @@ class RemoteCmd
         Tasker.timeout(5.seconds) do
           SSH2::Session.open(host, 2222) do |session|
             session.timeout = 5000
-            session.knownhosts.delete_if { |h| h.name == host }
+            session.knownhosts.delete_if { |knownhost| knownhost.name == host }
 
             if use_ssh_agent
               session.login_with_agent("root")
@@ -98,20 +108,19 @@ class RemoteCmd
       end
     end
 
-    @stdout = result.to_s.chomp
+    @output = result.to_s.chomp
     @success = true
   rescue ex : Exception
-    @stderr = ex.message.to_s
+    @output = ex.message.to_s
     @success = false
   end
 end
 
 class LocalCmd
   getter? success : Bool?
-  getter? running : Bool?
-  getter status : Process::Status?
-  getter stdout : String
-  getter stderr : String
+  getter output : String
+
+  @status : Process::Status?
 
   def initialize(
     entrypoint : String,
@@ -127,6 +136,7 @@ class LocalCmd
     @log = log
     @stdout = ""
     @stderr = ""
+    @output = ""
     @success = nil
     @status = nil
     @running = false
@@ -175,12 +185,14 @@ class LocalCmd
     # wait for the process to finish or for the timeout to occur
     select
     when done_channel.receive
-      # do nothing if the process has already finished
+      # set the value of output depending on the success of the process
+      @output = @success ? @stdout : @stderr 
     when timeout_channel.receive
       sleep 1.second # give the process a chance to finish (tie goes to the runner)
       unless process.terminated?
         process.try &.terminate(graceful: false)
         @stderr = "cmd.run: command timed out after #{@timeout} seconds"
+        @output = @stderr
         @success = false
         killed = true
       end
@@ -193,6 +205,7 @@ class LocalCmd
     @running = false
   rescue ex : Exception
     @stderr = ex.message.to_s
+    @output = @stderr
     @success = false
     @running = false
   end
