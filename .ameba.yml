@@ -4,6 +4,9 @@ Lint/NotNil:
 Style/RedundantReturn:
   Enabled: false
 
+Metrics/CyclomaticComplexity:
+  Enabled: false
+
 # exclude all files in vendor/cache
 Globs:
   - "**/*.cr"
