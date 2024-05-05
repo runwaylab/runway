@@ -118,12 +118,6 @@ class RemoteCmd
               pub_key = @remote_config.public_key_path.not_nil!
               priv_key = @remote_config.private_key_path.not_nil!
 
-              # set the permissions of the keys to 600 (required by ssh2) before attempting to login
-              @log.debug { "setting ssh key permissions..." } if @log
-              File.chmod(priv_key, File::Permissions.new(0o600))
-              File.chmod(pub_key, File::Permissions.new(0o600))
-              @log.debug { "ssh key permissions set" } if @log
-
               @log.debug { "logging in with public key" } if @log
               @log.debug { "username: #{username}" } if @log
               @log.debug { "priv_key: #{priv_key}" } if @log
