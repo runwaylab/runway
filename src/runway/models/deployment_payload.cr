@@ -100,4 +100,16 @@ class Payload
   setter description : String?
   setter user : String?
   setter path : String?
+
+  # This method is used to convert the Payload object to a Hash object
+  # It preserves the type of the instance variables as well
+  def to_h
+    {% begin %}
+      {
+        {% for ivar in @type.instance_vars %}
+          "{{ivar.name.id}}": @{{ivar.id}},
+        {% end %}
+      }
+    {% end %}
+  end
 end
