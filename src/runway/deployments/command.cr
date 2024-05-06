@@ -161,7 +161,7 @@ class RemoteCmd
 
               # render the command in case any variables are present from the payload
               bindings = {payload: @payload.to_h}
-              command = @renderer.render(command, bindings)  
+              command = @renderer.render(command, bindings)
 
               @log.debug { "#{@log_prefix} running command: #{command}" } if @log
 
@@ -233,7 +233,7 @@ class LocalCmd
     timeout_channel = Channel(Nil).new
 
     # iterate over all the command arguments and render them in case they contain variables
-    @log.debug { "cmd before rendering: #{@entrypoint} #{@cmd.join(" ")}" } if @log 
+    @log.debug { "cmd before rendering: #{@entrypoint} #{@cmd.join(" ")}" } if @log
     bindings = {payload: @payload.to_h}
     @cmd = @cmd.map { |arg| @renderer.render(arg, bindings) }
     @log.debug { "cmd after rendering: #{@entrypoint} #{@cmd.join(" ")}" } if @log
