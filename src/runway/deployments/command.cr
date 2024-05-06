@@ -29,6 +29,7 @@ class CommandDeployment < BaseDeployment
     # execute the command on the local system if the location is local
     if @location == "local"
       cmd = LocalCmd.new(
+        payload,
         @entrypoint,
         cmd: @cmd,
         directory: @path,
@@ -37,6 +38,7 @@ class CommandDeployment < BaseDeployment
       )
     elsif @location == "remote"
       cmd = RemoteCmd.new(
+        payload,
         @deployment_config.remote.not_nil!,
         @entrypoint,
         cmd: @cmd,
@@ -62,6 +64,7 @@ class RemoteCmd
   getter output : String
 
   def initialize(
+    payload : Payload,
     remote_config : RemoteConfig,
     entrypoint : String,
     cmd : Array(String) = [] of String,
@@ -185,6 +188,7 @@ class LocalCmd
   @status : Process::Status?
 
   def initialize(
+    payload : Payload,
     entrypoint : String,
     cmd : Array(String) = [] of String,
     directory : String = ".", # defaults to the current directory
