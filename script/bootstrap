@@ -74,7 +74,7 @@ if [[ "$CI" == "true" ]]; then
     sudo apt-get update && sudo apt-get install libssh2-1-dev -y
   fi
   if [[ "$os" == "mac" ]]; then
-    brew list
+    # do nothing for now
   fi
 fi
 

@@ -18,5 +18,5 @@ if [[ "$os" == "mac" && "$CI" == "true" ]]; then
 fi
 
 echo -e "🔨 ${BLUE}building in ${PURPLE}release${BLUE} mode${OFF}"
-SHARDS_CACHE_PATH="$DIR/.cache/shards" shards build --release --progress --debug --error-trace -Dpreview_mt -v
+SHARDS_CACHE_PATH="$DIR/.cache/shards" shards build --release --progress --debug --error-trace -Dpreview_mt
 echo -e "📦 ${GREEN}build complete${OFF}"
