@@ -31,9 +31,3 @@ FILES_TO_DELETE.each do |file|
   log.debug { "deleting file: #{file}" }
   File.delete(file) if File.exists?(file)
 end
-
-# set the permissions of the keys to 600
-puts "setting ssh key permissions..."
-File.chmod("#{ACCEPTANCE_DIR}/ssh_server/keys/private/id_rsa", File::Permissions.new(0o600))
-File.chmod("#{ACCEPTANCE_DIR}/ssh_server/keys/public/id_rsa.pub", File::Permissions.new(0o600))
-puts "ssh key permissions set"

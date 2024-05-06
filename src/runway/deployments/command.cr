@@ -122,6 +122,13 @@ class RemoteCmd
               @log.debug { "username: #{username}" } if @log
               @log.debug { "priv_key: #{priv_key}" } if @log
               @log.debug { "pub_key: #{pub_key}" } if @log
+
+              # set the permissions of the keys to 600
+              @log.debug { "setting ssh key permissions..." } if @log
+              File.chmod(priv_key, File::Permissions.new(0o600))
+              File.chmod(pub_key, File::Permissions.new(0o600))
+              @log.debug { "ssh key permissions set" } if @log
+
               session.login_with_pubkey(username, priv_key, pub_key, passphrase)
             elsif use_basic_password
               @log.debug { "attempting to log in with a username + password" } if @log
