@@ -45,6 +45,9 @@ jobs:
       - name: pull docker images
         run: docker compose -f acceptance/docker-compose.acceptance.yml pull
 
+      - uses: jpribyl/action-docker-layer-caching@c632825d12ec837065f49726ea27ddd40bcc7894 # pin@v0.1.1
+        continue-on-error: true
+
       - name: acceptance
         env:
           LOG_LEVEL: DEBUG
