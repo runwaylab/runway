@@ -33,6 +33,11 @@ jobs:
       - name: set directory permissions (for ci)
         run: chmod -R 777 ./acceptance
 
+      - name: set ssh key permissions (for ci)
+        run: |
+          chmod 600 ./acceptance/ssh_server/keys/private/id_rsa
+          chmod 600 ./acceptance/ssh_server/keys/public/id_rsa.pub
+
       - name: acceptance
         env:
           LOG_LEVEL: DEBUG
