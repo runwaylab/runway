@@ -76,6 +76,7 @@ if [[ "$CI" == "true" ]]; then
   if [[ "$os" == "mac" ]]; then
     brew list
     brew reinstall libssh2
+    brew install libssh
   fi
 fi
 
