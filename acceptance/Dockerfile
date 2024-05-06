@@ -5,6 +5,9 @@ WORKDIR /app
 # install build dependencies
 RUN apt-get update && apt-get install libssh2-1-dev -y
 
+# copy vendored dependencies
+COPY vendor/linux_x86_64/bin/ vendor/linux_x86_64/bin/
+
 # copy core scripts
 COPY script/preinstall script/preinstall
 COPY script/update script/update
@@ -19,7 +22,7 @@ COPY shard.lock shard.lock
 COPY shard.yml shard.yml
 
 # bootstrap the project
-RUN script/bootstrap
+RUN CI=true script/bootstrap
 
 # copy all source files (ensure to use a .dockerignore file for efficient copying)
 COPY . .
