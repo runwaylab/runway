@@ -32,4 +32,7 @@ class RemoteConfig
   # @return [String, nil] The ENVIRONMENT VARIABLE, to fetch the passphrase from for the remote server when using a private key.
   # this value is not required if the private key is not encrypted with a passphrase
   property passphrase : String?
+
+  # @return [String, nil] A "string" to search for in the remote command output to determine if the command was successful.
+  property success_string : String?
 end

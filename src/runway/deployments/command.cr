@@ -94,6 +94,7 @@ class RemoteCmd
     passphrase_env_var_name = @remote_config.passphrase || "RUNWAY_REMOTE_SSH_DEPLOY_PASSPHRASE"
     password = ENV.fetch(password_env_var_name, nil)
     passphrase = ENV.fetch(passphrase_env_var_name, nil)
+    success_string = @remote_config.success_string || nil
 
     @log.debug { "#{@log_prefix} use_ssh_agent: #{use_ssh_agent}" } if @log
     @log.debug { "#{@log_prefix} use_basic_password: #{use_basic_password}" } if @log
@@ -159,7 +160,18 @@ class RemoteCmd
     end
 
     @output = result.to_s.chomp
-    @success = true
+
+    if success_string
+      # if a success_string was provided, check for it in the output to determine if the command was successful
+      @success = @output.includes?(success_string)
+      @log.debug { "#{@log_prefix} success_string: #{success_string} #{ @success ? "found" : "not found" } in remote_cmd output" } if @log
+    else
+      # if no success_string was provided, assume the command was successful (kinda dangerous)
+      @log.debug { "#{@log_prefix} no deployment.remote.success_string provided - assuming command was successful" } if @log 
+      @success = true
+    end 
+
+    return
   rescue ex : Exception
     @output = ex.message.to_s
     @success = false
