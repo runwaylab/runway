@@ -68,6 +68,16 @@ if [[ "$os" == "mac" && "$CI" == "true" ]]; then
   export CRYSTAL_OPTS="--link-flags=-Wl,-ld_classic"
 fi
 
+# if we are in ci, install required dependencies
+if [[ "$CI" == "true" ]]; then
+  if [[ "$os" == "linux" ]]; then
+    apt-get update && apt-get install libssh2-1-dev -y
+  fi
+  if [[ "$os" == "mac" ]]; then
+    brew install libssh2
+  fi
+fi
+
 script/preinstall
 
 # if the cache directory doesn't exist, run script/update
