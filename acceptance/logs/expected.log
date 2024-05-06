@@ -2,18 +2,38 @@ DEBUG: log level set to DEBUG
 INFO: 📖 loading runway configuration
 DEBUG: attempting to load config from acceptance/config/config.yml
 INFO: ✅ loaded configuration successfully
-INFO: 🚚 1 project loaded
-INFO: 🛫 starting runway - version: v0.0.0
+INFO: 🚚 2 projects loaded
+INFO: 🛫 starting runway - version: v0.1.0
 INFO: 📦 starting project project-1
 INFO: 🕐 scheduling event with interval 3s for project-1
+INFO: 📦 starting project project-2
+INFO: 🕐 scheduling event with interval 3s for project-2
 INFO: 🚀 runway is ready and all events have been setup!
 INFO: 👀 project-1 is checking for a file event
 INFO: checking if file 'acceptance/projects/project-1/ship-it.txt' exists
 INFO: file exists at path: acceptance/projects/project-1/ship-it.txt
-DEBUG: deployment event triggered from event.type file for project-1 - event.uuid 087e34e4-c3df-4d8e-b6e2-39297863906f
+DEBUG: deployment event triggered from event.type file for project-1 - event.uuid 7dd84e24-5a3e-4dce-9634-d45875bdedae
 DEBUG: received a deploy() request for command
-DEBUG: running command: bash -c echo 'success' > result.txt
-DEBUG: status: 0, stdout: , stderr:  - success: true
+DEBUG: running command: bash -c echo 'success' > result.txt && echo 'complete!'
+INFO: 👀 project-2 is checking for a file event
+INFO: checking if file 'acceptance/projects/project-2/ship-it.txt' exists
+INFO: file exists at path: acceptance/projects/project-2/ship-it.txt
+DEBUG: deployment event triggered from event.type file for project-2 - event.uuid 5fc353d9-1967-4333-9cd9-9e1e5d9e59a8
+DEBUG: received a deploy() request for command
+DEBUG: remote_cmd use_ssh_agent: false
+DEBUG: remote_cmd use_basic_password: false
+DEBUG: remote_cmd use_public_key: true
+DEBUG: remote_cmd host: ssh_server - port: 22 - username: root
+DEBUG: output: complete!, - success: true
 INFO: 🚀 successfully deployed project-1!
-DEBUG: post_deploy() running post deploy logic for event.type file - event.uuid 087e34e4-c3df-4d8e-b6e2-39297863906f
-DEBUG: post_deploy() post deploy logic complete for event.type file - event.uuid 087e34e4-c3df-4d8e-b6e2-39297863906f
+DEBUG: post_deploy() running post deploy logic for event.type file - event.uuid 7dd84e24-5a3e-4dce-9634-d45875bdedae
+DEBUG: post_deploy() post deploy logic complete for event.type file - event.uuid 7dd84e24-5a3e-4dce-9634-d45875bdedae
+DEBUG: remote_cmd attempting to log in with public key
+DEBUG: remote_cmd no private key passphrase was provided - using an empty passphrase...
+DEBUG: remote_cmd priv_key: /app/acceptance/ssh_server/keys/private/id_rsa
+DEBUG: remote_cmd pub_key: /app/acceptance/ssh_server/keys/public/id_rsa.pub
+DEBUG: remote_cmd running command: bash -c 'echo success > /app/logs/result-remote.txt && echo complete-remote'
+DEBUG: output: complete-remote, - success: true
+INFO: 🚀 successfully deployed project-2!
+DEBUG: post_deploy() running post deploy logic for event.type file - event.uuid 5fc353d9-1967-4333-9cd9-9e1e5d9e59a8
+DEBUG: post_deploy() post deploy logic complete for event.type file - event.uuid 5fc353d9-1967-4333-9cd9-9e1e5d9e59a8

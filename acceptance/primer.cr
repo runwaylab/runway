@@ -11,6 +11,7 @@ log.info { Emoji.emojize(":zap: setting up the acceptance test suite for a fresh
 
 FILES_TO_CREATE = [
   "#{ACCEPTANCE_DIR}/projects/project-1/ship-it.txt",
+  "#{ACCEPTANCE_DIR}/projects/project-2/ship-it.txt",
 ]
 
 log.debug { "creating files: #{FILES_TO_CREATE}..." }
@@ -23,6 +24,7 @@ end
 FILES_TO_DELETE = [
   "#{ACCEPTANCE_DIR}/projects/project-1/result.txt",
   "#{ACCEPTANCE_DIR}/logs/runway.log",
+  "#{ACCEPTANCE_DIR}/logs/result-remote.txt",
 ]
 
 FILES_TO_DELETE.each do |file|

@@ -39,5 +39,9 @@ describe "runway" do
     it "the result.txt artifact contains the correct data" do
       File.read(File.join(ACCEPTANCE_DIR, "projects", "project-1", "result.txt")).strip.should eq("success")
     end
+
+    it "the result-remote.txt artifact contains the correct data" do
+      File.read(File.join(ACCEPTANCE_DIR, "logs", "result-remote.txt")).strip.should eq("success")
+    end
   end
 end

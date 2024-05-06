@@ -31,7 +31,11 @@ jobs:
         run: script/bootstrap
 
       - name: set directory permissions (for ci)
-        run: chmod -R 777 ./acceptance
+        run: |
+          chmod -R 777 ./acceptance
+          chmod 700 ./acceptance/ssh_server/keys
+          chmod 600 ./acceptance/ssh_server/keys/private/id_rsa
+          chmod 600 ./acceptance/ssh_server/keys/public/id_rsa.pub
 
       - name: acceptance
         env:

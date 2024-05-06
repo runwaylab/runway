@@ -40,6 +40,10 @@ shards:
     git: https://github.com/icy-arctic-fox/spectator.git
     version: 0.12.0
 
+  ssh2:
+    git: https://github.com/spider-gazelle/ssh2.cr.git
+    version: 1.6.1
+
   tasker:
     git: https://github.com/spider-gazelle/tasker.git
     version: 2.1.4

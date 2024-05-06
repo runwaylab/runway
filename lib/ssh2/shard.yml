@@ -1,0 +1,16 @@
+name: ssh2
+version: 1.6.1
+crystal: ">= 0.36.1"
+
+libraries:
+  libssh2: ">= 1.11.0"
+
+development_dependencies:
+  ameba:
+    github: veelenga/ameba
+
+authors:
+  - datanoise (https://github.com/datanoise)
+  - stakach (https://github.com/stakach)
+
+license: MIT

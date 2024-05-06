@@ -32,3 +32,7 @@ So how do we solve this problem in a way that requires the least amount of maint
 4. runway can be run as a standalone binary or as a docker container
 5. runway can be configured via a yaml file and environment variables
 6. runway can integrate with GitHub to *complete* deployments
+
+## Contributing 🤝
+
+See the [contributing documentation](CONTRIBUTING.md) to learn more about how you can contribute or develop runway.

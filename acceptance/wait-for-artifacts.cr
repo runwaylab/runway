@@ -12,6 +12,7 @@ log.info { Emoji.emojize(":mag: waiting for all artifacts to be created...") }
 ARTIFACTS = [
   "#{ACCEPTANCE_DIR}/projects/project-1/result.txt",
   "#{ACCEPTANCE_DIR}/logs/runway.log",
+  "#{ACCEPTANCE_DIR}/logs/result-remote.txt",
 ]
 
 log.debug { "artifacts to wait for: #{ARTIFACTS}" }
