@@ -77,6 +77,7 @@ class RemoteCmd
     @log = log
     @output = ""
     @success = nil
+    @log_prefix = "remote_cmd"
   end
 
   def run
@@ -94,12 +95,10 @@ class RemoteCmd
     password = ENV.fetch(password_env_var_name, nil)
     passphrase = ENV.fetch(passphrase_env_var_name, nil)
 
-    @log.debug { "host: #{host}" } if @log
-    @log.debug { "port: #{port}" } if @log
-    @log.debug { "username: #{username}" } if @log
-    @log.debug { "use_ssh_agent: #{use_ssh_agent}" } if @log
-    @log.debug { "use_basic_password: #{use_basic_password}" } if @log
-    @log.debug { "use_public_key: #{use_public_key}" } if @log
+    @log.debug { "#{@log_prefix} use_ssh_agent: #{use_ssh_agent}" } if @log
+    @log.debug { "#{@log_prefix} use_basic_password: #{use_basic_password}" } if @log
+    @log.debug { "#{@log_prefix} use_public_key: #{use_public_key}" } if @log
+    @log.debug { "#{@log_prefix} host: #{host} - port: #{port} - username: #{username}" } if @log
 
     result = IO::Memory.new
     IO::MultiWriter.new(result)
@@ -112,38 +111,30 @@ class RemoteCmd
             session.knownhosts.delete_if { |knownhost| knownhost.name == host }
 
             if use_ssh_agent
-              @log.debug { "attempting to log in with ssh-agent" } if @log
+              @log.debug { "#{@log_prefix} attempting to log in with ssh-agent" } if @log
               session.login_with_agent(username)
             elsif use_public_key
-              @log.debug { "attempting to log in with public key" } if @log
+              @log.debug { "#{@log_prefix} attempting to log in with public key" } if @log
 
               # if a passphrase_env_var_name was provided, but no passphrase was found for that variable, log a warning
               if passphrase.nil?
-                @log.debug { "no private key passphrase was provided - using an empty passphrase..." }
+                @log.debug { "#{@log_prefix} no private key passphrase was provided - using an empty passphrase..." }
               end
 
               pub_key = @remote_config.public_key_path.not_nil!
               priv_key = @remote_config.private_key_path.not_nil!
 
-              @log.debug { "logging in with public key" } if @log
-              @log.debug { "username: #{username}" } if @log
-              @log.debug { "priv_key: #{priv_key}" } if @log
-              @log.debug { "pub_key: #{pub_key}" } if @log
+              @log.debug { "#{@log_prefix} priv_key: #{priv_key}" } if @log
+              @log.debug { "#{@log_prefix} pub_key: #{pub_key}" } if @log
 
-              raise "public key file does not exist" unless File.exists?(pub_key)
-              raise "private key file does not exist" unless File.exists?(priv_key)
+              # note: make your ssh keys have 600ish permissions and the containing directory 700ish permissions
+              raise "#{@log_prefix} public key file does not exist" unless File.exists?(pub_key)
+              raise "#{@log_prefix} private key file does not exist" unless File.exists?(priv_key)
 
-              # set the permissions of the keys to 600
-              # @log.debug { "setting ssh key permissions..." } if @log
-              # File.chmod(priv_key, File::Permissions.new(0o600))
-              # File.chmod(pub_key, File::Permissions.new(0o600))
-              # @log.debug { "ssh key permissions set" } if @log
-
-              @log.debug { "attempting to log in..." } if @log
               session.login_with_pubkey(username, priv_key, pub_key, passphrase)
             elsif use_basic_password
-              @log.debug { "attempting to log in with a username + password" } if @log
-              raise "deployment.remote.password should point to an environment variable" if password.nil?
+              @log.debug { "#{@log_prefix} attempting to log in with a username + password" } if @log
+              raise "#{@log_prefix} deployment.remote.password should point to an environment variable" if password.nil?
               session.login(username, password)
             end
 
@@ -154,10 +145,10 @@ class RemoteCmd
                 # if no directory is specified, just run the command in the current directory
                 command = @entrypoint + " " + @cmd.join(" ")
               else
-                raise "custom directories are not yet supported in remote deployments"
+                raise "#{@log_prefix} custom directories are not yet supported in remote deployments"
               end
 
-              @log.debug { "running command: #{command}" } if @log
+              @log.debug { "#{@log_prefix} running command: #{command}" } if @log
 
               channel.command(command)
               IO.copy(channel, result)
