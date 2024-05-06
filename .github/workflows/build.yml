@@ -14,7 +14,8 @@ jobs:
     name: build
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-12, macos-13]
+        # https://github.com/actions/runner-images#available-environments
+        os: [ubuntu-latest, macos-13]
     runs-on: ${{ matrix.os }}
 
     steps:
