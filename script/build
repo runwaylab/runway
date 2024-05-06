@@ -12,6 +12,11 @@ PURPLE='\033[0;35m'
 # set the working directory to the root of the project
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && pwd )"
 
+if [[ "$os" == "mac" && "$CI" == "true" ]]; then
+  echo "setting custom macos CRYSTAL_OPTS for CI"
+  export CRYSTAL_OPTS="--link-flags=-Wl,-ld_classic"
+fi
+
 echo -e "🔨 ${BLUE}building in ${PURPLE}release${BLUE} mode${OFF}"
 SHARDS_CACHE_PATH="$DIR/.cache/shards" shards build --release --progress --debug --error-trace -Dpreview_mt -v
 echo -e "📦 ${GREEN}build complete${OFF}"
