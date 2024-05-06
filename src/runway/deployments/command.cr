@@ -94,6 +94,13 @@ class RemoteCmd
     password = ENV.fetch(password_env_var_name, nil)
     passphrase = ENV.fetch(passphrase_env_var_name, nil)
 
+    @log.debug { "host: #{host}" } if @log
+    @log.debug { "port: #{port}" } if @log
+    @log.debug { "username: #{username}" } if @log
+    @log.debug { "use_ssh_agent: #{use_ssh_agent}" } if @log
+    @log.debug { "use_basic_password: #{use_basic_password}" } if @log
+    @log.debug { "use_public_key: #{use_public_key}" } if @log
+
     result = IO::Memory.new
     IO::MultiWriter.new(result)
 
@@ -122,6 +129,9 @@ class RemoteCmd
               @log.debug { "username: #{username}" } if @log
               @log.debug { "priv_key: #{priv_key}" } if @log
               @log.debug { "pub_key: #{pub_key}" } if @log
+
+              raise "public key file does not exist" unless File.exists?(pub_key)
+              raise "private key file does not exist" unless File.exists?(priv_key)
 
               # set the permissions of the keys to 600
               @log.debug { "setting ssh key permissions..." } if @log
