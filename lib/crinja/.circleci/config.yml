@@ -1,0 +1,114 @@
+version: 2
+
+dry:
+  restore_shards_cache: &restore_shards_cache
+    # Use {{ checksum "shard.yml" }} if developing a shard instead of an app
+    keys:
+      - shards-cache-v1-{{ .Branch }}-{{ checksum "shard.yml" }}
+      - shards-cache-v1-{{ .Branch }}
+      - shards-cache-v1
+
+  save_shards_cache: &save_shards_cache
+    # Use {{ checksum "shard.yml" }} if developing a shard instead of an app
+    key: shards-cache-v1-{{ .Branch }}-{{ checksum "shard.yml" }}
+    paths:
+      - ./shards-cache
+
+jobs:
+  test:
+    docker:
+      # Use crystallang/crystal:latest or specific crystallang/crystal:VERSION
+      - image: crystallang/crystal:latest
+        environment:
+          SHARDS_CACHE_PATH: ./shards-cache
+    steps:
+      - run: crystal --version
+
+      - checkout
+
+      - restore_cache: *restore_shards_cache
+      - run: shards
+      - save_cache: *save_shards_cache
+
+      - run:
+          name: Install bats
+          command: |
+            git clone --branch v0.4.0 https://github.com/sstephenson/bats.git bats-v0.4.0
+            ./bats-v0.4.0/install.sh /usr/local
+
+      - run: make test
+
+      - run: crystal tool format --check spec src
+
+  deploy-docs:
+    docker:
+      # Use crystallang/crystal:latest or specific crystallang/crystal:VERSION
+      - image: crystallang/crystal:latest
+        environment:
+          SHARDS_CACHE_PATH: ./shards-cache
+    steps:
+      - run: crystal --version
+
+      - checkout
+
+      - restore_cache: *restore_shards_cache
+      - run: shards
+      - save_cache: *save_shards_cache
+
+      - run: scripts/generate-docs.sh
+
+      - run: apt update && apt install -y curl rsync
+      - run:
+          command: curl https://raw.githubusercontent.com/straight-shoota/autodeploy-docs/master/autodeploy-docs.sh | bash
+          environment:
+            GIT_COMMITTER_NAME: cirlceci
+            GIT_COMMITTER_EMAIL: circle@circleci.com
+
+  test-on-nightly:
+    docker:
+      - image: crystallang/crystal:nightly
+        environment:
+          SHARDS_CACHE_PATH: ./shards-cache
+    steps:
+      - run: crystal --version
+
+      - checkout
+
+      - restore_cache: *restore_shards_cache
+      - run: shards
+
+      - run:
+          name: Install bats
+          command: |
+            git clone --branch v0.4.0 https://github.com/sstephenson/bats.git bats-v0.4.0
+            ./bats-v0.4.0/install.sh /usr/local
+
+      - run: make test
+
+      - run: crystal tool format --check spec src
+
+workflows:
+  version: 2
+  # Run tests on every single commit
+  ci:
+    jobs:
+      - test
+      # Build and depoy docs only on master branch
+      - deploy-docs:
+          requires:
+            - test
+          filters: &master-only
+            branches:
+              only:
+                - master
+  # Run tests every night using crystal nightly
+  nightly:
+    triggers:
+      - schedule:
+          cron: "0 4 * * *"
+          filters:
+            branches:
+              only:
+                - master
+    jobs:
+      - test-on-nightly

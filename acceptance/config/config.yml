@@ -27,7 +27,7 @@ projects:
         success_string: complete-remote
       timeout: 5
       entrypoint: bash
-      cmd: ["-c", "'echo success > /app/logs/result-remote.txt && echo complete-remote'"] # shell escaping need to be fixed here
+      cmd: ["-c", "'echo path: {{ payload.path }} > /app/logs/result-remote.txt && echo complete-remote'"] # shell escaping need to be fixed here
     events:
       - type: file
         path: acceptance/projects/project-2/ship-it.txt

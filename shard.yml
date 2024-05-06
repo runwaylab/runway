@@ -28,6 +28,9 @@ dependencies:
   ssh2:
     github: spider-gazelle/ssh2.cr
     version: ~> 1.6.1
+  crinja:
+    github: straight-shoota/crinja
+    version: ~> 0.8.1
 
 development_dependencies:
   ameba:
