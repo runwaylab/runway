@@ -75,6 +75,7 @@ if [[ "$CI" == "true" ]]; then
   fi
   if [[ "$os" == "mac" ]]; then
     # do nothing for now
+    echo ""
   fi
 fi
 
