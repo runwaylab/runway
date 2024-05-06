@@ -2,6 +2,7 @@ require "process"
 require "ssh2"
 require "../models/base_deployment"
 require "../models/configs/remote_config"
+require "../lib/render"
 
 # This deployment type runs a command on the local machine (where runway is running) or a remote server (via SSH)
 # The actualy DeploymentConfig setup for the related project determines the command to run
@@ -21,6 +22,7 @@ class CommandDeployment < BaseDeployment
     @cmd = deployment_config.cmd || [] of String
     @path = deployment_config.path || "."
     @location = deployment_config.location.not_nil!
+    @renderer = Runway::Render.new
   end
 
   def deploy(payload : Payload) : Payload
@@ -34,6 +36,7 @@ class CommandDeployment < BaseDeployment
         cmd: @cmd,
         directory: @path,
         timeout: @timeout,
+        renderer: @renderer,
         log: @log
       )
     elsif @location == "remote"
@@ -44,6 +47,7 @@ class CommandDeployment < BaseDeployment
         cmd: @cmd,
         directory: @path,
         timeout: @timeout,
+        renderer: @renderer,
         log: @log
       )
     else
@@ -70,6 +74,7 @@ class RemoteCmd
     cmd : Array(String) = [] of String,
     directory : String = ".", # defaults to the current directory
     timeout : Int32 = 300,    # defaults to 5 minutes
+    renderer : Runway::Render = nil,
     log : Log = nil
   )
     @remote_config = remote_config
@@ -78,6 +83,8 @@ class RemoteCmd
     @directory = directory
     @timeout = timeout
     @log = log
+    @payload = payload
+    @renderer = renderer
     @output = ""
     @success = nil
     @log_prefix = "remote_cmd"
@@ -152,6 +159,10 @@ class RemoteCmd
                 raise "#{@log_prefix} custom directories are not yet supported in remote deployments"
               end
 
+              # render the command in case any variables are present from the payload
+              bindings = {payload: @payload.to_h}
+              command = @renderer.render(command, bindings)  
+
               @log.debug { "#{@log_prefix} running command: #{command}" } if @log
 
               channel.command(command)
@@ -193,6 +204,7 @@ class LocalCmd
     cmd : Array(String) = [] of String,
     directory : String = ".", # defaults to the current directory
     timeout : Int32 = 300,    # defaults to 5 minutes
+    renderer : Runway::Render = nil,
     log : Log = nil
   )
     @entrypoint = entrypoint
@@ -200,6 +212,8 @@ class LocalCmd
     @directory = directory
     @timeout = timeout
     @log = log
+    @payload = payload
+    @renderer = renderer
     @stdout = ""
     @stderr = ""
     @output = ""
@@ -209,7 +223,6 @@ class LocalCmd
   end
 
   def run
-    @log.debug { "running command: #{@entrypoint} #{@cmd.join(" ")}" } if @log
     raise "already running command process" if @running
 
     @running = true
@@ -218,6 +231,12 @@ class LocalCmd
     stderr = IO::Memory.new
     done_channel = Channel(Nil).new
     timeout_channel = Channel(Nil).new
+
+    # iterate over all the command arguments and render them in case they contain variables
+    @log.debug { "cmd before rendering: #{@entrypoint} #{@cmd.join(" ")}" } if @log 
+    bindings = {payload: @payload.to_h}
+    @cmd = @cmd.map { |arg| @renderer.render(arg, bindings) }
+    @log.debug { "cmd after rendering: #{@entrypoint} #{@cmd.join(" ")}" } if @log
 
     # start the process
     process = Process.new(
