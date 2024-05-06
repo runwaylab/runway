@@ -37,17 +37,6 @@ jobs:
           chmod 600 ./acceptance/ssh_server/keys/private/id_rsa
           chmod 600 ./acceptance/ssh_server/keys/public/id_rsa.pub
 
-      - name: debug ssh key permissions
-        run: |
-          ls -l ./acceptance/ssh_server/keys
-          id
-
-      - name: pull docker images
-        run: docker compose -f acceptance/docker-compose.acceptance.yml pull
-
-      - uses: jpribyl/action-docker-layer-caching@c632825d12ec837065f49726ea27ddd40bcc7894 # pin@v0.1.1
-        continue-on-error: true
-
       - name: acceptance
         env:
           LOG_LEVEL: DEBUG
