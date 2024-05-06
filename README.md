@@ -35,4 +35,4 @@ So how do we solve this problem in a way that requires the least amount of maint
 
 ## Contributing 🤝
 
-See the [contributing documentation](CONTRIBUTING.md) to learn more.
+See the [contributing documentation](CONTRIBUTING.md) to learn more about how you can contribute or develop runway.
