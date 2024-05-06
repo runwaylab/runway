@@ -22,7 +22,7 @@ COPY shard.lock shard.lock
 COPY shard.yml shard.yml
 
 # bootstrap the project
-RUN CI=true script/bootstrap
+RUN USE_LINUX_VENDOR=true script/bootstrap
 
 # copy all source files (ensure to use a .dockerignore file for efficient copying)
 COPY . .

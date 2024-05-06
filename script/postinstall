@@ -17,6 +17,15 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
     cp "$LINUX_VENDOR_DIR/ameba" "$DIR/bin/ameba"
     cp "$LINUX_VENDOR_DIR/crkcov" "$DIR/bin/crkcov"
     cp "$LINUX_VENDOR_DIR/kcov" "$DIR/bin/kcov"
+  elif [ "$USE_LINUX_VENDOR" = true ]; then
+    echo "OSTYPE: $OSTYPE"
+    echo "running in USE_LINUX_VENDOR mode, copying vendored binaries to bin/ directory (linux)"
+    cp "$LINUX_VENDOR_DIR/ameba" "$DIR/bin/ameba"
+    cp "$LINUX_VENDOR_DIR/crkcov" "$DIR/bin/crkcov"
+    cp "$LINUX_VENDOR_DIR/kcov" "$DIR/bin/kcov"
+  else
+    echo "OSTYPE: $OSTYPE"
+    echo "using system binaries (linux) [not vendored]"
   fi
 elif [[ "$OSTYPE" == "darwin"* ]]; then
   os="mac"
