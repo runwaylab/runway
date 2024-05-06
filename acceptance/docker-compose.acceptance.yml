@@ -6,7 +6,7 @@ services:
     restart: 'no'
     build:
       context: ../
-      dockerfile: Dockerfile
+      dockerfile: ./acceptance/Dockerfile
     entrypoint: bash
     command: ["-c", "./runway -c acceptance/config/config.yml | tee /app/acceptance/logs/runway.log"]
     environment:
@@ -16,7 +16,7 @@ services:
       - projects:/app/acceptance/projects
       - config:/app/acceptance/config
       - logs:/app/acceptance/logs
-      - keys:/app/acceptance/ssh_server/keys
+      # - keys:/app/acceptance/ssh_server/keys
     depends_on:
       - ssh_server
 
