@@ -1,0 +1,23 @@
+name: crinja
+version: 0.8.1
+license: Apache-2.0
+crystal: '>= 0.35.0'
+
+authors:
+  - Johannes Müller <straightshoota@gmail.com>
+
+description: |
+  Implementation of Jinja2 runtime template language in Crystal
+
+  https://straight-shoota.github.io/crinja/
+
+targets:
+  crinja:
+    main: src/cli.cr
+
+development_dependencies:
+  diff:
+    github: MakeNowJust/crystal-diff
+  baked_file_system:
+    github: schovi/baked_file_system
+    version: ">= 0.10.0"
