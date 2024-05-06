@@ -8,7 +8,7 @@ shards:
     git: https://github.com/icyleaf/halite.git
     version: 0.12.0
   octokit:
-    git: https://github.com/grantbirki/octokit.cr.git
+    git: https://github.com/octokit-cr/octokit.cr.git
     version: 0.2.4
   emoji:
     git: https://github.com/veelenga/emoji.cr.git

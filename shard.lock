@@ -33,7 +33,7 @@ shards:
     version: 0.1.1
 
   octokit:
-    git: https://github.com/grantbirki/octokit.cr.git
+    git: https://github.com/octokit-cr/octokit.cr.git
     version: 0.2.4
 
   retriable:
