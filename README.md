@@ -2,7 +2,7 @@
 
 <h2 align="center">runway</h1>
 <p align="center">
-  A pull based deployment controller for anything
+  A self-hosted deployment controller for anything
 </p>
 
 <p align="center">
@@ -15,6 +15,8 @@
 
 <p align="center">
   <img src="assets/language-crystal-black.svg" alt="language crystal"/>
+  <img src="assets/platforms.svg" alt="platforms amd64 and arm64"/>
+  <img src="assets/docker.svg" alt="Dockerized, oh yeah!"/>
 </p>
 
 <hr>
