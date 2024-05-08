@@ -1,5 +1,12 @@
 FROM crystallang/crystal:1.12.1 as builder
 
+LABEL org.opencontainers.image.title="runway"
+LABEL org.opencontainers.image.description="clearing code for take off"
+LABEL org.opencontainers.image.source="https://github.com/runwaylab/runway"
+LABEL org.opencontainers.image.documentation="https://github.com/runwaylab/runway"
+LABEL org.opencontainers.image.licenses="MIT"
+LABEL org.opencontainers.image.authors="Grant Birkinbine"
+
 WORKDIR /app
 
 # install build dependencies
