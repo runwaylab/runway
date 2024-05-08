@@ -1,4 +1,4 @@
-FROM crystallang/crystal:1.12.1 as builder
+FROM 84codes/crystal:1.12.1-ubuntu-24.04 AS builder
 
 LABEL org.opencontainers.image.title="runway"
 LABEL org.opencontainers.image.description="clearing code for take off"
@@ -34,21 +34,17 @@ COPY . .
 # build the project
 RUN script/build
 
-FROM crystallang/crystal:1.12.1
+FROM 84codes/crystal:1.12.1-ubuntu-24.04
 
 # install runtime dependencies
 RUN apt-get update && apt-get install libssh2-1-dev -y
-
-# create a non-root user for security
-RUN useradd -m nonroot
-USER nonroot
 
 WORKDIR /app
 
 ######### CUSTOM SECTION PER PROJECT #########
 
 # copy the binary from the builder stage
-COPY --from=builder --chown=nonroot:nonroot /app/bin/runway .
+COPY --from=builder /app/bin/runway .
 
 # run the binary
 ENTRYPOINT ["./runway"]
