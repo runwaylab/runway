@@ -10,6 +10,7 @@
   <a href="https://github.com/runwayapp/runway/actions/workflows/lint.yml"><img src="https://github.com/runwayapp/runway/actions/workflows/lint.yml/badge.svg?event=push" alt="lint"/></a>
   <a href="https://github.com/runwayapp/runway/actions/workflows/acceptance.yml"><img src="https://github.com/runwayapp/runway/actions/workflows/acceptance.yml/badge.svg?event=push" alt="acceptance"/></a>
   <a href="https://github.com/runwayapp/runway/actions/workflows/build.yml"><img src="https://github.com/runwayapp/runway/actions/workflows/build.yml/badge.svg?event=push" alt="build"/></a>
+  <a href="https://github.com/runwaylab/runway/actions/workflows/docker.yml/badge.svg"><img src="https://github.com/runwaylab/runway/actions/workflows/docker.yml/badge.svg?event=push" alt="build"/></a>
 </p>
 
 <p align="center">

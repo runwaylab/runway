@@ -1,5 +1,12 @@
 FROM crystallang/crystal:1.12.1 as builder
 
+LABEL org.opencontainers.image.title="runway"
+LABEL org.opencontainers.image.description="clearing code for take off"
+LABEL org.opencontainers.image.source="https://github.com/runwaylab/runway"
+LABEL org.opencontainers.image.documentation="https://github.com/runwaylab/runway"
+LABEL org.opencontainers.image.licenses="MIT"
+LABEL org.opencontainers.image.authors="Grant Birkinbine"
+
 WORKDIR /app
 
 # install build dependencies
@@ -19,7 +26,7 @@ COPY shard.lock shard.lock
 COPY shard.yml shard.yml
 
 # bootstrap the project
-RUN script/bootstrap
+RUN USE_LINUX_VENDOR=true script/bootstrap
 
 # copy all source files (ensure to use a .dockerignore file for efficient copying)
 COPY . .
@@ -31,9 +38,6 @@ FROM crystallang/crystal:1.12.1
 
 # install runtime dependencies
 RUN apt-get update && apt-get install libssh2-1-dev -y
-
-# add curl for healthchecks
-# RUN apt-get update && apt-get install -y curl
 
 # create a non-root user for security
 RUN useradd -m nonroot
