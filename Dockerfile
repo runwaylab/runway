@@ -32,9 +32,6 @@ FROM crystallang/crystal:1.12.1
 # install runtime dependencies
 RUN apt-get update && apt-get install libssh2-1-dev -y
 
-# add curl for healthchecks
-# RUN apt-get update && apt-get install -y curl
-
 # create a non-root user for security
 RUN useradd -m nonroot
 USER nonroot
