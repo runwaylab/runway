@@ -114,7 +114,7 @@ class GitHubDeployment < BaseEvent
     # however, the "in_progress" status must be the most recent status for the deployment or we'll ignore it
     deployments.each do |deployment|
       deployment_id = deployment["id"].to_s.to_i
-      statuses = @github.list_deployment_statuses(@event.repo.not_nil!, deployment_id)
+      statuses = @github.list_deployment_statuses(@event.repo.not_nil!, deployment_id, per_page: 100)
       statuses = JSON.parse(statuses.records.to_json).as_a
 
       # sort statuses by created_at date with the most recent first
