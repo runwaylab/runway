@@ -36,3 +36,6 @@ acceptance/logs/*
 
 spec/outputs/*
 !spec/outputs/.gitkeep
+
+# files that come from vendor that we don't want / need
+lib/cron_parser/bench
