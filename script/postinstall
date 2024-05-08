@@ -65,7 +65,7 @@ if [ -f "$DIR/bin/ameba" ]; then
   fi
 fi
 
-if [ "$AMEBA_UP_TO_DATE" = false ]; then
+if [ "$AMEBA_UP_TO_DATE" = false ] && [ "$USE_LINUX_VENDOR" != true ]; then
   echo "building ameba binary"
   cd "$DIR/lib/ameba" && shards build && cp bin/ameba "$DIR/bin/ameba" && cd "$DIR"
 fi
