@@ -29,7 +29,7 @@ Runway is deployment controller that runs on an *event driven system*. You defin
 
 ## Features 🚀
 
-- 🔍 Event driven system that looks for deployment events
+- 🔍 Event driven system that looks for deployment events that you configure
 - ✏️ Configurable - You define the events, how often runway should check for events, and how deployments should be executed
 - 📦 Plugable - You can write new deployment strategies or deployment events to extend runway
 - 🦾 ARM Support - Runway's pre-built Docker images run on both `x86_64` platforms and `ARM` platforms

@@ -89,3 +89,5 @@ sudo service ssh restart
 ```
 
 Now you SSH connections with your RSA should succeed.
+
+> This is a known and documented issue in the ssh2 library - [issue](https://github.com/spider-gazelle/ssh2.cr/issues/16)
