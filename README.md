@@ -21,20 +21,21 @@
 
 <hr>
 
-## Project Goals 🏆
+## About 💡
 
-The main **goal** of this project is to provide an easier way to have a pull based deployment system for a variety of projects.
+Runway is deployment controller that runs on an *event driven system*. You define the **events** that should trigger deployments and then you configure how you want those deployments to be executed. Runway is not a CI/CD system, it is a deployment controller. It is meant to be run on a server that can reach the internet and can also reach your target servers or projects. It can run on the same server as your projects, or on a separate server. It is up to you how you want to configure it.
 
-This project was originally created as a way to solve a specific problem in mind. *"How can I have a raspberry pi run a web app and have it automatically update when I push to a git repository or start a deployment on GitHub?"* When a deployment is triggered on GitHub via something like the [`github/branch-deploy`](https://github.com/github/branch-deploy) Action, there isn't a super easy way to connect to a raspberry pi running on your home network and deploy those changes. We can't SSH into the raspberry pi (or any other server) without exposing it to the internet. We also cannot have a webhook that GitHub can hit to trigger a deployment for the same reason. Now of course you could use a VPN, or port forward to your home server, but that is yet another thing to manage and its not something everyone really wants to do. Also, residential ISPs can be a pain to work with when it comes to port forwarding and they can change your IP address at any time.
+> See the full project goals [here](docs/original-project-goals.md) for even more information about why this project was created.
 
-So how do we solve this problem in a way that requires the least amount of maintenance, is secure, and super easy to use? Well, that is where `runway` comes in. `runway` is a pull based deployment controller that can be run on any server that can reach the internet. It can be configured to check for updates to a list of projects and deploy them when it finds a new commit, deployment, push to a target branch, or a new release. It can also be configured to deploy a project in a specific way (e.g. `git pull && make deploy`). `runway` can also be configured to integrate with GitHub to *complete* deployments. This means that when a deployment is triggered on GitHub, `runway` can be configured pick up that deployment, and complete it.
+## Features 🚀
 
-1. Give projects a way to have more robust deployments when they live behind a firewall and you don't want to expose a webhook to the internet (e.g. a private k8s cluster or a raspberry pi running a cool web app)
-2. You can give runway a list of projects and it will periodically check for updates and deploy them
-3. You can tell runway *how* to deploy a project (e.g. `git pull && make deploy`)
-4. runway can be run as a standalone binary or as a docker container
-5. runway can be configured via a yaml file and environment variables
-6. runway can integrate with GitHub to *complete* deployments
+- 🔍 Event driven system that looks for deployment events
+- ✏️ Configurable - You define the events, how often runway should check for events, and how deployments should be executed
+- 📦 Plugable - You can write new deployment strategies or deployment events to extend runway
+- 🦾 ARM Support - Runway's pre-built Docker images run on both `x86_64` platforms and `ARM` platforms
+- 🚀 Native [github/branch-deploy](https://github.com/github/branch-deploy) support - Runway can look for, and complete GitHub deployments
+- 🐳 Fully Dockerized - Runway has [pre-built Docker images](https://github.com/runwaylab/runway/pkgs/container/runway) that make it easy to get started
+- 🌱 Small Footprint - Runway is written in [crystal](https://github.com/crystal-lang/crystal) and has a tiny memory footprint. It can even run on a Raspberry Pi 4!
 
 ## Contributing 🤝
 

@@ -9,6 +9,8 @@ dist/
 # do not ignore vendor/*/bin directories
 !/vendor/*/bin/
 
+vendor/gems/
+
 # non-critical vendored crystal files
 lib/**/.github/
 lib/**/docs/
