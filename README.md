@@ -96,6 +96,8 @@ services:
     volumes:
       - keys:/app/keys
       - config:/app/config
+    env_file:
+      - creds.env
 
 volumes:
   config:
@@ -154,7 +156,30 @@ Now we need to create a `keys/` directory that contains our public/private key p
 
 > Please ensure the `keys/` dir has 700 permissions and your public/private keys have 600 permissions
 
+We also need to create a `creds.env` file which contains a GitHub PAT that is scoped to allow `read` access to `deployments` since our configuration is specifically looking for GitHub deployments. You may also need `repo` permissions on the token as well if your repository is private.
 
+```ini
+# creds.env
+GITHUB_TOKEN=ghp_abcdefg
+```
+
+Now we can fire up runway!
+
+```bash
+docker compose up --build -d
+```
+
+Let's explain what this all did:
+
+1. We created a docker compose service to start runway
+2. We configured our docker compose service to mount a `keys` and a `config` volume from our local disk. The `keys` volume contains the public/private key pair used for remote SSH commands on a given server with public key authentication
+3. We created a new runway configuration file (under `config/config.yml`) giving runway events to listen for (`in_progress` GitHub deployments) and deployments to run when these events are triggered
+4. We created a new `keys/` directory and placed our public/private keys inside of it (with the correct permisions)
+5. We created a new `creds.env` file containing our `GITHUB_TOKEN` so that runway can authenticate and listen for / complete GitHub deployments
+
+Now if runway detects an `in_progress` deployment for the `runwaylab/test-flight` repository under either the `production` or `staging` environment, it will SSH into the `remote` server and execute the `script/deploy` script with the provided GitHub REF that triggered the deployment.
+
+> Note: Yes this example was complex and verbose. Yes this example requires some fine tuning and setup to work for your project... but that is the point, showing you what can be accomplished with runway and how you can leverage it for your own projects in a very flexible/open way!
 
 ## Contributing 🤝
 
