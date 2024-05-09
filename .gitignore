@@ -9,6 +9,8 @@ dist/
 # do not ignore vendor/*/bin directories
 !/vendor/*/bin/
 
+vendor/gems/
+
 # non-critical vendored crystal files
 lib/**/.github/
 lib/**/docs/
@@ -36,3 +38,7 @@ acceptance/logs/*
 
 spec/outputs/*
 !spec/outputs/.gitkeep
+
+# files that come from vendor that we don't want / need
+lib/cron_parser/bench
+lib/crinja/scripts/**/*.py
