@@ -181,6 +181,10 @@ Now if runway detects an `in_progress` deployment for the `runwaylab/test-flight
 
 > Note: Yes this example was complex and verbose. Yes this example requires some fine tuning and setup to work for your project... but that is the point, showing you what can be accomplished with runway and how you can leverage it for your own projects in a very flexible/open way!
 
+Using the `github_deployment` deployment type makes runway the ultimate deployer of your application as far as GitHub deployments are concerned. In order to fully leverage this deployment type, you need to create deployments, and not complete them within GitHub Actions. This is because runway will look for them, run its defined deployment configuration, and then complete them for you!
+
+To see a live example of how this works using [github/branch-deploy](https://github.com/github/branch-deploy) and Actions, checkout this live example [here](https://github.com/GrantBirki/pihole/tree/38b9c166ebb2ea216453b9cf804fee87ad5f853b)
+
 ## Contributing 🤝
 
 See the [contributing documentation](CONTRIBUTING.md) to learn more about how you can contribute or develop runway.
