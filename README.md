@@ -185,6 +185,18 @@ Using the `github_deployment` deployment type makes runway the ultimate deployer
 
 To see a live example of how this works using [github/branch-deploy](https://github.com/github/branch-deploy) and Actions, checkout this live example [here](https://github.com/GrantBirki/pihole/tree/38b9c166ebb2ea216453b9cf804fee87ad5f853b)
 
+## Event Types 🕐
+
+Events are "things" that runway looks for which trigger deployments. Events can be anything, from the existence of a new file, to a new tag being published, to a GitHub deployment.
+
+For a complete list of event types and how to use them, see the [events](docs/events.md) documentation.
+
+## Deployment Types 🚀
+
+Deployments are triggered by events and define how your "project" gets deployed. Deployments are generally commands that runway executes.
+
+For a complete list of deployment types and how to use them, see the [deployments](docs/deployments.md) documentation.
+
 ## Contributing 🤝
 
 See the [contributing documentation](CONTRIBUTING.md) to learn more about how you can contribute or develop runway.
