@@ -1,0 +1,46 @@
+name: release
+on:
+  push:
+    branches: [ main ]
+    paths: [ "src/version.cr" ]
+  workflow_dispatch:
+
+jobs:
+    release:
+      name: release
+      runs-on: ubuntu-latest
+      steps:
+        - name: checkout
+          uses: actions/checkout@v4
+
+        - name: fetch crystal version
+          id: crystal-version
+          run: echo "crystal=$(cat .crystal-version)"
+  
+        - name: install crystal
+          uses: crystal-lang/install-crystal@v1.8.2
+          with:
+            crystal: ${{ steps.crystal-version.outputs.crystal }}
+  
+        - name: bootstrap
+          run: script/bootstrap
+
+        - name: fetch version
+          run: |
+            export RELEASE_VERSION=$(grep -o 'v[0-9]\+\.[0-9]\+\.[0-9]\+' src/version.cr)
+            echo "VERSION=${RELEASE_VERSION}" >> $GITHUB_ENV
+
+        - name: test
+          run: script/test
+
+        - name: build (linux x86_64)
+          run: |
+            mkdir -p releases
+            script/build
+
+        - name: Push a Release
+          uses: ncipollo/release-action@v1.14.0
+          with:
+            artifacts: "./releases/*"
+            tag: ${{ env.VERSION }}
+            generateReleaseNotes: true
