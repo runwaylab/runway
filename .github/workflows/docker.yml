@@ -40,6 +40,7 @@ jobs:
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
             type=semver,pattern={{major}}
+            type=semver,pattern=v{{version}}
             type=sha
 
       - name: set up QEMU
