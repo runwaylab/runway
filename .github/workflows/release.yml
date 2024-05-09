@@ -37,10 +37,20 @@ jobs:
           run: |
             mkdir -p releases
             script/build
+            mv ./bin/runway ./releases/runway-linux-x86_64
 
         - name: Push a Release
+          id: release
           uses: ncipollo/release-action@v1.14.0
           with:
             artifacts: "./releases/*"
             tag: ${{ env.VERSION }}
             generateReleaseNotes: true
+            artifactErrorsFailBuild: true
+            replacesArtifacts: true
+
+        - name: release url
+          env:
+            RELEASE_URL: ${{ steps.release.outputs.html_url }}
+          run: |
+            echo "release url: $RELEASE_URL"
