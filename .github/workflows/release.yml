@@ -42,6 +42,12 @@ jobs:
           script/build
           mv ./bin/runway ./releases/runway-linux-x86_64
 
+      - uses: actions/create-github-app-token@v1.10.0
+        id: app-token
+        with:
+          app-id: ${{ vars.APP_ID }}
+          private-key: ${{ secrets.PRIVATE_KEY }}
+
       - name: Push a Release
         id: release
         uses: ncipollo/release-action@v1.14.0
@@ -51,6 +57,7 @@ jobs:
           generateReleaseNotes: true
           artifactErrorsFailBuild: true
           replacesArtifacts: true
+          token: ${{ steps.app-token.outputs.token }}
 
       - name: release url
         env:
