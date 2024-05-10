@@ -86,6 +86,7 @@ module Runway
         @segment.inspect(io)
       end
     end
+
     # nocov-end
 
     def self.sort(versions)

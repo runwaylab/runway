@@ -23,19 +23,19 @@ Spectator.describe "Versions" do
     it "finds that the current version is up-to-date but doesn't match the requirement" do
       expect(subject.upgradable?("1.1.0", "1.1.0", ">= 1.2.0")).to be_falsey
     end
-  
+
     it "finds that the current version is not up-to-date but the latest version doesn't match the requirement" do
       expect(subject.upgradable?("1.1.0", "1.2.0", ">= 1.3.0")).to be_falsey
     end
-  
+
     it "finds that the current version is not up-to-date but the latest version matches the requirement" do
       expect(subject.upgradable?("1.1.0", "1.2.0", ">= 1.1.0")).to be_truthy
     end
-  
+
     it "finds that the current version is up-to-date and matches a strict requirement" do
       expect(subject.upgradable?("1.1.0", "1.1.0", "= 1.1.0")).to be_nil
     end
-  
+
     it "finds that the current version is not up-to-date but matches a strict requirement" do
       expect(subject.upgradable?("1.1.0", "1.2.0", "= 1.1.0")).to be_falsey
     end
@@ -43,19 +43,19 @@ Spectator.describe "Versions" do
     it "finds that the current version is less than or equal to the requirement" do
       expect(subject.upgradable?("1.1.0", "1.1.1", "<= 1.2.0")).to be_truthy
     end
-  
+
     it "finds that the current version is greater than the requirement" do
       expect(subject.upgradable?("1.3.0", "1.3.1", "> 1.2.0")).to be_truthy
     end
-  
+
     it "finds that the current version is less than the requirement" do
       expect(subject.upgradable?("1.1.0", "1.1.1", "< 1.2.0")).to be_truthy
     end
-  
+
     it "finds that the current version is not equal to the requirement" do
       expect(subject.upgradable?("1.1.0", "1.1.1", "!= 1.1.0")).to be_truthy
     end
-  
+
     it "finds that the latest version is compatible with !=" do
       expect(subject.upgradable?("1.1.0", "1.1.1", "!= 1.2.0")).to be_truthy
     end
