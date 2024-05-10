@@ -186,6 +186,35 @@ Using the `github_deployment` deployment type makes runway the ultimate deployer
 
 To see a live example of how this works using [github/branch-deploy](https://github.com/github/branch-deploy) and Actions, checkout this live example [here](https://github.com/GrantBirki/pihole/tree/38b9c166ebb2ea216453b9cf804fee87ad5f853b)
 
+## Installation 📦
+
+There are a few ways to go about installing and using runway:
+
+### Docker 🐳
+
+Docker is the suggested way to run runway. You can pull the latest runway image from [GitHub Container Registry](https://github.com/runwaylab/runway/pkgs/container/runway). Images are built with `amd64`, and `arm64` support. You can run runway out of the box with Docker on Linux x86_64 platforms and ARM64 platforms (like a Raspberry Pi).
+
+### GitHub Releases 🏷️
+
+You can download pre-built binaries from the [releases page](https://github.com/runwaylab/runway/releases) for your desired platform.
+
+For extra security, you can verify each release binary with the GitHub CLI. Here is an example:
+
+```console
+$ gh attestation verify runway-linux-x86_64 --owner runwaylab
+Loaded digest sha256:2bd82ad62195a6b20c491585d0ff7477dd0189a08469f53ba73546807596957f for file://runway-linux-x86_64
+Loaded 1 attestation from GitHub API
+✓ Verification succeeded!
+```
+
+### Source 🛠️
+
+You can also build runway from source. To do this, you will need to have crystal installed. Make sure you are using the same version this project uses by checking the [`.crystal-version`](.crystal-version) file.
+
+Check out the [CONTRIBUTING.md](CONTRIBUTING.md) file to make sure you have the necessary dependencies installed (you probably already have them, but if not it only takes a few commands to install them).
+
+First, run `script/bootstrap` to install all crystal dependencies. Then, you can run `script/build` to build the runway binary. The binary will be placed in the `bin/` directory and it will be named `runway`.
+
 ## Event Types 🕐
 
 Events are "things" that runway looks for which trigger deployments. Events can be anything, from the existence of a new file, to a new tag being published, to a GitHub deployment.
