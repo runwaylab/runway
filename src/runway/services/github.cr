@@ -36,6 +36,13 @@ module Runway
       end
     end
 
+    def latest_release_tag(repo : String) : String
+      Retriable.retry do
+        check_rate_limit!
+        @client.latest_release(repo).tag_name
+      end
+    end
+
     # A helper method to check the rate limit of the GitHub API
     # if the rate limit is exceeded, we'll wait until the rate limit resets
     # this is a blocking operation

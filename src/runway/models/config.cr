@@ -88,6 +88,9 @@ class Event
 
   # @return [Bool, nil] A flag to enable property cleanup, or `nil` if not specified. Used by a few event types.
   property cleanup : Bool?
+
+  # @return [String, nil] The GitHub release version requirement or `nil` if not specified.
+  property version : String?
 end
 
 # The `Schedule` class represents the schedule for an event.

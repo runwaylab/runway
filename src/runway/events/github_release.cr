@@ -4,12 +4,15 @@ require "../services/github"
 class GitHubRelease < BaseEvent
   EventRegistry.register_event("github_release", self)
   @repo : String
+  @version_requirement : String
+  @current_version : String?
 
   def initialize(log : Log, event : Event)
     super(log, event)
     @github = Runway::GitHub.new(log)
     @repo = @event.repo.not_nil!
-    @timezone = Runway::TimeHelpers.timezone(@event.schedule.timezone)
+    @version_requirement = @event.version.not_nil!
+    @current_version = nil # on first run, this will be nil and will always trigger a deployment (but then it will be set)
   end
 
   # This method is called after the project's deployment has completed
@@ -41,6 +44,8 @@ class GitHubRelease < BaseEvent
 
     @log.debug { "received a check_for_event() request for event.uuid: #{@event.uuid}" }
     @log.info { "checking #{@repo} for a new release" } unless Runway::QUIET
+
+    release = @github.latest_release_tag(@repo).lchop('v')
 
     return payload
   end
