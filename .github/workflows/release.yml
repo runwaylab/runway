@@ -7,6 +7,8 @@ on:
 
 permissions:
   contents: write
+  id-token: write
+  attestations: write
 
 jobs:
   release:
@@ -41,6 +43,16 @@ jobs:
           mkdir -p releases
           script/build
           mv ./bin/runway ./releases/runway-linux-x86_64
+
+      - name: generate artifact attestation
+        uses: actions/attest-build-provenance@v1.1.0
+        with:
+          subject-path: 'releases/runway-*'
+      
+      - uses: actions/upload-artifact@v4
+        with:
+          name: runway-binaries
+          path: releases/
 
       - uses: actions/create-github-app-token@v1.10.0
         id: app-token
