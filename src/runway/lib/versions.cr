@@ -29,8 +29,8 @@ module Runway
       end
 
       # nocov-start
-      def <=>(b : self)
-        natural_sort(segment, b.segment)
+      def <=>(other : self)
+        natural_sort(segment, other.segment)
       end
 
       # Original natural sorting algorithm from:
@@ -90,7 +90,7 @@ module Runway
     # nocov-end
 
     def self.sort(versions)
-      versions.sort { |a, b| compare(a, b) }
+      versions.sort { |version_a, version_b| compare(version_a, version_b) }
     end
 
     # A helper function to determine if a version is upgradable based on the current version, the latest version, and the requirement.
