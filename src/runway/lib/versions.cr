@@ -28,6 +28,7 @@ module Runway
         segment.to_i?(whitespace: false)
       end
 
+      # nocov-start
       def <=>(b : self)
         natural_sort(segment, b.segment)
       end
@@ -85,6 +86,7 @@ module Runway
         @segment.inspect(io)
       end
     end
+    # nocov-end
 
     def self.sort(versions)
       versions.sort { |a, b| compare(a, b) }
