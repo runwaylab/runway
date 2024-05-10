@@ -4,6 +4,17 @@ on:
   pull_request:
     branches:
       - main
+    paths:
+      - "Dockerfile"
+      - "docker-compose.yml"
+      - ".dockerignore"
+      - ".github/workflows/docker.yml"
+      - "acceptance/Dockerfile"
+      - "acceptance/docker-compose.acceptance.yml"
+      - "acceptance/ssh_server/Dockerfile"
+      - ".crystal-version"
+      - "shard.yml"
+      - "shard.lock"
   push:
     branches:
       - main
