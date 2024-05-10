@@ -37,12 +37,6 @@ FROM ghcr.io/phusion/baseimage:noble-1.0.0
 # install runtime dependencies
 RUN apt-get update && apt-get install libssh2-1-dev libevent-dev -y
 
-# cleanup some non-critical dependencies
-RUN apt-get remove -y \
-    openssh-server \
-    curl && \
-    apt-get autoremove -y
-
 WORKDIR /app
 
 ######### CUSTOM SECTION PER PROJECT #########
