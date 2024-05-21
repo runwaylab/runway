@@ -48,6 +48,7 @@ module Runway
         error_message = ex.message.not_nil!
         if error_message.includes?("Missing hash key: HTTP::Headers::Key(@name=\"X-RateLimit-Limit\")")
           # https://github.com/runwaylab/runway/issues/25
+          @log.debug { "GitHub API rate limit headers are missing - attempting to fetch the rate limit again" }
           @client.get("rate_limit")
           rate_limit = @client.rate_limit
         else
