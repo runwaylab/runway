@@ -41,7 +41,21 @@ module Runway
     # this is a blocking operation
     def check_rate_limit!
       # Octokit::RateLimit(@limit=5000, @remaining=4278, @resets_at=2024-04-29 06:23:52.0 UTC, @resets_in=1784)
-      rate_limit = @client.rate_limit
+      rate_limit = nil 
+      begin
+        rate_limit = @client.rate_limit
+      rescue ex : KeyError
+        error_message = ex.message.not_nil!
+        if error_message.includes?("Missing hash key: HTTP::Headers::Key(@name=\"X-RateLimit-Limit\")")
+          # https://github.com/runwaylab/runway/issues/25
+          @client.get("rate_limit")
+          rate_limit = @client.rate_limit
+        else
+          raise ex
+        end
+      end
+
+      rate_limit = rate_limit.not_nil!
 
       # if rate_limit.remaining is nil, exit early
       if rate_limit.remaining.nil?
