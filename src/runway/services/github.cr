@@ -41,7 +41,7 @@ module Runway
     # this is a blocking operation
     def check_rate_limit!
       # Octokit::RateLimit(@limit=5000, @remaining=4278, @resets_at=2024-04-29 06:23:52.0 UTC, @resets_in=1784)
-      rate_limit = nil 
+      rate_limit = nil
       begin
         rate_limit = @client.rate_limit
       rescue ex : KeyError
