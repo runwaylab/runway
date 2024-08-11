@@ -1,5 +1,5 @@
 name: runway
-version: 0.1.0
+version: 0.2.0
 
 authors:
   - GrantBirki
@@ -8,14 +8,14 @@ targets:
   runway:
     main: src/cli.cr
 
-crystal: ">= 1.12.1"
+crystal: ">= 1.13.1"
 
 license: MIT
 
 dependencies:
   octokit:
     github: octokit-cr/octokit.cr
-    version: ~> 0.2.4
+    version: ~> 0.2.5
   emoji:
     github: veelenga/emoji.cr
     version: ~> 0.5.0
