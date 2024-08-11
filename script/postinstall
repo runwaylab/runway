@@ -3,12 +3,14 @@
 # set the working directory to the root of the project
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && pwd )"
 LINUX_VENDOR_DIR="$DIR/vendor/linux_x86_64/bin"
-DARWIN_VENDOR_DIR="$DIR/vendor/darwin_x86_64/bin"
+DARWIN_VENDOR_DIR_X64="$DIR/vendor/darwin_x86_64/bin"
+DARWIN_VENDOR_DIR_ARM64="$DIR/vendor/darwin_arm64/bin"
 
 mkdir -p "$DIR/bin"
 
 # Determine if the system is a Mac or Linux
 os="unknown"
+arch="unknown"
 if [[ "$OSTYPE" == "linux-gnu" ]]; then
   os="linux"
   if [ "$CI" = true ]; then
@@ -29,12 +31,22 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
   fi
 elif [[ "$OSTYPE" == "darwin"* ]]; then
   os="mac"
+  arch=$(uname -m)
   if [ "$CI" = true ]; then
     echo "OSTYPE: $OSTYPE"
+    echo "ARCH: $arch"
     echo "running in CI mode, copying vendored binaries to bin/ directory (mac)"
-    cp "$DARWIN_VENDOR_DIR/ameba" "$DIR/bin/ameba"
-    cp "$DARWIN_VENDOR_DIR/crkcov" "$DIR/bin/crkcov"
-    cp "$DARWIN_VENDOR_DIR/kcov" "$DIR/bin/kcov"
+    if [ "$arch" = "x86_64" ]; then
+      cp "$DARWIN_VENDOR_DIR_X64/ameba" "$DIR/bin/ameba"
+      cp "$DARWIN_VENDOR_DIR_X64/crkcov" "$DIR/bin/crkcov"
+      cp "$DARWIN_VENDOR_DIR_X64/kcov" "$DIR/bin/kcov"
+    elif [ "$arch" = "arm64" ]; then
+      cp "$DARWIN_VENDOR_DIR_ARM64/ameba" "$DIR/bin/ameba"
+      cp "$DARWIN_VENDOR_DIR_ARM64/crkcov" "$DIR/bin/crkcov"
+      cp "$DARWIN_VENDOR_DIR_ARM64/kcov" "$DIR/bin/kcov"
+    else
+      echo "Unknown architecture: $arch"
+    fi
   fi
 else
   os="unknown"
