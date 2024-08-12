@@ -34,7 +34,7 @@ shards:
 
   octokit:
     git: https://github.com/octokit-cr/octokit.cr.git
-    version: 0.2.5
+    version: 0.3.0
 
   retriable:
     git: https://github.com/sija/retriable.cr.git

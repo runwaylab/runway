@@ -1,5 +1,5 @@
 name: runway
-version: 0.2.0
+version: 0.2.1
 
 authors:
   - GrantBirki
@@ -15,7 +15,7 @@ license: MIT
 dependencies:
   octokit:
     github: octokit-cr/octokit.cr
-    version: ~> 0.2.5
+    version: ~> 0.3.0
   emoji:
     github: veelenga/emoji.cr
     version: ~> 0.5.0
