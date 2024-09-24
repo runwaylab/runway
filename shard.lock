@@ -42,7 +42,7 @@ shards:
 
   spectator:
     git: https://github.com/icy-arctic-fox/spectator.git
-    version: 0.12.0
+    version: 0.12.1
 
   ssh2:
     git: https://github.com/spider-gazelle/ssh2.cr.git

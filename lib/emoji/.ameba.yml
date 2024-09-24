@@ -1,3 +1,0 @@
-LineLength:
-  # Disallows lines longer that MaxLength number of symbols.
-  MaxLength: 110

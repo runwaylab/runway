@@ -10,6 +10,10 @@ PURPLE='\033[0;35m'
 # set the working directory to the root of the project
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && pwd )"
 
+if [[ "$CI" == "true" ]]; then
+  source script/ci-env
+fi
+
 echo -e "${BLUE}🚗 starting acceptance test suite...${OFF}"
 
 COMPOSE_FILE="$DIR/acceptance/docker-compose.acceptance.yml"
