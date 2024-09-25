@@ -16,22 +16,6 @@ VENDOR_DIR="$DIR/vendor"
 SHARDS_CACHE_PATH="$VENDOR_DIR/.cache/shards"
 SHARDS_INSTALL_PATH="$VENDOR_DIR/shards/install"
 
-if [[ "$os" == "mac" && "$CI" == "true" ]]; then
-  echo "setting custom macos CRYSTAL_OPTS for CI"
-  export CRYSTAL_OPTS="--link-flags=-Wl,-ld_classic"
-fi
-
-# if we are in ci, install required dependencies
-if [[ "$CI" == "true" ]]; then
-  if [[ "$os" == "linux" ]]; then
-    sudo apt-get update && sudo apt-get install libssh2-1-dev -y
-  fi
-  if [[ "$os" == "mac" ]]; then
-    # do nothing for now
-    echo ""
-  fi
-fi
-
 if [[ "$@" == *"--ci"* ]]; then
   source script/ci-env
 fi
@@ -92,6 +76,22 @@ if [[ ! -z "$compatability_warning" && "$SUPPRESS_BOOTSTRAP_WARNINGS" != "true" 
   echo -e "$compatability_warning"
   echo ""
   echo -e "You can set ${PURPLE}SUPPRESS_BOOTSTRAP_WARNINGS=true${OFF} in your environment to suppress this warning"
+fi
+
+if [[ "$os" == "mac" && "$CI" == "true" ]]; then
+  echo "setting custom macos CRYSTAL_OPTS for CI"
+  export CRYSTAL_OPTS="--link-flags=-Wl,-ld_classic"
+fi
+
+# if we are in ci, install required dependencies
+if [[ "$CI" == "true" ]]; then
+  if [[ "$os" == "linux" ]]; then
+    sudo apt-get update && sudo apt-get install libssh2-1-dev -y
+  fi
+  if [[ "$os" == "mac" ]]; then
+    # do nothing for now
+    echo ""
+  fi
 fi
 
 script/preinstall
