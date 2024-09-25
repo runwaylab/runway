@@ -13,7 +13,7 @@ PURPLE='\033[0;35m'
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && pwd )"
 
 if [[ "$CI" == "true" ]]; then
-  source script/ci-env
+  source script/setup-env
 fi
 
 echo -e "🖌️  ${BLUE}linting ${PURPLE}crystal${BLUE} files..."

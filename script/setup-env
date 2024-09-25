@@ -1,5 +1,3 @@
 #!/bin/bash
 
-echo "running ci-env script"
-
 export CRYSTAL_PATH="vendor/shards/install:$(crystal env CRYSTAL_PATH)"

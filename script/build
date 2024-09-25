@@ -15,20 +15,13 @@ VENDOR_DIR="$DIR/vendor"
 SHARDS_CACHE_PATH="$VENDOR_DIR/.cache/shards"
 SHARDS_INSTALL_PATH="$VENDOR_DIR/shards/install"
 
-if [[ "$CI" == "true" ]]; then
-  source script/ci-env
+if [[ "$@" == *"--production"* ]] || [[ "$CRYSTAL_ENV" == "production" ]] || [[ "$CI" == "true" ]]; then
+  source script/setup-env
 fi
 
 if [[ "$OSTYPE" == "darwin"* && "$CI" == "true" ]]; then
   echo "setting custom macos CRYSTAL_OPTS for CI"
   export CRYSTAL_OPTS="--link-flags=-Wl"
-fi
-
-# if the --production flag is passed or the CRYSTAL_ENV environment variable is set to production,
-# always ensure the CRYSTAL_PATH is set with vendored shards
-if [[ "$@" == *"--production"* ]] || [[ "$CRYSTAL_ENV" == "production" ]]; then
-  echo "🔨 setting CRYSTAL_PATH to $VENDOR_DIR/shards/install:$(crystal env CRYSTAL_PATH)"
-  export CRYSTAL_PATH="vendor/shards/install:$(crystal env CRYSTAL_PATH)"
 fi
 
 echo -e "🔨 ${BLUE}building in ${PURPLE}release${BLUE} mode${OFF}"

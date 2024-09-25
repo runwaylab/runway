@@ -16,8 +16,10 @@ VENDOR_DIR="$DIR/vendor"
 SHARDS_CACHE_PATH="$VENDOR_DIR/.cache/shards"
 SHARDS_INSTALL_PATH="$VENDOR_DIR/shards/install"
 
-if [[ "$@" == *"--ci"* ]]; then
-  source script/ci-env
+# if the --production flag is passed or the CRYSTAL_ENV environment variable is set to production,
+# always ensure the CRYSTAL_PATH is set with vendored shards
+if [[ "$@" == *"--production"* ]] || [[ "$CRYSTAL_ENV" == "production" ]] || [[ "$@" == *"--ci"* ]]; then
+  source script/setup-env
 fi
 
 crystal_path_var="$(crystal env CRYSTAL_PATH)"
