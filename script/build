@@ -32,5 +32,5 @@ if [[ "$@" == *"--production"* ]] || [[ "$CRYSTAL_ENV" == "production" ]]; then
 fi
 
 echo -e "🔨 ${BLUE}building in ${PURPLE}release${BLUE} mode${OFF}"
-SHARDS_CACHE_PATH="$SHARDS_CACHE_PATH" SHARDS_INSTALL_PATH="$SHARDS_INSTALL_PATH" shards build --production --release --progress --debug --error-trace
+SHARDS_CACHE_PATH="$SHARDS_CACHE_PATH" SHARDS_INSTALL_PATH="$SHARDS_INSTALL_PATH" shards build --production --release --progress --debug --error-trace -Dpreview_mt
 echo -e "📦 ${GREEN}build complete${OFF}"
