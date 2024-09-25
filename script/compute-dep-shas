@@ -2,7 +2,7 @@
 
 source script/setup-env $@
 
-if [ -f "$VENDOR_DIR/shards/install/.shards.info" ]; then
+if [ -f "$VENDOR_SHARDS_INFO_FILE" ]; then
 
   # Use yq to parse the file and extract shard names and versions
   shards=$(yq eval '.shards | to_entries | .[] | "\(.key)|\(.value.git)|\(.value.version)"' $VENDOR_SHARDS_INFO_FILE)

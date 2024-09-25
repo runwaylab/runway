@@ -4,11 +4,6 @@ set -e
 
 source script/setup-env $@
 
-if [[ "$OSTYPE" == "darwin"* && "$CI" == "true" ]]; then
-  echo "setting custom macos CRYSTAL_OPTS for CI"
-  export CRYSTAL_OPTS="--link-flags=-Wl"
-fi
-
 echo -e "🔨 ${BLUE}building in ${PURPLE}release${BLUE} mode${OFF}"
 SHARDS_CACHE_PATH="$SHARDS_CACHE_PATH" SHARDS_INSTALL_PATH="$SHARDS_INSTALL_PATH" shards build --production --release --progress --debug --error-trace -Dpreview_mt
 echo -e "📦 ${GREEN}build complete${OFF}"

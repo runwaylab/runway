@@ -24,7 +24,17 @@ export LINUX_VENDOR_DIR="$VENDOR_DIR/linux_x86_64/bin"
 export DARWIN_VENDOR_DIR_X64="$VENDOR_DIR/darwin_x86_64/bin"
 export DARWIN_VENDOR_DIR_ARM64="$VENDOR_DIR/darwin_arm64/bin"
 
+# if --production was provided, always ensure CRYSTAL_ENV is set to production
+if [[ "$@" == *"--production"* ]]; then
+  export CRYSTAL_ENV="production"
+fi
+
 if [[ "$@" == *"--production"* ]] || [[ "$CRYSTAL_ENV" == "production" ]] || [[ "$CI" == "true" ]]; then
   echo "setting CRYSTAL_PATH to include vendored shards - reason: --production flag passed or CRYSTAL_ENV is set to production or CI is true"
   export CRYSTAL_PATH="vendor/shards/install:$(crystal env CRYSTAL_PATH)"
+fi
+
+if [[ "$OSTYPE" == "darwin"* && "$CI" == "true" ]]; then
+  echo "setting custom macos CRYSTAL_OPTS for CI"
+  export CRYSTAL_OPTS="--link-flags=-Wl"
 fi

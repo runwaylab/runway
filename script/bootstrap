@@ -33,11 +33,6 @@ if [[ "$OSTYPE" == "linux-gnu"* ]]; then
 elif [[ "$OSTYPE" == "darwin"* ]]; then
   os="mac"
 
-  if [[ "$CI" == "true" ]]; then
-    echo "setting custom macos CRYSTAL_OPTS for CI"
-    export CRYSTAL_OPTS="--link-flags=-Wl"
-  fi
-
   # if CRYSTAL_OPTS is not set to `--link-flags=-Wl` then print a warning
   if [[ -z "$CRYSTAL_OPTS" || "$CRYSTAL_OPTS" != "--link-flags=-Wl" ]]; then
     compatability_warning="⚠️ ${YELLOW}Warning${OFF}: please consider exporting the following env vars in your terminal -> https://github.com/GrantBirki/dotfiles/blob/42526c0004cd7562883e5019db8e462e8f307e6a/dotfiles/.bashrc#L201"
@@ -88,7 +83,7 @@ if [[ "$@" == *"--ci"* ]]; then
 fi
 
 # install the shards
-SHARDS_CACHE_PATH="$SHARDS_CACHE_PATH" SHARDS_INSTALL_PATH="$SHARDS_INSTALL_PATH" shards install --local --frozen $ci_flags $@
+shards install --local --frozen $ci_flags $@
 
 # shards install often wipes out our custom shards sha256 file so we need to recompute it if they are gone
 script/compute-dep-shas
