@@ -49,6 +49,11 @@ if [[ "$OSTYPE" == "linux-gnu"* ]]; then
 elif [[ "$OSTYPE" == "darwin"* ]]; then
   os="mac"
 
+  if [[ "$CI" == "true" ]]; then
+    echo "setting custom macos CRYSTAL_OPTS for CI"
+    export CRYSTAL_OPTS="--link-flags=-Wl"
+  fi
+
   # if CRYSTAL_OPTS is not set to `--link-flags=-Wl` then print a warning
   if [[ -z "$CRYSTAL_OPTS" || "$CRYSTAL_OPTS" != "--link-flags=-Wl" ]]; then
     compatability_warning="⚠️ ${YELLOW}Warning${OFF}: please consider exporting the following env vars in your terminal -> https://github.com/GrantBirki/dotfiles/blob/42526c0004cd7562883e5019db8e462e8f307e6a/dotfiles/.bashrc#L201"
@@ -76,11 +81,6 @@ if [[ ! -z "$compatability_warning" && "$SUPPRESS_BOOTSTRAP_WARNINGS" != "true" 
   echo -e "$compatability_warning"
   echo ""
   echo -e "You can set ${PURPLE}SUPPRESS_BOOTSTRAP_WARNINGS=true${OFF} in your environment to suppress this warning"
-fi
-
-if [[ "$os" == "mac" && "$CI" == "true" ]]; then
-  echo "setting custom macos CRYSTAL_OPTS for CI"
-  export CRYSTAL_OPTS="--link-flags=-Wl"
 fi
 
 # if we are in ci, install required dependencies
