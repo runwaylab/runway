@@ -10,4 +10,5 @@ Metrics/CyclomaticComplexity:
 # exclude all files in vendor/cache
 Globs:
   - "**/*.cr"
+  - "!vendor"
   - "!lib"

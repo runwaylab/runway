@@ -12,6 +12,21 @@ YELLOW='\033[0;33m'
 
 # set the working directory to the root of the project
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && pwd )"
+VENDOR_DIR="$DIR/vendor"
+SHARDS_CACHE_PATH="$VENDOR_DIR/.cache/shards"
+SHARDS_INSTALL_PATH="$VENDOR_DIR/shards/install"
+
+if [[ "$@" == *"--ci"* ]]; then
+  source script/ci-env
+fi
+
+crystal_path_var="$(crystal env CRYSTAL_PATH)"
+# if the crystal_path_var does not contain 'vendor/shards/install' then we need to add it to the CRYSTAL_PATH
+if [[ "$crystal_path_var" != *"vendor/shards/install"* ]]; then
+  echo -e "💡 ${YELLOW}WARNING${OFF}: This project uses a custom vendoring strategy. Please update your ${PURPLE}CRYSTAL_PATH${OFF} env var to also check the ${PURPLE}vendor/shards/install${OFF} dir relative to the root of this (and other) crystal projects for builds to work properly. Example:\n"
+  echo -e "${PURPLE}export CRYSTAL_PATH=\"vendor/shards/install:$(crystal env CRYSTAL_PATH)\"${OFF}\n"
+  echo -e "It is suggested to add this to your ${PURPLE}.bashrc${OFF} or ${PURPLE}.zshrc${OFF} file so you only have to update it once and then can forget about it.\n"
+fi
 
 # check to ensure both crystal and shards are installed
 if ! [ -x "$(command -v crystal)" ]; then
@@ -34,9 +49,14 @@ if [[ "$OSTYPE" == "linux-gnu"* ]]; then
 elif [[ "$OSTYPE" == "darwin"* ]]; then
   os="mac"
 
-  # if CRYSTAL_OPTS is not set to `--link-flags=-Wl,-ld_classic` then print a warning
-  if [[ -z "$CRYSTAL_OPTS" || "$CRYSTAL_OPTS" != "--link-flags=-Wl,-ld_classic" ]]; then
-    compatability_warning="⚠️ ${YELLOW}Warning${OFF}: crystal may have issues on macOS due to -> https://github.com/crystal-lang/crystal/issues/13846. If you have issues, please consider exporting the following env vars in your terminal -> https://github.com/GrantBirki/dotfiles/blob/d57db3e4167aa5ae7766c5e544f38ead111f040c/dotfiles/.bashrc#L199"
+  if [[ "$CI" == "true" ]]; then
+    echo "setting custom macos CRYSTAL_OPTS for CI"
+    export CRYSTAL_OPTS="--link-flags=-Wl"
+  fi
+
+  # if CRYSTAL_OPTS is not set to `--link-flags=-Wl` then print a warning
+  if [[ -z "$CRYSTAL_OPTS" || "$CRYSTAL_OPTS" != "--link-flags=-Wl" ]]; then
+    compatability_warning="⚠️ ${YELLOW}Warning${OFF}: please consider exporting the following env vars in your terminal -> https://github.com/GrantBirki/dotfiles/blob/42526c0004cd7562883e5019db8e462e8f307e6a/dotfiles/.bashrc#L201"
   fi
 
 elif [[ "$OSTYPE" == "cygwin" ]]; then
@@ -63,11 +83,6 @@ if [[ ! -z "$compatability_warning" && "$SUPPRESS_BOOTSTRAP_WARNINGS" != "true" 
   echo -e "You can set ${PURPLE}SUPPRESS_BOOTSTRAP_WARNINGS=true${OFF} in your environment to suppress this warning"
 fi
 
-if [[ "$os" == "mac" && "$CI" == "true" ]]; then
-  echo "setting custom macos CRYSTAL_OPTS for CI"
-  export CRYSTAL_OPTS="--link-flags=-Wl,-ld_classic"
-fi
-
 # if we are in ci, install required dependencies
 if [[ "$CI" == "true" ]]; then
   if [[ "$os" == "linux" ]]; then
@@ -80,13 +95,18 @@ if [[ "$CI" == "true" ]]; then
 fi
 
 script/preinstall
+script/unzipper
 
-# if the cache directory doesn't exist, run script/update
-if [ ! -d "$DIR/.cache/shards" ]; then
-  echo -e "🔄 ${BLUE}Updating${OFF}: shards cache"
-  script/update
+# for now, I think I can get away with `--ci` passing in `--skip-postinstall`. This may change one day when I actually need to run the postinstall command for deps in ci
+ci_flags=""
+if [[ "$@" == *"--ci"* ]]; then
+  ci_flags="--skip-postinstall --skip-executables"
 fi
 
-SHARDS_CACHE_PATH="$DIR/.cache/shards" shards install --skip-postinstall --skip-executables --local --frozen $@
+# install the shards
+SHARDS_CACHE_PATH="$SHARDS_CACHE_PATH" SHARDS_INSTALL_PATH="$SHARDS_INSTALL_PATH" shards install --local --frozen $ci_flags $@
 
-script/postinstall
+# shards install often wipes out our custom shards sha256 file so we need to recompute it if they are gone
+script/compute-dep-shas
+
+script/postinstall $@

@@ -1,5 +1,0 @@
-Lint/UnusedArgument:
-  IgnoreProcs: true
-
-Style/WhileTrue:
-  Enabled: false

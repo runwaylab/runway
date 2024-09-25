@@ -11,29 +11,29 @@ LABEL org.opencontainers.image.authors="Grant Birkinbine"
 WORKDIR /app
 
 # install build dependencies
-RUN apt-get update && apt-get install libssh2-1-dev -y
+RUN apt-get update && apt-get install libssh2-1-dev unzip wget -y
+
+# install yq
+RUN wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq && chmod +x /usr/bin/yq
 
 # copy core scripts
-COPY script/preinstall script/preinstall
-COPY script/update script/update
-COPY script/bootstrap script/bootstrap
-COPY script/postinstall script/postinstall
+COPY script/ script/
 
 # copy all vendored dependencies
-COPY lib/ lib/
+COPY vendor/shards/cache/ vendor/shards/cache/
 
 # copy shard files
 COPY shard.lock shard.lock
 COPY shard.yml shard.yml
 
 # bootstrap the project
-RUN USE_LINUX_VENDOR=true script/bootstrap
+RUN script/bootstrap --production
 
 # copy all source files (ensure to use a .dockerignore file for efficient copying)
 COPY . .
 
 # build the project
-RUN script/build
+RUN script/build --production
 
 # https://github.com/phusion/baseimage-docker
 FROM ghcr.io/phusion/baseimage:noble-1.0.0

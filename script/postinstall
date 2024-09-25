@@ -2,48 +2,47 @@
 
 # set the working directory to the root of the project
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && pwd )"
-LINUX_VENDOR_DIR="$DIR/vendor/linux_x86_64/bin"
-DARWIN_VENDOR_DIR_X64="$DIR/vendor/darwin_x86_64/bin"
-DARWIN_VENDOR_DIR_ARM64="$DIR/vendor/darwin_arm64/bin"
+VENDOR_DIR="$DIR/vendor"
+SHARDS_INSTALL_PATH="$VENDOR_DIR/shards/install"
+
+LINUX_VENDOR_DIR="$VENDOR_DIR/linux_x86_64/bin"
+DARWIN_VENDOR_DIR_X64="$VENDOR_DIR/darwin_x86_64/bin"
+DARWIN_VENDOR_DIR_ARM64="$VENDOR_DIR/darwin_arm64/bin"
+
+if [[ "$CI" == "true" ]]; then
+  source script/ci-env
+fi
 
 mkdir -p "$DIR/bin"
+
+flags="$@"
+
+if [[ "$flags" == *"--ci"* ]]; then
+  echo $OSTYPE
+  echo $(uname -m)
+fi
 
 # Determine if the system is a Mac or Linux
 os="unknown"
 arch="unknown"
 if [[ "$OSTYPE" == "linux-gnu" ]]; then
   os="linux"
-  if [ "$CI" = true ]; then
+  if [[ "$flags" == *"--ci"* ]]; then
     echo "OSTYPE: $OSTYPE"
     echo "running in CI mode, copying vendored binaries to bin/ directory (linux)"
-    cp "$LINUX_VENDOR_DIR/ameba" "$DIR/bin/ameba"
-    cp "$LINUX_VENDOR_DIR/crkcov" "$DIR/bin/crkcov"
-    cp "$LINUX_VENDOR_DIR/kcov" "$DIR/bin/kcov"
-  elif [ "$USE_LINUX_VENDOR" = true ]; then
-    echo "OSTYPE: $OSTYPE"
-    echo "running in USE_LINUX_VENDOR mode, copying vendored binaries to bin/ directory (linux)"
-    cp "$LINUX_VENDOR_DIR/ameba" "$DIR/bin/ameba"
-    cp "$LINUX_VENDOR_DIR/crkcov" "$DIR/bin/crkcov"
-    cp "$LINUX_VENDOR_DIR/kcov" "$DIR/bin/kcov"
-  else
-    echo "OSTYPE: $OSTYPE"
-    echo "using system binaries (linux) [not vendored]"
+    cp -r "$LINUX_VENDOR_DIR/." "$DIR/bin"
   fi
 elif [[ "$OSTYPE" == "darwin"* ]]; then
   os="mac"
   arch=$(uname -m)
-  if [ "$CI" = true ]; then
+  if [[ "$flags" == *"--ci"* ]]; then
     echo "OSTYPE: $OSTYPE"
     echo "ARCH: $arch"
     echo "running in CI mode, copying vendored binaries to bin/ directory (mac)"
     if [ "$arch" = "x86_64" ]; then
-      cp "$DARWIN_VENDOR_DIR_X64/ameba" "$DIR/bin/ameba"
-      cp "$DARWIN_VENDOR_DIR_X64/crkcov" "$DIR/bin/crkcov"
-      cp "$DARWIN_VENDOR_DIR_X64/kcov" "$DIR/bin/kcov"
+      cp -r "$DARWIN_VENDOR_DIR_X64/." "$DIR/bin"
     elif [ "$arch" = "arm64" ]; then
-      cp "$DARWIN_VENDOR_DIR_ARM64/ameba" "$DIR/bin/ameba"
-      cp "$DARWIN_VENDOR_DIR_ARM64/crkcov" "$DIR/bin/crkcov"
-      cp "$DARWIN_VENDOR_DIR_ARM64/kcov" "$DIR/bin/kcov"
+      cp -r "$DARWIN_VENDOR_DIR_ARM64/" "$DIR/bin"
     else
       echo "Unknown architecture: $arch"
     fi
@@ -52,32 +51,27 @@ else
   os="unknown"
 fi
 
-# check if the $DIR/bin/kcov binary exists
-if [ ! -f "$DIR/bin/kcov" ]; then
-  echo "WARN: the kcov binary does not exist in the bin/ directory"
-  echo "  you will need to install kcov (and place it in ./bin) if you wish to use code coverage"
-  echo "  check out the vendor/ dir for precompiled binaries that may be compatible with your system"
-fi
+if [[ ! "$@" == *"--production"* ]]; then
+  # ensure the ameba binary is built and available in the bin directory
+  AMEBA_UP_TO_DATE=false
+  # first, check the version of the ameba binary in the lock file
+  AMEBA_VERSION=$(SHARDS_INSTALL_PATH="$SHARDS_INSTALL_PATH" shards list | grep ameba | awk '{print $3}' | tr -d '()')
 
-# ensure the ameba binary is built and available in the bin directory
-AMEBA_UP_TO_DATE=false
-# first, check the version of the ameba binary in the lock file
-AMEBA_VERSION=$(shards list | grep ameba | awk '{print $3}' | tr -d '()')
-
-# if the bin/ameba binary exists, check if it is the correct version
-if [ -f "$DIR/bin/ameba" ]; then
-  CURRENT_VERSION=$("$DIR/bin/ameba" --version)
-  if [ "$AMEBA_VERSION" = "$CURRENT_VERSION" ]; then
-    AMEBA_UP_TO_DATE=true
-  else
-    echo "ameba binary is not up to date"
-    echo "ameba version (./bin/ameba): $CURRENT_VERSION"
-    echo "ameba version (shards list): $AMEBA_VERSION"
-    AMEBA_UP_TO_DATE=false
+  # if the bin/ameba binary exists, check if it is the correct version
+  if [ -f "$DIR/bin/ameba" ]; then
+    CURRENT_VERSION=$("$DIR/bin/ameba" --version)
+    if [ "$AMEBA_VERSION" = "$CURRENT_VERSION" ]; then
+      AMEBA_UP_TO_DATE=true
+    else
+      echo "ameba binary is not up to date"
+      echo "ameba version (./bin/ameba): $CURRENT_VERSION"
+      echo "ameba version (shards list): $AMEBA_VERSION"
+      AMEBA_UP_TO_DATE=false
+    fi
   fi
-fi
 
-if [ "$AMEBA_UP_TO_DATE" = false ] && [ "$USE_LINUX_VENDOR" != true ]; then
-  echo "building ameba binary"
-  cd "$DIR/lib/ameba" && shards build && cp bin/ameba "$DIR/bin/ameba" && cd "$DIR"
+  if [ "$AMEBA_UP_TO_DATE" = false ]; then
+    echo "building ameba binary"
+    cd "$SHARDS_INSTALL_PATH/ameba" && shards build && cp bin/ameba "$DIR/bin/ameba" && cd "$DIR"
+  fi
 fi
