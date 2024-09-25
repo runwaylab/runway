@@ -19,9 +19,9 @@ if [[ "$CI" == "true" ]]; then
   source script/ci-env
 fi
 
-if [[ "$os" == "mac" && "$CI" == "true" ]]; then
+if [[ "$OSTYPE" == "darwin"* && "$CI" == "true" ]]; then
   echo "setting custom macos CRYSTAL_OPTS for CI"
-  export CRYSTAL_OPTS="--link-flags=-Wl,-ld_classic"
+  export CRYSTAL_OPTS="--link-flags=-Wl"
 fi
 
 # if the --production flag is passed or the CRYSTAL_ENV environment variable is set to production,
