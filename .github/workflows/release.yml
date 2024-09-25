@@ -41,7 +41,7 @@ jobs:
       - name: build (linux x86_64)
         run: |
           mkdir -p releases
-          script/build
+          script/build --production
           mv ./bin/runway ./releases/runway-linux-x86_64
 
       - name: generate artifact attestation
