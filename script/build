@@ -2,22 +2,7 @@
 
 set -e
 
-# COLORS
-OFF='\033[0m'
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-BLUE='\033[0;34m'
-PURPLE='\033[0;35m'
-
-# set the working directory to the root of the project
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && pwd )"
-VENDOR_DIR="$DIR/vendor"
-SHARDS_CACHE_PATH="$VENDOR_DIR/.cache/shards"
-SHARDS_INSTALL_PATH="$VENDOR_DIR/shards/install"
-
-if [[ "$@" == *"--production"* ]] || [[ "$CRYSTAL_ENV" == "production" ]] || [[ "$CI" == "true" ]]; then
-  source script/setup-env
-fi
+source script/setup-env $@
 
 if [[ "$OSTYPE" == "darwin"* && "$CI" == "true" ]]; then
   echo "setting custom macos CRYSTAL_OPTS for CI"

@@ -2,25 +2,7 @@
 
 set -e
 
-# COLORS
-OFF='\033[0m'
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-BLUE='\033[0;34m'
-PURPLE='\033[0;35m'
-YELLOW='\033[0;33m'
-
-# set the working directory to the root of the project
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && pwd )"
-VENDOR_DIR="$DIR/vendor"
-SHARDS_CACHE_PATH="$VENDOR_DIR/.cache/shards"
-SHARDS_INSTALL_PATH="$VENDOR_DIR/shards/install"
-
-# if the --production flag is passed or the CRYSTAL_ENV environment variable is set to production,
-# always ensure the CRYSTAL_PATH is set with vendored shards
-if [[ "$@" == *"--production"* ]] || [[ "$CRYSTAL_ENV" == "production" ]] || [[ "$@" == *"--ci"* ]]; then
-  source script/setup-env
-fi
+source script/setup-env $@
 
 crystal_path_var="$(crystal env CRYSTAL_PATH)"
 # if the crystal_path_var does not contain 'vendor/shards/install' then we need to add it to the CRYSTAL_PATH
