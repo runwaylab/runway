@@ -35,8 +35,8 @@ if [ ! -f "$VENDOR_DIR/shards/install/.shards.info" ]; then
     rm -rf "$SHARDS_INSTALL_PATH/$shard_name"
 
     # move the shard and cache directories to the correct location
-    mv -f "$TRASHDIR/shard/"* "$SHARDS_INSTALL_PATH/" 2>/dev/null || true
-    mv -f "$TRASHDIR/cache/"* "$SHARDS_CACHE_PATH/github.com/" 2>/dev/null || true
+    cp -r "$TRASHDIR/shard/"* "$SHARDS_INSTALL_PATH/" 2>/dev/null || true
+    cp -r "$TRASHDIR/cache/"* "$SHARDS_CACHE_PATH/github.com/" 2>/dev/null || true
 
     # cleanup the TRASHDIR
     rm -rf "$TRASHDIR/shard"
@@ -78,8 +78,8 @@ else
       rm -rf "$SHARDS_INSTALL_PATH/$name"
 
       # move the shard and cache directories to the correct location
-      mv -f "$TRASHDIR/shard/"* "$SHARDS_INSTALL_PATH/" 2>/dev/null || true
-      mv -f "$TRASHDIR/cache/"* "$SHARDS_CACHE_PATH/github.com/" 2>/dev/null || true
+      cp -r "$TRASHDIR/shard/"* "$SHARDS_INSTALL_PATH/" 2>/dev/null || true
+      cp -r "$TRASHDIR/cache/"* "$SHARDS_CACHE_PATH/github.com/" 2>/dev/null || true
 
       # write the new sha to the $SHARD_SHA_FILE file
       cat > "$SHARDS_INSTALL_PATH/$name/$SHARD_SHA_FILE" <<< "$shard_cache_sha"
