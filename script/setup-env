@@ -30,11 +30,19 @@ if [[ "$@" == *"--production"* ]]; then
 fi
 
 if [[ "$@" == *"--production"* ]] || [[ "$CRYSTAL_ENV" == "production" ]] || [[ "$CI" == "true" ]]; then
-  echo "setting CRYSTAL_PATH to include vendored shards - reason: --production flag passed or CRYSTAL_ENV is set to production or CI is true"
-  export CRYSTAL_PATH="vendor/shards/install:$(crystal env CRYSTAL_PATH)"
+  crystal_path_var="$(crystal env CRYSTAL_PATH)"
+
+  # if the crystal_path_var does not contain 'vendor/shards/install' then we need to add it to the CRYSTAL_PATH
+  if [[ "$crystal_path_var" != *"vendor/shards/install"* ]]; then
+    echo "setting CRYSTAL_PATH to include vendored shards - reason: --production flag passed or CRYSTAL_ENV is set to production or CI is true"
+    export CRYSTAL_PATH="vendor/shards/install:$(crystal env CRYSTAL_PATH)"
+  fi
 fi
 
 if [[ "$OSTYPE" == "darwin"* && "$CI" == "true" ]]; then
-  echo "setting custom macos CRYSTAL_OPTS for CI"
-  export CRYSTAL_OPTS="--link-flags=-Wl"
+  # only set the CRYSTAL_OPTS if it is not set or if it does not contain "-Wl"
+  if [[ -z "$CRYSTAL_OPTS" || "$CRYSTAL_OPTS" != *"-Wl"* ]]; then
+    echo "setting custom macos CRYSTAL_OPTS for CI"
+    export CRYSTAL_OPTS="--link-flags=-Wl"
+  fi
 fi
