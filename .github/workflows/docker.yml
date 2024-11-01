@@ -55,7 +55,7 @@ jobs:
         uses: docker/setup-qemu-action@49b3bc8e6bdd4a60e6116a5414239cba5943d3cf # pin@v3
 
       - name: set up docker buildx
-        uses: docker/setup-buildx-action@988b5a0280414f521da01fcc63a27aeeb4b104db # pin@v3.6.1
+        uses: docker/setup-buildx-action@c47758b77c9736f4b2ef4073d4d51994fabfe349 # pin@v3.7.1
 
       - name: login to ghcr
         if: github.event_name != 'pull_request'
