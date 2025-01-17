@@ -1,3 +1,4 @@
+.git/
 docs/
 vendor/.cache/
 vendor/shards/install/

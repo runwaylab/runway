@@ -1,5 +1,5 @@
 name: runway
-version: 0.2.3
+version: 0.2.4
 
 authors:
   - GrantBirki
@@ -8,7 +8,7 @@ targets:
   runway:
     main: src/cli.cr
 
-crystal: ">= 1.13.2"
+crystal: ">= 1.14.1"
 
 license: MIT
 
