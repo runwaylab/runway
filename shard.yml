@@ -1,5 +1,5 @@
 name: runway
-version: 0.2.4
+version: 0.2.5
 
 authors:
   - GrantBirki
@@ -27,7 +27,7 @@ dependencies:
     version: ~> 0.2.5
   ssh2:
     github: spider-gazelle/ssh2.cr
-    version: ~> 1.6.1
+    version: ~> 1.7.0
   crinja:
     github: straight-shoota/crinja
     version: ~> 0.8.1
@@ -35,7 +35,7 @@ dependencies:
 development_dependencies:
   ameba:
     github: crystal-ameba/ameba
-    version: ~> 1.6.1
+    version: == 1.6.1
   spectator:
     github: icy-arctic-fox/spectator
     version: ~> 0.12.0
