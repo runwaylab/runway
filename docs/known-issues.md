@@ -30,6 +30,14 @@ brew install libssh2
 apt-get install libssh2-1-dev
 ```
 
+### Dependency on `libevent`
+
+This library has a direct dependency on the `libevent` library. You may need to install it on your system.
+
+```bash
+sudo apt-get install libevent-dev
+```
+
 ### Public Key Authentication Failures
 
 This section describes possible problems you may run into when using public key authentication with the remote command deployment strategy, and how to fix them.
