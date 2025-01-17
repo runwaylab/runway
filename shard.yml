@@ -8,7 +8,7 @@ targets:
   runway:
     main: src/cli.cr
 
-crystal: ">= 1.15.0"
+crystal: ">= 1.14.1"
 
 license: MIT
 
