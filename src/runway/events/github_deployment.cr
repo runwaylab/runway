@@ -11,7 +11,6 @@ class GitHubDeployment < BaseEvent
     @github = Runway::GitHub.new(log)
     @deployment_filter = (@event.deployment_filter.try(&.to_i) || 1)
     @repo = @event.repo.not_nil!
-    @timezone = Runway::TimeHelpers.timezone(@event.schedule.timezone)
     @success = "success"
     @failure = "failure"
   end
@@ -97,9 +96,7 @@ class GitHubDeployment < BaseEvent
   # @param deployments [Array] the deployments to sort
   # @return [Array] the sorted deployments
   protected def sort_deployments(deployments : Array(Octokit::Models::Deployment)) : Array(Octokit::Models::Deployment)
-    deployments = deployments.sort_by do |deployment|
-      Time.parse(deployment.created_at.to_s, "%FT%T%z", @timezone)
-    end.reverse!
+    deployments = deployments.sort_by(&.created_at).reverse!
 
     # only grab the X most recent deployments (based on event.filters.deployments)
     return deployments.first(@deployment_filter)
@@ -118,9 +115,7 @@ class GitHubDeployment < BaseEvent
       statuses = statuses.records
 
       # sort statuses by created_at date with the most recent first
-      statuses = statuses.sort_by do |status|
-        Time.parse(status.created_at.to_s, "%FT%T%z", @timezone)
-      end.reverse!
+      statuses = statuses.sort_by(&.created_at).reverse!
 
       # if the most recent status is "in_progress", we have our deployment
       if statuses.first.state == "in_progress"
