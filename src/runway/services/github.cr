@@ -15,7 +15,7 @@ module Runway
       @miniumum_rate_limit = ENV.fetch("GITHUB_MINIMUM_RATE_LIMIT", "10").to_s.to_i
     end
 
-    def create_deployment_status(repo : String, deployment_id : Int64, status : String) : String
+    def create_deployment_status(repo : String, deployment_id : Int64, status : String) : Octokit::Models::DeploymentStatus
       Retriable.retry do
         check_rate_limit!
         @client.create_deployment_status(repo, deployment_id, status)
@@ -29,7 +29,7 @@ module Runway
       end
     end
 
-    def deployments(repo : String, environment : String) : String
+    def deployments(repo : String, environment : String) : Octokit::Connection::Paginator(Octokit::Models::Deployment)
       Retriable.retry do
         check_rate_limit!
         @client.deployments(repo, {"environment" => environment})
