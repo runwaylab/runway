@@ -11,7 +11,6 @@ class GitHubDeployment < BaseEvent
     @github = Runway::GitHub.new(log)
     @deployment_filter = (@event.deployment_filter.try(&.to_i) || 1)
     @repo = @event.repo.not_nil!
-    @timezone = Runway::TimeHelpers.timezone(@event.schedule.timezone)
     @success = "success"
     @failure = "failure"
   end
@@ -42,9 +41,9 @@ class GitHubDeployment < BaseEvent
     # create a deployment status
     result = @github.create_deployment_status(@repo, deployment_id, status)
 
-    @log.debug { "deployment status result: #{JSON.parse(result).to_pretty_json}" } if Runway::VERBOSE
+    @log.debug { "deployment status result: #{result.to_pretty_json}" } if Runway::VERBOSE
 
-    raise "Unexpected deployment status result" unless JSON.parse(result)["state"] == @success
+    raise "Unexpected deployment status result" unless result.state == @success
 
     # logs about the deployment status
     @log.info { Emoji.emojize(":white_check_mark: successfully completed deployment for #{@repo} in the #{@event.environment} environment") } if status == @success unless Runway::QUIET
@@ -54,7 +53,7 @@ class GitHubDeployment < BaseEvent
   rescue error : Exception
     @log.error { "error handling deployment event: #{error.message} - attempting to set a 'failure' statue on the deployment" }
     result = @github.create_deployment_status(@repo, payload.id.to_s.to_i64.not_nil!, @failure)
-    @log.debug { "deployment status result (on error): #{JSON.parse(result).to_pretty_json}" }
+    @log.debug { "deployment status result (on error): #{result.to_pretty_json}" }
     return payload
   end
 
@@ -86,9 +85,9 @@ class GitHubDeployment < BaseEvent
   # this should already have been done by the GitHub API, but we'll do it again out of extra caution
   # @param deployments [JSON::Any] the deployments to filter
   # @return [Array] the filtered deployments
-  protected def filter_deployments(deployments : JSON::Any) : Array
-    deployments.as_a.select do |deployment|
-      deployment["environment"] == @event.environment
+  protected def filter_deployments(deployments : Array(Octokit::Models::Deployment)) : Array(Octokit::Models::Deployment)
+    deployments.select do |deployment|
+      deployment.environment == @event.environment
     end
   end
 
@@ -96,10 +95,8 @@ class GitHubDeployment < BaseEvent
   # uses the deployment_filter attribute to only grab the X most recent deployments
   # @param deployments [Array] the deployments to sort
   # @return [Array] the sorted deployments
-  protected def sort_deployments(deployments : Array) : Array
-    deployments = deployments.sort_by do |deployment|
-      Time.parse(deployment["created_at"].as_s, "%FT%T%z", @timezone)
-    end.reverse!
+  protected def sort_deployments(deployments : Array(Octokit::Models::Deployment)) : Array(Octokit::Models::Deployment)
+    deployments = deployments.sort_by(&.created_at).reverse!
 
     # only grab the X most recent deployments (based on event.filters.deployments)
     return deployments.first(@deployment_filter)
@@ -108,22 +105,20 @@ class GitHubDeployment < BaseEvent
   # A helper method to find the most recent deployment with an "in_progress" status and return it (if it exists)
   # @param deployments [Array] the deployments to search through
   # @return [JSON::Any] the deployment with an "in_progress" status or nil if it doesn't exist
-  protected def find_in_progress_deployment(deployments : Array) : JSON::Any?
+  protected def find_in_progress_deployment(deployments : Array) : Octokit::Models::Deployment | Nil
     # loop through all filtered deployments and get their deployment statuses
     # the first deployment to have an "in_progress" status will be the one we're looking for
     # however, the "in_progress" status must be the most recent status for the deployment or we'll ignore it
     deployments.each do |deployment|
-      deployment_id = deployment["id"].to_s.to_i
+      deployment_id = deployment.id.to_i32
       statuses = @github.list_deployment_statuses(@event.repo.not_nil!, deployment_id, per_page: 100)
-      statuses = JSON.parse(statuses.records.to_json).as_a
+      statuses = statuses.records
 
       # sort statuses by created_at date with the most recent first
-      statuses = statuses.sort_by do |status|
-        Time.parse(status["created_at"].as_s, "%FT%T%z", @timezone)
-      end.reverse!
+      statuses = statuses.sort_by(&.created_at).reverse!
 
       # if the most recent status is "in_progress", we have our deployment
-      if statuses.first["state"] == "in_progress"
+      if statuses.first.state == "in_progress"
         @log.debug { "found an in_progress deployment for #{@repo} in the #{@event.environment} environment" }
         return deployment
       end
@@ -135,17 +130,17 @@ class GitHubDeployment < BaseEvent
 
   # set the payload attributes based on the detected deployment
   # @param payload [Payload] the payload object to set attributes on
-  # @param detected_deployment [JSON::Any] the detected deployment to get attributes from
+  # @param detected_deployment [Octokit::Models::Deployment] the detected deployment to get attributes from
   # @return [Payload] the payload object with attributes set
-  protected def set_payload_attributes(payload : Payload, detected_deployment : JSON::Any) : Payload
-    payload.id = detected_deployment["id"].to_s.not_nil!
-    payload.environment = detected_deployment.try(&.["environment"]).try(&.to_s) || nil
-    payload.created_at = detected_deployment.try(&.["created_at"]).try(&.to_s) || nil
-    payload.updated_at = detected_deployment.try(&.["updated_at"]).try(&.to_s) || nil
-    payload.description = detected_deployment.try(&.["description"]).try(&.to_s) || nil
-    payload.user = detected_deployment.try(&.["creator"]).try(&.["login"]).try(&.to_s) || nil
-    payload.sha = detected_deployment.try(&.["sha"]).try(&.to_s) || nil
-    payload.ref = detected_deployment.try(&.["ref"]).try(&.to_s) || nil
+  protected def set_payload_attributes(payload : Payload, detected_deployment : Octokit::Models::Deployment) : Payload
+    payload.id = detected_deployment.id.to_s
+    payload.environment = detected_deployment.environment
+    payload.created_at = detected_deployment.created_at.to_s
+    payload.updated_at = detected_deployment.updated_at.to_s
+    payload.description = detected_deployment.description
+    payload.user = detected_deployment.creator.login
+    payload.sha = detected_deployment.sha
+    payload.ref = detected_deployment.ref
     payload.status = "in_progress"
     payload.ship_it = true
     return payload
@@ -165,9 +160,8 @@ class GitHubDeployment < BaseEvent
   # It then sorts the deployments as well
   # @param deployments [String] the deployments raw JSON response
   # @return [Array] the parsed, filtered, and sorted deployments
-  protected def parse_and_filter_deployments(deployments : String) : Array
-    deployments = JSON.parse(deployments)
-    deployments = filter_deployments(deployments)
+  protected def parse_and_filter_deployments(deployments : Octokit::Connection::Paginator(Octokit::Models::Deployment)) : Array
+    deployments = filter_deployments(deployments.records)
     sort_deployments(deployments)
   end
 end
