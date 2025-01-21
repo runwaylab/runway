@@ -1,4 +1,5 @@
 require "../models/base_event"
+require "../models/branch_deploy_payload"
 require "../services/github"
 
 class GitHubDeployment < BaseEvent
@@ -133,6 +134,15 @@ class GitHubDeployment < BaseEvent
   # @param detected_deployment [Octokit::Models::Deployment] the detected deployment to get attributes from
   # @return [Payload] the payload object with attributes set
   protected def set_payload_attributes(payload : Payload, detected_deployment : Octokit::Models::Deployment) : Payload
+
+    # set the branch_deploy_payload attribute if it exists
+    # https://github.com/github/branch-deploy/blob/f9cc91d1f3b53149b3abcb582f2844993cd9277d/docs/deployment-payload.md
+    branch_deploy_payload = if detected_deployment.payload
+      BranchDeployPayload.from_json(detected_deployment.payload.to_s)
+    else
+      nil
+    end
+
     payload.id = detected_deployment.id.to_s
     payload.environment = detected_deployment.environment
     payload.created_at = detected_deployment.created_at.to_s
@@ -141,6 +151,7 @@ class GitHubDeployment < BaseEvent
     payload.user = detected_deployment.creator.login
     payload.sha = detected_deployment.sha
     payload.ref = detected_deployment.ref
+    payload.branch_deploy_payload = branch_deploy_payload
     payload.status = "in_progress"
     payload.ship_it = true
     return payload
