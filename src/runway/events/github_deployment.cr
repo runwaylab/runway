@@ -10,7 +10,7 @@ class GitHubDeployment < BaseEvent
   def initialize(log : Log, event : Event)
     super(log, event)
     @github = Runway::GitHub.new(log)
-    @deployment_filter = (@event.deployment_filter.try(&.to_i) || 1)
+    @deployment_filter = @event.deployment_filter.try(&.to_i) || 1
     @repo = @event.repo.not_nil!
     @success = "success"
     @failure = "failure"
