@@ -100,6 +100,7 @@ class BranchDeploy
 
   ALLOWED_REACTIONS = %w[eyes rocket +1 -1 tada laugh confused heart]
 
+  property enabled : Bool?
   property remove_initial_reaction : Bool?
   property success_reaction : String?
   property failure_reaction : String?

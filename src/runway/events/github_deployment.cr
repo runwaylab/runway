@@ -14,6 +14,7 @@ class GitHubDeployment < BaseEvent
     @repo = @event.repo.not_nil!
     @success = "success"
     @failure = "failure"
+    @branch_deploy_enabled = @event.branch_deploy.try(&.enabled) || false
   end
 
   # This method is called after the project's deployment has completed
@@ -134,15 +135,6 @@ class GitHubDeployment < BaseEvent
   # @param detected_deployment [Octokit::Models::Deployment] the detected deployment to get attributes from
   # @return [Payload] the payload object with attributes set
   protected def set_payload_attributes(payload : Payload, detected_deployment : Octokit::Models::Deployment) : Payload
-
-    # set the branch_deploy_payload attribute if it exists
-    # https://github.com/github/branch-deploy/blob/f9cc91d1f3b53149b3abcb582f2844993cd9277d/docs/deployment-payload.md
-    branch_deploy_payload = if detected_deployment.payload
-      BranchDeployPayload.from_json(detected_deployment.payload.to_s)
-    else
-      nil
-    end
-
     payload.id = detected_deployment.id.to_s
     payload.environment = detected_deployment.environment
     payload.created_at = detected_deployment.created_at.to_s
@@ -151,10 +143,26 @@ class GitHubDeployment < BaseEvent
     payload.user = detected_deployment.creator.login
     payload.sha = detected_deployment.sha
     payload.ref = detected_deployment.ref
-    payload.branch_deploy_payload = branch_deploy_payload
+    payload.branch_deploy_payload = parse_github_branch_deploy_payload(detected_deployment)
     payload.status = "in_progress"
     payload.ship_it = true
     return payload
+  end
+
+  # set the branch_deploy_payload attribute if it exists
+  # https://github.com/github/branch-deploy/blob/f9cc91d1f3b53149b3abcb582f2844993cd9277d/docs/deployment-payload.md
+  protected def parse_github_branch_deploy_payload(deployment : Octokit::Models::Deployment) : BranchDeployPayload | Nil
+    unless @branch_deploy_enabled
+      @log.debug { "branch_deploy is not enabled for #{@repo} - skipping branch_deploy payload hydration" }
+      return nil
+    end
+
+    if deployment.payload.nil?
+      @log.debug { "payload is nil for #{@repo} - skipping branch_deploy payload hydration" }
+      return nil
+    end
+
+    return BranchDeployPayload.from_json(deployment.payload.to_s)
   end
 
   # logging for debugging purposes

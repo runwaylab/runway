@@ -33,5 +33,6 @@ projects:
         schedule:
           interval: 10s
         branch_deploy:
+          enabled: true # enable custom github/branch-deploy payload hydration
           success_reaction: rocket # react to successful github/branch-deploy comments with a 🚀
           failure_reaction: '-1' # react to failed github/branch-deploy comments with a 👎
