@@ -1,5 +1,6 @@
 require "json"
 
+# https://github.com/github/branch-deploy/blob/f9cc91d1f3b53149b3abcb582f2844993cd9277d/docs/deployment-payload.md
 class BranchDeployPayload
   include JSON::Serializable
 
@@ -7,10 +8,10 @@ class BranchDeployPayload
   property sha : String?
   property params : String?
   property parsed_params : JSON::Any?
-  property github_run_id : Int32?
-  property initial_comment_id : Int32?
-  property initial_reaction_id : Int32?
-  property deployment_started_comment_id : Int32?
+  property github_run_id : Int64?
+  property initial_comment_id : Int64?
+  property initial_reaction_id : Int64?
+  property deployment_started_comment_id : Int64?
   property timestamp : String?
   property commit_verified : Bool?
   property actor : String?

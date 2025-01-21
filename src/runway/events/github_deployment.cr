@@ -11,7 +11,7 @@ class GitHubDeployment < BaseEvent
     super(log, event)
     @github = Runway::GitHub.new(log)
     @deployment_filter = @event.deployment_filter.try(&.to_i) || 1
-    @repo = @event.repo.not_nil!
+    @repo = @event.repo.not_nil! # in format of "owner/repo"
     @success = "success"
     @failure = "failure"
     @branch_deploy_enabled = @event.branch_deploy.try(&.enabled) || false
@@ -51,12 +51,57 @@ class GitHubDeployment < BaseEvent
     @log.info { Emoji.emojize(":white_check_mark: successfully completed deployment for #{@repo} in the #{@event.environment} environment") } if status == @success unless Runway::QUIET
     @log.error { Emoji.emojize(":x: failed to complete deployment for #{@repo} in the #{@event.environment} environment") } if status != @success
 
+    extra_post_branch_deploy_steps(payload) if @branch_deploy_enabled
+
     return payload
   rescue error : Exception
     @log.error { "error handling deployment event: #{error.message} - attempting to set a 'failure' statue on the deployment" }
     result = @github.create_deployment_status(@repo, payload.id.to_s.to_i64.not_nil!, @failure)
     @log.debug { "deployment status result (on error): #{result.to_pretty_json}" }
     return payload
+  end
+
+  # This method gets called from the post_deploy() method if the branch_deploy_enabled attribute is true
+  # It will perform extra steps that are specific to github/branch-deploy workflows.
+  # For example, it will remove the initial reaction from the branch-deploy trigger comment if we are configured to do so...
+  # ... and it will also add a reaction to the branch-deploy trigger comment based on the payload's success attribute
+  def extra_post_branch_deploy_steps(payload : Payload)
+    if payload.branch_deploy_payload.nil?
+      @log.debug { "branch_deploy_payload is nil for #{@repo} - skipping extra post branch deploy steps" }
+      return
+    end
+
+    # extra the payload and ensure it's not nil
+    branch_deploy_payload = payload.branch_deploy_payload.not_nil!
+
+    # remove the initial reaction from the branch-deploy comment if we are configured to do so
+    remove_initial_reaction = @event.branch_deploy.try(&.remove_initial_reaction) || false
+    if remove_initial_reaction
+      @log.debug { "removing initial reaction from branch-deploy trigger comment" }
+      result = @github.delete_issue_comment_reaction(
+        @repo,
+        branch_deploy_payload.initial_comment_id.not_nil!,
+        branch_deploy_payload.initial_reaction_id.not_nil!
+      )
+
+      @log.debug { "delete_issue_comment_reaction result for #{@repo}: #{result}" } if Runway::VERBOSE
+    end
+
+    # set the reaction to use based on the payload's success attribute
+    success_reaction = @event.branch_deploy.try(&.success_reaction)
+    failure_reaction = @event.branch_deploy.try(&.failure_reaction)
+    reaction = payload.success? ? success_reaction : failure_reaction
+
+    if reaction
+      @log.debug { "adding a #{reaction} reaction to the initial branch-deploy trigger comment" }
+      result = @github.create_issue_comment_reaction(
+        @repo,
+        branch_deploy_payload.initial_comment_id.not_nil!,
+        reaction
+      )
+
+      @log.debug { "create_issue_comment_reaction result.id for #{@repo}: #{result.id}" } if Runway::VERBOSE
+    end
   end
 
   # Check for a GitHub deployment event in the specified environment
@@ -162,7 +207,12 @@ class GitHubDeployment < BaseEvent
       return nil
     end
 
-    return BranchDeployPayload.from_json(deployment.payload.to_s)
+    begin
+      BranchDeployPayload.from_json(deployment.payload.to_s)
+    rescue e : Exception
+      @log.error { "failed to parse branch_deploy payload for #{@repo}: #{e.message}" }
+      nil
+    end
   end
 
   # logging for debugging purposes
