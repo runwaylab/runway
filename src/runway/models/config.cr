@@ -88,6 +88,35 @@ class Event
 
   # @return [Bool, nil] A flag to enable property cleanup, or `nil` if not specified. Used by a few event types.
   property cleanup : Bool?
+
+  # @return [BranchDeploy, nil] The branch deploy configuration for the event, or `nil` if not specified.
+  property branch_deploy : BranchDeploy?
+end
+
+# The `BranchDeploy` class represents the configuration for how runway should handle additional logic from https://github.com/github/branch-deploy requests
+# For example, you may want to add a reaction to the comment that initially triggers the branch deploy request. You can configure that here.
+class BranchDeploy
+  include YAML::Serializable
+
+  ALLOWED_REACTIONS = %w[eyes rocket +1 -1 tada laugh confused heart]
+
+  property enabled : Bool?
+  property remove_initial_reaction : Bool?
+  property success_reaction : String?
+  property failure_reaction : String?
+
+  def after_initialize
+    validate_reaction(@success_reaction)
+    validate_reaction(@failure_reaction)
+  end
+
+  private def validate_reaction(value : String?)
+    if value.nil? || ALLOWED_REACTIONS.includes?(value)
+      return
+    else
+      raise ArgumentError.new("Invalid reaction value: #{value} - must be one of: #{ALLOWED_REACTIONS.join(", ")}")
+    end
+  end
 end
 
 # The `Schedule` class represents the schedule for an event.

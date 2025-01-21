@@ -32,3 +32,8 @@ projects:
         environment: development
         schedule:
           interval: 10s
+        branch_deploy:
+          enabled: true # enable custom github/branch-deploy payload hydration
+          remove_initial_reaction: true # remove the initial reaction from the github/branch-deploy comment
+          success_reaction: rocket # react to successful github/branch-deploy comments with a 🚀
+          failure_reaction: '-1' # react to failed github/branch-deploy comments with a 👎

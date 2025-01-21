@@ -36,6 +36,20 @@ module Runway
       end
     end
 
+    def delete_issue_comment_reaction(repo : String, comment_id : Int64, reaction_id : Int64) : Bool
+      Retriable.retry do
+        check_rate_limit!
+        @client.delete_issue_comment_reaction(repo, comment_id, reaction_id)
+      end
+    end
+
+    def create_issue_comment_reaction(repo : String, comment_id : Int64, reaction : String) : Octokit::Models::Reaction
+      Retriable.retry do
+        check_rate_limit!
+        @client.create_issue_comment_reaction(repo, comment_id, reaction)
+      end
+    end
+
     # A helper method to check the rate limit of the GitHub API
     # if the rate limit is exceeded, we'll wait until the rate limit resets
     # this is a blocking operation

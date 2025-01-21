@@ -1,3 +1,5 @@
+require "./branch_deploy_payload"
+
 # The payload class is used as a data structure to hold the data that is passed from event triggers to deployment handlers
 # This class is highly flexible and can be used to pass all sorts of data between the two components
 # The class is designed to be used as a data structure and should not contain any logic
@@ -24,6 +26,7 @@ class Payload
   getter description : String?
   getter user : String?
   getter path : String?
+  getter branch_deploy_payload : BranchDeployPayload?
 
   # Here is a rough description of what each field *could* be used for
   # All of these fields are optional and can be used as needed - they default to nil
@@ -48,6 +51,7 @@ class Payload
   # @param description [String or nil] - A description of the deployment or the reason for the deployment
   # @param user [String or nil] - The user that triggered the deployment or the user that is responsible for the deployment
   # @param path [String or nil] - The path to a file that is related to the deployment or the deployment itself
+  # @param branch_deploy_payload [BranchDeployPayload or nil] - The branch deploy payload that is related to the deployment - https://github.com/github/branch-deploy/blob/f9cc91d1f3b53149b3abcb582f2844993cd9277d/docs/deployment-payload.md
   def initialize(
     @ship_it : Bool = false,         # defaults to false - set this value to true to indicate that the deployment should be triggered
     @run_post_deploy : Bool = false, # defaults to false - set this value to true to indicate that the post_deploy hook should be run
@@ -69,7 +73,8 @@ class Payload
     @url : String? = nil,
     @description : String? = nil,
     @user : String? = nil,
-    @path : String? = nil
+    @path : String? = nil,
+    @branch_deploy_payload : BranchDeployPayload? = nil
   )
   end
 
@@ -100,6 +105,7 @@ class Payload
   setter description : String?
   setter user : String?
   setter path : String?
+  setter branch_deploy_payload : BranchDeployPayload?
 
   # This method is used to convert the Payload object to a Hash object
   # It preserves the type of the instance variables as well
