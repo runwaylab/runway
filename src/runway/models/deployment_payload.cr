@@ -1,10 +1,13 @@
 require "./branch_deploy_payload"
+require "../lib/to_h"
 
 # The payload class is used as a data structure to hold the data that is passed from event triggers to deployment handlers
 # This class is highly flexible and can be used to pass all sorts of data between the two components
 # The class is designed to be used as a data structure and should not contain any logic
 # Feel free to open a PR and add more fields to this class if you need
 class Payload
+  include ToH
+
   getter? ship_it : Bool
   getter? run_post_deploy : Bool
   getter? success : Bool?
@@ -106,16 +109,4 @@ class Payload
   setter user : String?
   setter path : String?
   setter branch_deploy_payload : BranchDeployPayload?
-
-  # This method is used to convert the Payload object to a Hash object
-  # It preserves the type of the instance variables as well
-  def to_h
-    {% begin %}
-      {
-        {% for ivar in @type.instance_vars %}
-          "{{ivar.name.id}}": @{{ivar.id}},
-        {% end %}
-      }
-    {% end %}
-  end
 end
