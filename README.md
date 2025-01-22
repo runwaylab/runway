@@ -157,12 +157,23 @@ Now we need to create a `keys/` directory that contains our public/private key p
 
 > Please ensure the `keys/` dir has 700 permissions and your public/private keys have 600 permissions
 
-We also need to create a `creds.env` file which contains a GitHub PAT that is scoped to allow `read` access to `deployments` since our configuration is specifically looking for GitHub deployments. You may also need `repo` permissions on the token as well if your repository is private.
+We also need to create a `creds.env` file which contains a GitHub PAT for using the `github_deployment` event type. This file should be in the same directory as your `docker-compose.yml` file.
 
 ```ini
 # creds.env
 GITHUB_TOKEN=ghp_abcdefg
 ```
+
+At a bare minimum, the PAT will need the following permissions:
+
+- Deployments: **read and write**
+
+However, to unlock the full potential of runway, you will need to give the PAT the following permissions:
+
+- Deployments: **read and write**
+- Pull Requests: **read and write** (for usage with [`github/branch-deploy`](https://github.com/github/branch-deploy))
+
+You should be using fine-grained GitHub Access Tokens as you can apply granular permissions to them.
 
 Now we can fire up runway!
 
