@@ -1,7 +1,9 @@
 require "json"
+require "../lib/to_h"
 
 # https://github.com/github/branch-deploy/blob/f9cc91d1f3b53149b3abcb582f2844993cd9277d/docs/deployment-payload.md
 class BranchDeployPayload
+  include ToH
   include JSON::Serializable
 
   property type : String?
