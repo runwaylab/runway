@@ -1,5 +1,4 @@
 module ToH
-
   # This method is used to convert the Payload object to a Hash object
   # It preserves the type of the instance variables as well
   def to_h
