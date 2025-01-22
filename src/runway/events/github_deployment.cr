@@ -207,10 +207,9 @@ class GitHubDeployment < BaseEvent
       return nil
     end
 
-    deployment_payload = deployment.payload.to_s
-    @log.debug { "deployment_payload for #{@repo}: #{deployment_payload} - deployment.payload.inspect #{deployment.payload.inspect}" } if Runway::VERBOSE
-
     begin
+      deployment_payload = deployment.payload.to_json
+      @log.debug { "deployment_payload for #{@repo}: #{deployment_payload}" }
       BranchDeployPayload.from_json(deployment_payload)
     rescue e : Exception
       log_message = "failed to parse branch_deploy payload for #{@repo}: #{e.message}"
