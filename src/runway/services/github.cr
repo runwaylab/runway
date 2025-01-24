@@ -101,7 +101,7 @@ module Runway
       @log = Runway.setup_logger(log_level.to_s.upcase)
 
       if ENV["GITHUB_APP_ID"]? && ENV["GITHUB_APP_INSTALLATION_ID"]? && ENV["GITHUB_APP_PRIVATE_KEY"]?
-        @log.info { "🔑 using github app authentication" } unless Runway::QUIET
+        @log.info { Emoji.emojize(":key: using github app authentication") } unless Runway::QUIET
         return GitHubApp.new
       end
 
@@ -110,7 +110,7 @@ module Runway
       end
 
       # create the client
-      @log.info { "🔑 using github token authentication" } unless Runway::QUIET
+      @log.info { Emoji.emojize(":key: using github token authentication") } unless Runway::QUIET
       client = Octokit::Client.new(access_token: token)
       client.auto_paginate = ENV.fetch("OCTOKIT_CR_AUTO_PAGINATE", "true") == "true"
       client.per_page = ENV.fetch("OCTOKIT_CR_PER_PAGE", "100").to_i
