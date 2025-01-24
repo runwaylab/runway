@@ -3,7 +3,7 @@ INFO: 📖 loading runway configuration
 DEBUG: attempting to load config from acceptance/config/config.yml
 INFO: ✅ loaded configuration successfully
 INFO: 🚚 2 projects loaded
-INFO: 🛫 starting runway - version: v0.4.0
+INFO: 🛫 starting runway - version: v0.5.0
 INFO: 📦 starting project project-1
 INFO: 🕐 scheduling event with interval 3s for project-1
 INFO: 📦 starting project project-2
