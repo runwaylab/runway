@@ -26,7 +26,8 @@ class GitHubApp
   @installation_id : Int32
   @app_key : String
 
-  def initialize
+  def initialize(log : Log)
+    @log = log
     @app_id = fetch_env_var("RUNWAY_GITHUB_APP_ID").to_i
     @installation_id = fetch_env_var("RUNWAY_GITHUB_APP_INSTALLATION_ID").to_i
     @app_key = fetch_env_var("RUNWAY_GITHUB_APP_PRIVATE_KEY").gsub(/\\+n/, "\n")
@@ -64,6 +65,12 @@ class GitHubApp
     client.auto_paginate = ENV.fetch("OCTOKIT_CR_AUTO_PAGINATE", "true") == "true"
     client.per_page = ENV.fetch("OCTOKIT_CR_PER_PAGE", "100").to_i
     @token_refresh_time = Time.utc
+
+    # octokit.cr wipes out the loggers, so we need to re-apply them... bleh
+    # fetch the current log level
+    log_level = @log.level
+    @log = Runway.setup_logger(log_level.to_s.upcase)
+
     client
   end
 
