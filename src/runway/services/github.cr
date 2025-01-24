@@ -97,7 +97,9 @@ module Runway
     protected def create_client(token : String?) : Octokit::Client | GitHubApp
       if ENV["RUNWAY_GITHUB_APP_ID"]? && ENV["RUNWAY_GITHUB_APP_INSTALLATION_ID"]? && ENV["RUNWAY_GITHUB_APP_PRIVATE_KEY"]?
         log_authentication_method("github app")
-        return GitHubApp.new.tap { rebuild_logger }
+        github_app = GitHubApp.new(@log)
+        rebuild_logger
+        return github_app
       end
 
       if token.nil? || token.empty?
