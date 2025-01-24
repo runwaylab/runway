@@ -27,9 +27,9 @@ class GitHubApp
   @app_key : String
 
   def initialize
-    @app_id = fetch_env_var("GITHUB_APP_ID").to_i
-    @installation_id = fetch_env_var("GITHUB_APP_INSTALLATION_ID").to_i
-    @app_key = fetch_env_var("GITHUB_APP_PRIVATE_KEY").gsub(/\\+n/, "\n")
+    @app_id = fetch_env_var("RUNWAY_GITHUB_APP_ID").to_i
+    @installation_id = fetch_env_var("RUNWAY_GITHUB_APP_INSTALLATION_ID").to_i
+    @app_key = fetch_env_var("RUNWAY_GITHUB_APP_PRIVATE_KEY").gsub(/\\+n/, "\n")
     @token_refresh_time = Time.unix(0)
     @client = create_client
   end
@@ -61,8 +61,8 @@ class GitHubApp
     access_token = JSON.parse(response)["token"].to_s
 
     client = Octokit.client(access_token: access_token)
-    client.auto_paginate = true
-    client.per_page = 100
+    client.auto_paginate = ENV.fetch("OCTOKIT_CR_AUTO_PAGINATE", "true") == "true"
+    client.per_page = ENV.fetch("OCTOKIT_CR_PER_PAGE", "100").to_i
     @token_refresh_time = Time.utc
     client
   end

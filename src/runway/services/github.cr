@@ -93,29 +93,39 @@ module Runway
 
     # Creates an octokit.cr client with the given token (can be nil aka unauthenticated)
     # @param token [String?] the GitHub token to use for authentication - if nil, the client will be unauthenticated
-    # @return [Octokit::Client] the client
+    # @return [Octokit::Client | GitHubApp] the client
     protected def create_client(token : String?) : Octokit::Client | GitHubApp
+      if ENV["RUNWAY_GITHUB_APP_ID"]? && ENV["RUNWAY_GITHUB_APP_INSTALLATION_ID"]? && ENV["RUNWAY_GITHUB_APP_PRIVATE_KEY"]?
+        log_authentication_method("github app")
+        return GitHubApp.new.tap { rebuild_logger }
+      end
+
+      if token.nil? || token.empty?
+        log_missing_token_warning unless ENV["SUPPRESS_STARTUP_WARNINGS"]?
+      else
+        log_authentication_method("github token")
+      end
+
+      Octokit::Client.new(access_token: token).tap do |client|
+        client.auto_paginate = ENV.fetch("OCTOKIT_CR_AUTO_PAGINATE", "true") == "true"
+        client.per_page = ENV.fetch("OCTOKIT_CR_PER_PAGE", "100").to_i
+        rebuild_logger
+      end
+    end
+
+    private def log_authentication_method(method : String)
+      @log.info { Emoji.emojize(":key: using #{method} authentication") } unless Runway::QUIET
+    end
+
+    private def log_missing_token_warning
+      @log.warn { "No GitHub token provided. Please set the GITHUB_TOKEN environment variable to avoid excessive rate limiting." }
+    end
+
+    protected def rebuild_logger
       # octokit.cr wipes out the loggers, so we need to re-apply them... bleh
       # fetch the current log level
       log_level = @log.level
       @log = Runway.setup_logger(log_level.to_s.upcase)
-
-      if ENV["GITHUB_APP_ID"]? && ENV["GITHUB_APP_INSTALLATION_ID"]? && ENV["GITHUB_APP_PRIVATE_KEY"]?
-        @log.info { Emoji.emojize(":key: using github app authentication") } unless Runway::QUIET
-        return GitHubApp.new
-      end
-
-      if (token.nil? || token.empty?) && ENV.fetch("SUPPRESS_STARTUP_WARNINGS", nil).nil?
-        @log.warn { "No GitHub token provided. Please set the GITHUB_TOKEN environment variable to avoid excessive rate limiting." }
-      end
-
-      # create the client
-      @log.info { Emoji.emojize(":key: using github token authentication") } unless Runway::QUIET
-      client = Octokit::Client.new(access_token: token)
-      client.auto_paginate = ENV.fetch("OCTOKIT_CR_AUTO_PAGINATE", "true") == "true"
-      client.per_page = ENV.fetch("OCTOKIT_CR_PER_PAGE", "100").to_i
-
-      return client
     end
   end
 end
