@@ -68,4 +68,4 @@ module Runway
   end
 end
 
-Runway::Cli.run unless ENV["CRYSTAL_ENV"] == "test"
+Runway::Cli.run unless ENV.fetch("CRYSTAL_ENV", nil) == "test"
