@@ -55,7 +55,7 @@ if [[ ! "$@" == *"--production"* ]]; then
   # ensure the ameba binary is built and available in the bin directory
   AMEBA_UP_TO_DATE=false
   # first, check the version of the ameba binary in the lock file
-  AMEBA_VERSION=$(SHARDS_INSTALL_PATH="$SHARDS_INSTALL_PATH" shards list | grep ameba | awk '{print $3}' | tr -d '()')
+  AMEBA_VERSION=$(SHARDS_INSTALL_PATH="$SHARDS_INSTALL_PATH" $SHARDS_BIN list | grep ameba | awk '{print $3}' | tr -d '()')
 
   # if the bin/ameba binary exists, check if it is the correct version
   if [ -f "$DIR/bin/ameba" ]; then
@@ -72,6 +72,6 @@ if [[ ! "$@" == *"--production"* ]]; then
 
   if [ "$AMEBA_UP_TO_DATE" = false ]; then
     echo "building ameba binary"
-    cd "$SHARDS_INSTALL_PATH/ameba" && shards build && cp bin/ameba "$DIR/bin/ameba" && cd "$DIR"
+    cd "$SHARDS_INSTALL_PATH/ameba" && $SHARDS_BIN build && cp bin/ameba "$DIR/bin/ameba" && cd "$DIR"
   fi
 fi

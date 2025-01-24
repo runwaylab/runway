@@ -8,7 +8,7 @@ echo -e "📦 ${BLUE}Running ${PURPLE}shards update${BLUE} to update all depende
 
 script/preinstall
 
-shards update $@
+$SHARDS_BIN update $@
 
 script/zipper
 script/postinstall

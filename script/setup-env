@@ -20,6 +20,7 @@ export SHARDS_INSTALL_PATH="$VENDOR_DIR/shards/install"
 export SHARDS_CACHED="$VENDOR_DIR/shards/cache"
 export SHARD_SHA_FILE=".shard.vendor.cache.sha256"
 export VENDOR_SHARDS_INFO_FILE="vendor/shards/install/.shards.info"
+export SHARDS_BIN="shards"
 
 # common vendor dirs for binaries
 export LINUX_VENDOR_DIR="$VENDOR_DIR/linux_x86_64/bin"

@@ -16,5 +16,5 @@ if [[ "$@" == *"--production"* ]] || [[ "$CRYSTAL_ENV" == "production" ]]; then
 fi
 
 echo -e "🔨 ${BLUE}building in ${PURPLE}release${BLUE} mode${OFF}"
-shards build --production --release --progress --debug --error-trace -Dpreview_mt
+$SHARDS_BIN build --production --release --progress --debug --error-trace -Dpreview_mt
 echo -e "📦 ${GREEN}build complete${OFF}"

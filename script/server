@@ -12,7 +12,7 @@ if [ "$1" == "--dev" ]; then
     LOG_LEVEL="$3"
   fi
 
-  shards run --debug --error-trace -- -c config.yml --log-level $LOG_LEVEL
+  $SHARDS_BIN run --debug --error-trace -- -c config.yml --log-level $LOG_LEVEL
 else
-  shards run --release --debug --error-trace
+  $SHARDS_BIN run --release --debug --error-trace
 fi
