@@ -10,7 +10,7 @@ module Runway
     # The octokit class for interacting with GitHub's API
     # @param log [Log] the logger to use
     # @param token [String?] the GitHub token to use for authentication - if nil, the client will be unauthenticated
-    def initialize(log : Log, token : String? = ENV.fetch("GITHUB_TOKEN", nil))
+    def initialize(log : Log, token : String? = ENV.fetch("RUNWAY_GITHUB_TOKEN", nil))
       @log = log
       @client = create_client(token)
       @miniumum_rate_limit = ENV.fetch("GITHUB_MINIMUM_RATE_LIMIT", "10").to_s.to_i

@@ -161,7 +161,7 @@ We also need to create a `creds.env` file which contains a GitHub PAT for using 
 
 ```ini
 # creds.env
-GITHUB_TOKEN=ghp_abcdefg
+RUNWAY_GITHUB_TOKEN=ghp_abcdefg
 ```
 
 At a bare minimum, the PAT will need the following permissions:
@@ -174,6 +174,14 @@ However, to unlock the full potential of runway, you will need to give the PAT t
 - Pull Requests: **read and write** (for usage with [`github/branch-deploy`](https://github.com/github/branch-deploy))
 
 You should be using fine-grained GitHub Access Tokens as you can apply granular permissions to them.
+
+Alternatively, you can use a GitHub App to authenticate. To do so, set the following environment variables instead:
+
+```ini
+RUNWAY_GITHUB_APP_ID=<app_id> # app ids are found on the App's settings page
+RUNWAY_GITHUB_APP_INSTALLATION_ID=<installation_id> # https://github.com/organizations/<org>/settings/installations/<8_digit_id>
+RUNWAY_GITHUB_APP_PRIVATE_KEY=<private_key> # format: "-----BEGIN...key\n...END-----\n" (note the newlines)
+```
 
 Now we can fire up runway!
 
