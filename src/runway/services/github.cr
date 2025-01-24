@@ -114,7 +114,7 @@ module Runway
     end
 
     private def log_authentication_method(method : String)
-      @log.info { Emoji.emojize(":key: using #{method} authentication") } unless Runway::QUIET
+      @log.info { Emoji.emojize(":key: using #{method} authentication") }
     end
 
     private def log_missing_token_warning
