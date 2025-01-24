@@ -7,7 +7,7 @@ require "./runway/core/runway"
 require "./runway/core/logger"
 
 module Runway
-  @@logger : Log?
+  @@logger = Runway.setup_logger(ENV.fetch("LOG_LEVEL", "INFO"))
 
   def self.logger
     @@logger
@@ -18,7 +18,7 @@ module Runway
   end
 
   def self.github
-    @@github ||= Runway::GitHub.new(Runway.logger.not_nil!)
+    @@github ||= Runway::GitHub.new(Runway.logger)
   end
 
   module Cli
@@ -68,4 +68,4 @@ module Runway
   end
 end
 
-Runway::Cli.run
+Runway::Cli.run unless ENV["CRYSTAL_ENV"] == "test"
