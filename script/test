@@ -25,6 +25,8 @@ for arg in "$@"; do
   fi
 done
 
+export CRYSTAL_ENV="test"
+
 # if -s was supplied as an argument, skip coverage reports (they can be slow)
 if $skip_coverage; then
   crystal spec

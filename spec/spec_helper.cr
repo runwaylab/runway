@@ -3,6 +3,7 @@
 # https://gist.github.com/stufro/b4d70bbf2923ca742db617fe802a6d76
 
 require "../src/version"
+require "../src/cli"
 require "../src/runway/**"
 require "spectator"
 require "log"

@@ -7,11 +7,27 @@ require "./runway/core/runway"
 require "./runway/core/logger"
 
 module Runway
+  @@logger = Runway.setup_logger(ENV.fetch("LOG_LEVEL", "INFO"))
+
+  def self.logger
+    @@logger
+  end
+
+  def self.logger=(logger : Log)
+    @@logger = logger
+  end
+
+  def self.github
+    @@github ||= Runway::GitHub.new(Runway.logger)
+  end
+
   module Cli
     def self.run
       opts = self.opts
 
       log = Runway.setup_logger(opts[:log_level])
+      Runway.logger = log
+
       log.info { Emoji.emojize(":book: loading runway configuration") }
 
       log.debug { "attempting to load config from #{opts[:config_path]}" }
@@ -52,4 +68,4 @@ module Runway
   end
 end
 
-Runway::Cli.run
+Runway::Cli.run unless ENV.fetch("CRYSTAL_ENV", nil) == "test"
