@@ -220,7 +220,7 @@ class GitHubDeployment < BaseEvent
       BranchDeployPayload.from_json(deployment_payload)
     rescue e : Exception
       log_message = "failed to parse branch_deploy payload for #{@repo}: #{e.message}"
-      log_message += " - traceback: #{e.backtrace.join("\n")}" if Runway::VERBOSE
+      log_message += " - traceback: #{e.backtrace.join("\n")}"
       @log.error { log_message }
       nil
     end
