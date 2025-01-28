@@ -233,7 +233,7 @@ class GitHubDeployment < BaseEvent
   # It then sorts the deployments as well
   # @param deployments [String] the deployments raw JSON response
   # @return [Array] the parsed, filtered, and sorted deployments
-  protected def parse_and_filter_deployments(deployments : Octokit::Connection::Paginator(Octokit::Models::Deployment)) : Array
+  protected def parse_and_filter_deployments(deployments : Octokit::Connection::Paginator(Octokit::Models::Deployment)) : Array(Octokit::Models::Deployment)
     deployments = filter_deployments(deployments.records)
     sort_deployments(deployments)
   end
