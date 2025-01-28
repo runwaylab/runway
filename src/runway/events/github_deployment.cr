@@ -157,7 +157,7 @@ class GitHubDeployment < BaseEvent
     # the first deployment to have an "in_progress" status will be the one we're looking for
     # however, the "in_progress" status must be the most recent status for the deployment or we'll ignore it
     deployments.each do |deployment|
-      deployment_id = deployment.id.to_i32
+      deployment_id = deployment.id
       statuses = @github.list_deployment_statuses(@event.repo.not_nil!, deployment_id, per_page: 100)
       statuses = statuses.records
 
