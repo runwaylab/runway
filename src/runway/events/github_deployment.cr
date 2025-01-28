@@ -210,6 +210,13 @@ class GitHubDeployment < BaseEvent
     begin
       deployment_payload = deployment.payload.to_json
       @log.debug { "deployment_payload for #{@repo}: #{deployment_payload}" }
+
+      # if the deployment type is not of the branch-deploy type (or if it's not set), we'll skip hydration
+      if deployment_payload["type"].try(&.to_s) != "branch-deploy"
+        @log.debug { "deployment type is not branch-deploy for #{@repo} - skipping branch_deploy payload hydration" }
+        return nil
+      end
+
       BranchDeployPayload.from_json(deployment_payload)
     rescue e : Exception
       log_message = "failed to parse branch_deploy payload for #{@repo}: #{e.message}"
