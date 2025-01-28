@@ -23,7 +23,7 @@ module Runway
       end
     end
 
-    def list_deployment_statuses(repo : String, deployment_id : Int32, per_page : Int32 = 30) : Octokit::Connection::Paginator(Octokit::Models::DeploymentStatus)
+    def list_deployment_statuses(repo : String, deployment_id : Int64, per_page : Int32 = 30) : Octokit::Connection::Paginator(Octokit::Models::DeploymentStatus)
       Retriable.retry do
         check_rate_limit!
         @client.list_deployment_statuses(repo, deployment_id, per_page: per_page)
