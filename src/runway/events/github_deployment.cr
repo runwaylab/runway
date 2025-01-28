@@ -63,11 +63,35 @@ class GitHubDeployment < BaseEvent
     return payload
   end
 
+  # Check for a GitHub deployment event in the specified environment
+  # This method uses post_deploy hooks to create a deployment status for the deployment after a deployment completes/fails
+  def check_for_event : Payload
+    payload = Payload.new(ship_it: false, run_post_deploy: true)
+
+    @log.debug { "received a check_for_event() request for event.uuid: #{@event.uuid}" }
+    @log.info { "checking #{@repo} for a #{@event.environment} deployment event" } unless Runway::QUIET
+    deployments = @github.deployments(@repo, @event.environment.not_nil!)
+
+    @log.debug { "GitHubDeployment -> check_for_event() deployments: #{deployments}" } if Runway::VERBOSE
+
+    deployments = parse_and_filter_deployments(deployments)
+
+    detected_deployment = find_in_progress_deployment(deployments)
+
+    # exit early if we didn't find a deployment in_progress
+    return payload unless detected_deployment
+
+    payload = set_payload_attributes(payload, detected_deployment)
+    log_payload_warnings(payload)
+
+    return payload
+  end
+
   # This method gets called from the post_deploy() method if the branch_deploy_enabled attribute is true
   # It will perform extra steps that are specific to github/branch-deploy workflows.
   # For example, it will remove the initial reaction from the branch-deploy trigger comment if we are configured to do so...
   # ... and it will also add a reaction to the branch-deploy trigger comment based on the payload's success attribute
-  def extra_post_branch_deploy_steps(payload : Payload)
+  protected def extra_post_branch_deploy_steps(payload : Payload)
     if payload.branch_deploy_payload.nil?
       @log.debug { "branch_deploy_payload is nil for #{@repo} - skipping extra post branch deploy steps" }
       return
@@ -104,30 +128,6 @@ class GitHubDeployment < BaseEvent
 
       @log.debug { "create_issue_comment_reaction result.id for #{@repo}: #{result.id}" } if Runway::VERBOSE
     end
-  end
-
-  # Check for a GitHub deployment event in the specified environment
-  # This method uses post_deploy hooks to create a deployment status for the deployment after a deployment completes/fails
-  def check_for_event : Payload
-    payload = Payload.new(ship_it: false, run_post_deploy: true)
-
-    @log.debug { "received a check_for_event() request for event.uuid: #{@event.uuid}" }
-    @log.info { "checking #{@repo} for a #{@event.environment} deployment event" } unless Runway::QUIET
-    deployments = @github.deployments(@repo, @event.environment.not_nil!)
-
-    @log.debug { "GitHubDeployment -> check_for_event() deployments: #{deployments}" } if Runway::VERBOSE
-
-    deployments = parse_and_filter_deployments(deployments)
-
-    detected_deployment = find_in_progress_deployment(deployments)
-
-    # exit early if we didn't find a deployment in_progress
-    return payload unless detected_deployment
-
-    payload = set_payload_attributes(payload, detected_deployment)
-    log_payload_warnings(payload)
-
-    return payload
   end
 
   # filter deployments by environment
