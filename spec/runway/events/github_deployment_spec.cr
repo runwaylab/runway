@@ -29,7 +29,7 @@ Spectator.describe "GitHubDeployment" do
     end
 
     describe "#initialize" do
-      it "creates an instance of ExampleEvent" do
+      it "creates an instance of GitHubDeployment" do
         expect(subject).to be_a(GitHubDeployment)
       end
     end

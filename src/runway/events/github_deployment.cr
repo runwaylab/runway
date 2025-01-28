@@ -16,7 +16,7 @@ class GitHubDeployment < BaseEvent
     @success = "success"
     @failure = "failure"
     @branch_deploy_enabled = @event.branch_deploy.try(&.enabled) || false
-    @branch_deploy_text = @event.branch_deploy.try(&.branch_deploy_text).not_nil!
+    @branch_deploy_text = @event.branch_deploy.try(&.branch_deploy_text) || "branch-deploy"
   end
 
   # This method is called after the project's deployment has completed

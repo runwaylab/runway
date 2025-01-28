@@ -14,7 +14,7 @@ Spectator.describe "FileEvent" do
     subject { FileEvent.new(log, FILE_EVENT) }
 
     describe "#initialize" do
-      it "creates an instance of ExampleEvent" do
+      it "creates an instance of FileEvent" do
         expect(subject).to be_a(FileEvent)
       end
     end
