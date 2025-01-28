@@ -22,3 +22,5 @@ projects:
         environment: staging
         schedule:
           interval: 5s
+        branch_deploy:
+          enabled: true

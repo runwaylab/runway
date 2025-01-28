@@ -105,9 +105,13 @@ class BranchDeploy
   property success_reaction : String?
   property failure_reaction : String?
 
+  # branch_deploy_text defaults to "branch-deploy" and will likely never need to be set by the user
+  property branch_deploy_text : String?
+
   def after_initialize
     validate_reaction(@success_reaction)
     validate_reaction(@failure_reaction)
+    set_defaults
   end
 
   private def validate_reaction(value : String?)
@@ -116,6 +120,10 @@ class BranchDeploy
     else
       raise ArgumentError.new("Invalid reaction value: #{value} - must be one of: #{ALLOWED_REACTIONS.join(", ")}")
     end
+  end
+
+  private def set_defaults
+    @branch_deploy_text = "branch-deploy" if @branch_deploy_text.nil?
   end
 end
 
