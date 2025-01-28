@@ -210,6 +210,13 @@ class GitHubDeployment < BaseEvent
     begin
       deployment_payload = deployment.payload.to_json
       @log.debug { "deployment_payload for #{@repo}: #{deployment_payload}" }
+
+      # if the deployment type is not of the branch-deploy type (or if it's not set), we'll skip hydration
+      if deployment_payload["type"].try(&.to_s) != "branch-deploy"
+        @log.debug { "deployment type is not branch-deploy for #{@repo} - skipping branch_deploy payload hydration" }
+        return nil
+      end
+
       BranchDeployPayload.from_json(deployment_payload)
     rescue e : Exception
       log_message = "failed to parse branch_deploy payload for #{@repo}: #{e.message}"
@@ -233,7 +240,7 @@ class GitHubDeployment < BaseEvent
   # It then sorts the deployments as well
   # @param deployments [String] the deployments raw JSON response
   # @return [Array] the parsed, filtered, and sorted deployments
-  protected def parse_and_filter_deployments(deployments : Octokit::Connection::Paginator(Octokit::Models::Deployment)) : Array
+  protected def parse_and_filter_deployments(deployments : Octokit::Connection::Paginator(Octokit::Models::Deployment)) : Array(Octokit::Models::Deployment)
     deployments = filter_deployments(deployments.records)
     sort_deployments(deployments)
   end
