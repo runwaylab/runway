@@ -25,6 +25,7 @@ COPY vendor/shards/cache/ vendor/shards/cache/
 # copy shard files
 COPY shard.lock shard.lock
 COPY shard.yml shard.yml
+COPY .crystal-version .crystal-version
 
 # bootstrap the project
 RUN script/bootstrap --production
