@@ -12,8 +12,11 @@ LABEL org.opencontainers.image.authors="Grant Birkinbine"
 
 WORKDIR /app
 
+# update packages
+RUN apt-get update && apt-get upgrade -y
+
 # install build dependencies
-RUN apt-get update && apt-get install libssh2-1-dev unzip wget -y
+RUN apt-get install libssh2-1-dev unzip wget -y
 
 # install yq
 RUN wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq && chmod +x /usr/bin/yq
