@@ -5,7 +5,11 @@ FROM 84codes/crystal@sha256:9f84ce6b226a1814c33250eed86e7ca073dbbd7130d41fc6a1a8
 WORKDIR /app
 
 # install build dependencies
-RUN apt-get update && apt-get install libssh2-1-dev unzip wget -y
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libssh2-1-dev \
+    unzip \
+    wget \
+    && rm -rf /var/lib/apt/lists/*
 
 # install yq
 RUN wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq && chmod +x /usr/bin/yq
