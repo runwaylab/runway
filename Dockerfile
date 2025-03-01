@@ -1,5 +1,7 @@
 # https://github.com/84codes/crystal-container-images
-FROM 84codes/crystal:1.14.1-ubuntu-24.04 AS builder
+# FROM 84codes/crystal:1.14.1-ubuntu-24.04 AS builder
+FROM 84codes/crystal@sha256:9f84ce6b226a1814c33250eed86e7ca073dbbd7130d41fc6a1a8c56dfd0c6111 AS builder
+
 
 LABEL org.opencontainers.image.title="runway"
 LABEL org.opencontainers.image.description="clearing code for take off"
