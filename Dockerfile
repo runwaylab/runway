@@ -39,7 +39,7 @@ COPY . .
 RUN script/build --production
 
 # https://github.com/phusion/baseimage-docker
-FROM ghcr.io/phusion/baseimage:noble-1.0.0
+FROM phusion/baseimage@sha256:b05855f2aa91a1d887d26039d203b65f6d1c7f64191cff786c6deff439af17f3
 
 # install runtime dependencies
 RUN apt-get update && apt-get install libssh2-1-dev libevent-dev -y
