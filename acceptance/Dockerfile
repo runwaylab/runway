@@ -1,10 +1,15 @@
 # https://github.com/84codes/crystal-container-images
-FROM 84codes/crystal:1.12.1-ubuntu-24.04 AS builder
+# FROM 84codes/crystal:1.14.1-ubuntu-24.04 AS builder
+FROM 84codes/crystal@sha256:9f84ce6b226a1814c33250eed86e7ca073dbbd7130d41fc6a1a8c56dfd0c6111 AS builder
 
 WORKDIR /app
 
 # install build dependencies
-RUN apt-get update && apt-get install libssh2-1-dev unzip wget -y
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libssh2-1-dev \
+    unzip \
+    wget \
+    && rm -rf /var/lib/apt/lists/*
 
 # install yq
 RUN wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq && chmod +x /usr/bin/yq
@@ -18,6 +23,7 @@ COPY vendor/shards/cache/ vendor/shards/cache/
 # copy shard files
 COPY shard.lock shard.lock
 COPY shard.yml shard.yml
+COPY .crystal-version .crystal-version
 
 # bootstrap the project
 RUN script/bootstrap --production
@@ -29,7 +35,7 @@ COPY . .
 RUN script/build --production
 
 # https://github.com/phusion/baseimage-docker
-FROM ghcr.io/phusion/baseimage:noble-1.0.0
+FROM phusion/baseimage@sha256:b05855f2aa91a1d887d26039d203b65f6d1c7f64191cff786c6deff439af17f3
 
 # install runtime dependencies
 RUN apt-get update && apt-get install libssh2-1-dev libevent-dev -y
