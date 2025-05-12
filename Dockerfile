@@ -36,7 +36,7 @@ COPY .crystal-version .crystal-version
 # bootstrap the project
 RUN script/bootstrap --production
 
-# copy all source files (ensure to use a .dockerignore file for efficient copying)
+# copy all source files (use a .dockerignore file for efficient copying)
 COPY . .
 
 # build the project
