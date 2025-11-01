@@ -16,14 +16,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: fetch crystal version
         id: crystal-version
         run: echo "crystal=$(cat .crystal-version)" >> $GITHUB_OUTPUT
 
       - name: install crystal
-        uses: crystal-lang/install-crystal@cdf26dcd488490c9939e9d4d62cab169c9e4f20d # pin@v1.8.2
+        uses: crystal-lang/install-crystal@5503f15cfd350dfc402f9c2f0fa31bdf83fd7384 # pin@v1.8.3
         with:
           crystal: ${{ steps.crystal-version.outputs.crystal }}
 
@@ -45,16 +45,16 @@ jobs:
           mv ./bin/runway ./releases/runway-linux-x86_64
 
       - name: generate artifact attestation
-        uses: actions/attest-build-provenance@v2.4.0
+        uses: actions/attest-build-provenance@v3.0.0
         with:
           subject-path: 'releases/runway-*'
       
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: runway-binaries
           path: releases/
 
-      - uses: actions/create-github-app-token@df432ceedc7162793a195dd1713ff69aefc7379e # pin@v2.0.6
+      - uses: actions/create-github-app-token@67018539274d69449ef7c02e8e71183d1719ab42 # pin@v2.1.4
         id: app-token
         with:
           app-id: ${{ vars.APP_ID }}
@@ -62,7 +62,7 @@ jobs:
 
       - name: Push a Release
         id: release
-        uses: ncipollo/release-action@bcfe5470707e8832e12347755757cec0eb3c22af # pin@v1.18.0
+        uses: ncipollo/release-action@b7eabc95ff50cbeeedec83973935c8f306dfcd0b # pin@v1.20.0
         with:
           artifacts: "./releases/*"
           tag: ${{ env.VERSION }}
