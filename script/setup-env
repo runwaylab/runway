@@ -32,6 +32,44 @@ if [[ "$@" == *"--production"* ]]; then
   export CRYSTAL_ENV="production"
 fi
 
+# On newer macOS versions, the Homebrew Crystal toolchain (LLVM 19) can crash
+# during compilation. Prefer the official toolchain (LLVM 15) in that case.
+if [[ "$OSTYPE" == "darwin"* ]] && command -v crystal >/dev/null 2>&1; then
+  darwin_major="$(uname -r | cut -d. -f1)"
+  llvm_version="$(crystal --version 2>/dev/null | awk '/LLVM:/ {print $2}')"
+
+  if [[ "${RUNWAY_USE_OFFICIAL_CRYSTAL:-false}" == "true" ]] || { [[ "$darwin_major" -ge 25 ]] && [[ "$llvm_version" == 19.* ]]; }; then
+    echo "detected Crystal LLVM ${llvm_version:-unknown} on macOS (Darwin $darwin_major) - using official Crystal toolchain"
+
+    script/ensure-official-crystal
+
+    OFFICIAL_CRYSTAL_BIN="$DIR/vendor/crystal/$CRYSTAL_VERSION/bin"
+    if [ -x "$OFFICIAL_CRYSTAL_BIN/crystal" ]; then
+      export PATH="$OFFICIAL_CRYSTAL_BIN:$PATH"
+      export RUNWAY_OFFICIAL_CRYSTAL="true"
+      if [ -x "$OFFICIAL_CRYSTAL_BIN/shards" ]; then
+        export SHARDS_BIN="$OFFICIAL_CRYSTAL_BIN/shards"
+      else
+        export SHARDS_BIN="shards"
+      fi
+      official_crystal_path="$(env -u CRYSTAL_PATH "$OFFICIAL_CRYSTAL_BIN/crystal" env CRYSTAL_PATH)"
+      export CRYSTAL_PATH="vendor/shards/install:$official_crystal_path"
+
+      crystal_opts="${CRYSTAL_OPTS:-}"
+      if [[ "$crystal_opts" != *"--link-flags=-L/opt/homebrew/lib"* ]]; then
+        crystal_opts="--link-flags=-L/opt/homebrew/lib $crystal_opts"
+      fi
+      if [[ "$crystal_opts" != *"--link-flags=-Wl"* ]]; then
+        crystal_opts="--link-flags=-Wl $crystal_opts"
+      fi
+      export CRYSTAL_OPTS="${crystal_opts# }"
+    else
+      echo "failed to locate official Crystal toolchain at $OFFICIAL_CRYSTAL_BIN"
+      exit 1
+    fi
+  fi
+fi
+
 if [[ "$@" == *"--production"* ]] || [[ "$CRYSTAL_ENV" == "production" ]] || [[ "$CI" == "true" ]]; then
   crystal_path_var="$(crystal env CRYSTAL_PATH)"
 
@@ -48,4 +86,13 @@ if [[ "$OSTYPE" == "darwin"* && "$CI" == "true" ]]; then
     echo "setting custom macos CRYSTAL_OPTS for CI"
     export CRYSTAL_OPTS="--link-flags=-Wl"
   fi
+fi
+
+# Ensure Homebrew libs are discoverable on macOS when linking native deps.
+if [[ "$OSTYPE" == "darwin"* ]] && [ -d /opt/homebrew/lib ]; then
+  crystal_opts="${CRYSTAL_OPTS:-}"
+  if [[ "$crystal_opts" != *"--link-flags=-L/opt/homebrew/lib"* ]]; then
+    crystal_opts="--link-flags=-L/opt/homebrew/lib $crystal_opts"
+  fi
+  export CRYSTAL_OPTS="${crystal_opts# }"
 fi

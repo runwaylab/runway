@@ -39,7 +39,14 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
 
   if [[ "$CI" == "true" ]]; then
     echo "setting custom macos CRYSTAL_OPTS for CI"
-    export CRYSTAL_OPTS="--link-flags=-Wl"
+    crystal_opts="${CRYSTAL_OPTS:-}"
+    if [ -d /opt/homebrew/lib ] && [[ "$crystal_opts" != *"--link-flags=-L/opt/homebrew/lib"* ]]; then
+      crystal_opts="--link-flags=-L/opt/homebrew/lib $crystal_opts"
+    fi
+    if [[ "$crystal_opts" != *"--link-flags=-Wl"* ]]; then
+      crystal_opts="--link-flags=-Wl $crystal_opts"
+    fi
+    export CRYSTAL_OPTS="${crystal_opts# }"
   fi
 
   # if CRYSTAL_OPTS is not set to `--link-flags=-Wl` then print a warning
@@ -77,22 +84,19 @@ if [[ "$CI" == "true" ]]; then
     sudo apt-get update && sudo apt-get install libssh2-1-dev -y
   fi
   if [[ "$os" == "mac" ]]; then
-    # do nothing for now
-    echo ""
+    brew install libssh2
   fi
 fi
 
 script/preinstall
 script/unzipper
 
-# for now, I think I can get away with `--ci` passing in `--skip-postinstall`. This may change one day when I actually need to run the postinstall command for deps in ci
-ci_flags=""
-if [[ "$@" == *"--ci"* ]]; then
-  ci_flags="--skip-postinstall --skip-executables"
-fi
+# Shard postinstalls and executables can trigger compiler bugs on some toolchains.
+# We vendor the required binaries and handle them in script/postinstall instead.
+install_flags="--skip-postinstall --skip-executables"
 
 # install the shards
-SHARDS_CACHE_PATH="$SHARDS_CACHE_PATH" SHARDS_INSTALL_PATH="$SHARDS_INSTALL_PATH" shards install --local --frozen $ci_flags $@
+SHARDS_CACHE_PATH="$SHARDS_CACHE_PATH" SHARDS_INSTALL_PATH="$SHARDS_INSTALL_PATH" shards install --local --frozen $install_flags $@
 
 # shards install often wipes out our custom shards sha256 file so we need to recompute it if they are gone
 script/compute-dep-shas
