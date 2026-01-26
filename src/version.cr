@@ -1,3 +1,3 @@
 module Runway
-  VERSION = "v0.5.8"
+  VERSION = "v0.5.9"
 end
