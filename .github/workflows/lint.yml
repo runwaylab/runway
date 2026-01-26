@@ -14,12 +14,12 @@ jobs:
     name: lint
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-13]
+        os: [ubuntu-latest, macos-latest]
     runs-on: ${{ matrix.os }}
 
     steps:
       - name: checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           persist-credentials: false
 
@@ -28,7 +28,7 @@ jobs:
         run: echo "crystal=$(cat .crystal-version)" >> $GITHUB_OUTPUT
 
       - name: install crystal
-        uses: crystal-lang/install-crystal@cdf26dcd488490c9939e9d4d62cab169c9e4f20d # pin@v1.8.2
+        uses: crystal-lang/install-crystal@56684e85b94c6340f5035965d57dcfdedd1ab0de # pin@v1.9.1
         with:
           crystal: ${{ steps.crystal-version.outputs.crystal }}
 

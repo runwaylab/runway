@@ -1,0 +1,45 @@
+#!/bin/bash
+
+set -euo pipefail
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && pwd )"
+CRYSTAL_VERSION="$(cat "$DIR/.crystal-version")"
+
+if [[ "$OSTYPE" != "darwin"* ]]; then
+  exit 0
+fi
+
+TARGET_DIR="$DIR/vendor/crystal/$CRYSTAL_VERSION"
+TARGET_BIN="$TARGET_DIR/bin/crystal"
+
+if [ -x "$TARGET_BIN" ]; then
+  exit 0
+fi
+
+mkdir -p "$DIR/vendor/crystal"
+
+TMPDIR=$(mktemp -d /tmp/crystal.XXXXXX)
+cleanup() {
+  rm -rf "$TMPDIR"
+}
+trap cleanup EXIT
+
+URL="https://github.com/crystal-lang/crystal/releases/download/${CRYSTAL_VERSION}/crystal-${CRYSTAL_VERSION}-1-darwin-universal.tar.gz"
+
+echo "downloading official Crystal toolchain $CRYSTAL_VERSION"
+curl -fsSL "$URL" -o "$TMPDIR/crystal.tar.gz"
+tar -xzf "$TMPDIR/crystal.tar.gz" -C "$TMPDIR"
+
+EXTRACTED_DIR="$(find "$TMPDIR" -maxdepth 1 -type d -name "crystal-${CRYSTAL_VERSION}-*" | head -n 1)"
+if [ -z "$EXTRACTED_DIR" ]; then
+  echo "failed to extract Crystal toolchain from $URL"
+  exit 1
+fi
+
+rm -rf "$TARGET_DIR"
+mv "$EXTRACTED_DIR" "$TARGET_DIR"
+
+if [ ! -x "$TARGET_BIN" ]; then
+  echo "official Crystal toolchain installed but crystal binary was not found at $TARGET_BIN"
+  exit 1
+fi

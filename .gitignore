@@ -11,6 +11,7 @@ bin/
 dist/
 vendor/shards/install
 vendor/.cache
+vendor/crystal/
 
 vendor/gems/
 

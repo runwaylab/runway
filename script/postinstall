@@ -1,13 +1,8 @@
 #!/bin/bash
 
-# set the working directory to the root of the project
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && pwd )"
-VENDOR_DIR="$DIR/vendor"
-SHARDS_INSTALL_PATH="$VENDOR_DIR/shards/install"
+set -e
 
-LINUX_VENDOR_DIR="$VENDOR_DIR/linux_x86_64/bin"
-DARWIN_VENDOR_DIR_X64="$VENDOR_DIR/darwin_x86_64/bin"
-DARWIN_VENDOR_DIR_ARM64="$VENDOR_DIR/darwin_arm64/bin"
+source script/setup-env "$@"
 
 if [[ "$CI" == "true" ]]; then
   source script/ci-env
@@ -22,33 +17,36 @@ if [[ "$flags" == *"--ci"* ]]; then
   echo $(uname -m)
 fi
 
-# Determine if the system is a Mac or Linux
+# Determine the vendor bin directory for this platform
 os="unknown"
 arch="unknown"
+vendor_bin_dir=""
 if [[ "$OSTYPE" == "linux-gnu" ]]; then
   os="linux"
-  if [[ "$flags" == *"--ci"* ]]; then
-    echo "OSTYPE: $OSTYPE"
-    echo "running in CI mode, copying vendored binaries to bin/ directory (linux)"
-    cp -r "$LINUX_VENDOR_DIR/." "$DIR/bin"
-  fi
+  vendor_bin_dir="$LINUX_VENDOR_DIR"
 elif [[ "$OSTYPE" == "darwin"* ]]; then
   os="mac"
   arch=$(uname -m)
-  if [[ "$flags" == *"--ci"* ]]; then
-    echo "OSTYPE: $OSTYPE"
-    echo "ARCH: $arch"
-    echo "running in CI mode, copying vendored binaries to bin/ directory (mac)"
-    if [ "$arch" = "x86_64" ]; then
-      cp -r "$DARWIN_VENDOR_DIR_X64/." "$DIR/bin"
-    elif [ "$arch" = "arm64" ]; then
-      cp -r "$DARWIN_VENDOR_DIR_ARM64/" "$DIR/bin"
-    else
-      echo "Unknown architecture: $arch"
-    fi
+  if [ "$arch" = "x86_64" ]; then
+    vendor_bin_dir="$DARWIN_VENDOR_DIR_X64"
+  elif [ "$arch" = "arm64" ]; then
+    vendor_bin_dir="$DARWIN_VENDOR_DIR_ARM64"
+  else
+    echo "Unknown architecture: $arch"
   fi
 else
   os="unknown"
+fi
+
+if [ -n "$vendor_bin_dir" ] && [ -d "$vendor_bin_dir" ]; then
+  if [[ "$flags" == *"--ci"* ]]; then
+    echo "OSTYPE: $OSTYPE"
+    echo "ARCH: $arch"
+    echo "running in CI mode, copying vendored binaries to bin/ directory ($os)"
+  else
+    echo "copying vendored binaries to bin/ directory ($os)"
+  fi
+  cp -r "$vendor_bin_dir/." "$DIR/bin"
 fi
 
 if [[ ! "$@" == *"--production"* ]]; then
@@ -70,8 +68,21 @@ if [[ ! "$@" == *"--production"* ]]; then
     fi
   fi
 
+  if [ "$AMEBA_UP_TO_DATE" = false ] && [ -n "$vendor_bin_dir" ] && [ -f "$vendor_bin_dir/ameba" ]; then
+    VENDORED_AMEBA_VERSION=$("$vendor_bin_dir/ameba" --version 2>/dev/null || true)
+    if [ "$AMEBA_VERSION" = "$VENDORED_AMEBA_VERSION" ]; then
+      echo "using vendored ameba binary"
+      cp "$vendor_bin_dir/ameba" "$DIR/bin/ameba"
+      AMEBA_UP_TO_DATE=true
+    fi
+  fi
+
   if [ "$AMEBA_UP_TO_DATE" = false ]; then
     echo "building ameba binary"
-    cd "$SHARDS_INSTALL_PATH/ameba" && $SHARDS_BIN build && cp bin/ameba "$DIR/bin/ameba" && cd "$DIR"
+    (
+      cd "$SHARDS_INSTALL_PATH/ameba"
+      $SHARDS_BIN build
+    )
+    cp "$SHARDS_INSTALL_PATH/ameba/bin/ameba" "$DIR/bin/ameba"
   fi
 fi
