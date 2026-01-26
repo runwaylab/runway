@@ -88,6 +88,24 @@ if [[ "$OSTYPE" == "darwin"* && "$CI" == "true" ]]; then
   fi
 fi
 
+# Ensure pkg-config can locate Homebrew OpenSSL on macOS (keg-only).
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  brew_prefix="${HOMEBREW_PREFIX:-/opt/homebrew}"
+  if command -v brew >/dev/null 2>&1; then
+    brew_prefix="$(brew --prefix)"
+  fi
+
+  for openssl_prefix in "$brew_prefix/opt/openssl@3" "$brew_prefix/opt/openssl@1.1"; do
+    pkgconfig_dir="$openssl_prefix/lib/pkgconfig"
+    if [ -d "$pkgconfig_dir" ]; then
+      if [[ ":${PKG_CONFIG_PATH:-}:" != *":$pkgconfig_dir:"* ]]; then
+        export PKG_CONFIG_PATH="$pkgconfig_dir${PKG_CONFIG_PATH:+:$PKG_CONFIG_PATH}"
+      fi
+      break
+    fi
+  done
+fi
+
 # Ensure Homebrew libs are discoverable on macOS when linking native deps.
 if [[ "$OSTYPE" == "darwin"* ]] && [ -d /opt/homebrew/lib ]; then
   crystal_opts="${CRYSTAL_OPTS:-}"
