@@ -45,7 +45,7 @@ jobs:
           mv ./bin/runway ./releases/runway-linux-x86_64
 
       - name: generate artifact attestation
-        uses: actions/attest-build-provenance@v3.1.0
+        uses: actions/attest-build-provenance@v3.2.0
         with:
           subject-path: 'releases/runway-*'
       
