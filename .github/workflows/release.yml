@@ -45,16 +45,16 @@ jobs:
           mv ./bin/runway ./releases/runway-linux-x86_64
 
       - name: generate artifact attestation
-        uses: actions/attest-build-provenance@v3.1.0
+        uses: actions/attest-build-provenance@v4.1.0
         with:
           subject-path: 'releases/runway-*'
       
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         with:
           name: runway-binaries
           path: releases/
 
-      - uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf # pin@v2.2.1
+      - uses: actions/create-github-app-token@f8d387b68d61c58ab83c6c016672934102569859 # pin@v3.0.0
         id: app-token
         with:
           app-id: ${{ vars.APP_ID }}
@@ -62,7 +62,7 @@ jobs:
 
       - name: Push a Release
         id: release
-        uses: ncipollo/release-action@b7eabc95ff50cbeeedec83973935c8f306dfcd0b # pin@v1.20.0
+        uses: ncipollo/release-action@339a81892b84b4eeb0f6e744e4574d79d0d9b8dd # pin@v1.21.0
         with:
           artifacts: "./releases/*"
           tag: ${{ env.VERSION }}
