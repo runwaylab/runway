@@ -28,7 +28,7 @@ jobs:
         run: echo "crystal=$(cat .crystal-version)" >> $GITHUB_OUTPUT
 
       - name: install crystal
-        uses: crystal-lang/install-crystal@56684e85b94c6340f5035965d57dcfdedd1ab0de # pin@v1.9.1
+        uses: crystal-lang/install-crystal@d8ef131ecec0352ce0e39b81b0a6d95def58fe2f # pin@v1.9.2
         with:
           crystal: ${{ steps.crystal-version.outputs.crystal }}
 
