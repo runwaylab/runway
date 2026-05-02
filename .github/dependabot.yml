@@ -1,13 +1,43 @@
-# Please see the documentation for all configuration options:
-# https://docs.github.com/github/administering-a-repository/configuration-options-for-dependency-updates
 ---
 version: 2
 updates:
-  - package-ecosystem: github-actions
-    directory: "/"
-    groups:
-      github-actions:
-        patterns:
-          - "*"
-    schedule:
-      interval: monthly
+- package-ecosystem: github-actions
+  directory: "/"
+  groups:
+    github-actions:
+      patterns:
+      - "*"
+  schedule:
+    interval: monthly
+  cooldown:
+    default-days: 45
+- package-ecosystem: docker
+  directory: "/"
+  schedule:
+    interval: monthly
+  cooldown:
+    default-days: 45
+- package-ecosystem: docker
+  directory: "/acceptance/ssh_server"
+  schedule:
+    interval: monthly
+  cooldown:
+    default-days: 45
+- package-ecosystem: docker
+  directory: "/acceptance"
+  schedule:
+    interval: monthly
+  cooldown:
+    default-days: 45
+- package-ecosystem: docker-compose
+  directory: "/acceptance"
+  schedule:
+    interval: monthly
+  cooldown:
+    default-days: 45
+- package-ecosystem: docker-compose
+  directory: "/"
+  schedule:
+    interval: monthly
+  cooldown:
+    default-days: 45
