@@ -1,6 +1,6 @@
 # https://github.com/84codes/crystal-container-images
 # FROM 84codes/crystal:1.14.1-ubuntu-24.04 AS builder
-FROM 84codes/crystal@sha256:9f84ce6b226a1814c33250eed86e7ca073dbbd7130d41fc6a1a8c56dfd0c6111 AS builder
+FROM 84codes/crystal@sha256:5d6ef35999ffd8782387df7e1cbc5aa6e5b17c3fc1ede3109bf533d350388110 AS builder
 
 
 LABEL org.opencontainers.image.title="runway"
